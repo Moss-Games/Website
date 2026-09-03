@@ -30,5 +30,7 @@ production sur mossgames.fr. Il n'y a pas d'étape manuelle de déploiement à f
 
 ## Documentation du projet
 
+- [docs/ONBOARDING.md](docs/ONBOARDING.md) — **à lire en premier** si tu reprends ce projet
+  sur une nouvelle machine ou avec un nouvel agent (accès GitHub/Vercel nécessaires, etc.)
 - [docs/STATUS.md](docs/STATUS.md) — état actuel du site, ce qui est fait, ce qui reste à faire
 - [docs/DECISIONS.md](docs/DECISIONS.md) — journal des décisions techniques et pourquoi
