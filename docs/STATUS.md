@@ -4,14 +4,31 @@ Dernière mise à jour : 2026-09-03
 
 ## Où on en est
 
-Le repo vient d'être initialisé. C'est un squelette Next.js minimal, sans contenu réel :
+Le repo vient d'être initialisé. C'est un squelette Next.js minimal, avec un premier
+élément de contenu réel (le logo) mais pas encore le reste :
 
 - Structure Next.js (App Router) en place, avec Tailwind CSS v4 configuré.
 - Une seule page (`app/page.js`) : placeholder "MossGames — le site arrive bientôt".
-- Aucun contenu réel (textes, jeux, logo, images, couleurs de marque, liens sociaux,
-  contact) n'a encore été intégré — voir `docs/DECISIONS.md` du 2026-09-03.
+- **Logo intégré** (`public/images/logo.png`) et utilisé comme favicon.
+- **Concept visuel "mascotte qui tient le site dans ses bras" implémenté** :
+  `app/components/MascotFrame.js` enveloppe tout le site (branché dans `app/layout.js`),
+  avec des formes CSS simples (pas d'artwork illustré pour l'instant) pour le museau, les
+  pattes et les pieds qui dépassent du cadre. Détails + comment ajuster :
+  [docs/DESIGN.md](DESIGN.md).
+- Toujours aucun autre contenu réel (textes des jeux, bio du studio, charte graphique
+  complète, contact, liens sociaux) — voir `docs/DECISIONS.md` du 2026-09-03.
 - Repo git initialisé et poussé sur `main` de `Moss-Games/Website` (GitHub), lié à Vercel
   → **confirmé live** sur mossgames.fr avec la page placeholder (vérifié par curl).
+
+## Piège déjà rencontré : flex + enfants en `position: absolute`
+
+Dans `MascotFrame.module.css`, `.box` est un enfant flex de `<body>` (`flex flex-col`)
+mais tous SES enfants à lui (`.content`, les `.limb`) sont en `position: absolute` — donc
+aucun contenu "en flux" pour lui donner une largeur naturelle. Résultat observé en testant
+dans un navigateur : sans `width: 100%` explicite sur `.box`, la boîte s'effondre à une
+largeur quasi nulle (les marges `auto` désactivent le stretch flex par défaut, et il ne
+reste plus rien pour calculer une largeur). Corrigé en ajoutant `width: 100%` — voir le
+commentaire dans le fichier. À garder en tête si `.box` est un jour restructuré.
 
 ## Prochaine étape attendue
 

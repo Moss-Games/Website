@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import MascotFrame from "./components/MascotFrame";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "MossGames",
   description: "Studio de jeu vidéo MossGames.",
+  icons: {
+    icon: "/images/logo.png",
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -22,7 +26,9 @@ export default function RootLayout({ children }) {
       lang="fr"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <MascotFrame>{children}</MascotFrame>
+      </body>
     </html>
   );
 }

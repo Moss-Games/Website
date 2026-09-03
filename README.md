@@ -34,3 +34,5 @@ production sur mossgames.fr. Il n'y a pas d'étape manuelle de déploiement à f
   sur une nouvelle machine ou avec un nouvel agent (accès GitHub/Vercel nécessaires, etc.)
 - [docs/STATUS.md](docs/STATUS.md) — état actuel du site, ce qui est fait, ce qui reste à faire
 - [docs/DECISIONS.md](docs/DECISIONS.md) — journal des décisions techniques et pourquoi
+- [docs/DESIGN.md](docs/DESIGN.md) — concept visuel du mascotte qui tient le site dans ses
+  bras (`MascotFrame`), et comment l'ajuster

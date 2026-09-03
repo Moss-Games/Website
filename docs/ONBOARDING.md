@@ -59,8 +59,12 @@ npm run dev
 
 ## Convention pour les agents qui reprennent ce projet
 
-À chaque session avec un changement notable (nouvelle décision technique, contenu ajouté,
-incident/piège rencontré, changement de config Vercel/GitHub) : mettre à jour STATUS.md
-et/ou DECISIONS.md, committer et pousser sur `main` avant de terminer. Le but est qu'aucune
-information importante ne reste uniquement dans l'historique de conversation d'un agent —
-tout ce qui compte doit finir dans ces `.md`.
+- **Push après (quasiment) chaque échange** — demande explicite de l'utilisateur
+  (2026-09-03) : ne pas accumuler plusieurs prompts de travail sans pousser sur `main`.
+  L'utilisateur veut pouvoir récupérer l'état du projet depuis une autre machine à tout
+  moment, donc l'état local ne doit pas rester longtemps en avance sur GitHub.
+- À chaque changement notable (nouvelle décision technique, contenu ajouté, incident/piège
+  rencontré, changement de config Vercel/GitHub) : mettre à jour STATUS.md et/ou
+  DECISIONS.md dans le même commit que le changement de code correspondant. Le but est
+  qu'aucune information importante ne reste uniquement dans l'historique de conversation
+  d'un agent — tout ce qui compte doit finir dans ces `.md`.

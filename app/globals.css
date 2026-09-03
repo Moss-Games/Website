@@ -12,12 +12,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/*
+ * No dark-mode variant on purpose: the MascotFrame (app/components/MascotFrame.module.css)
+ * is a fixed black-on-light shell that matches the logo and isn't theme-aware yet. If the
+ * page background went dark while the frame stayed black, the frame would disappear
+ * (black-on-near-black). Revisit both together once the real brand palette is set — see
+ * docs/DESIGN.md.
+ */
 
 body {
   background: var(--background);
