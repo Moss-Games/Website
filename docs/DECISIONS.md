@@ -34,3 +34,30 @@ existante, confirmée par l'utilisateur — le repo était vide avant ce projet)
 Implication pour les agents futurs : pas besoin de demander confirmation avant un
 `git push origin main` sur ce repo, sauf action inhabituelle (force-push, reset, etc. —
 ça reste soumis aux règles de sécurité générales, jamais de force-push sans demander).
+
+## 2026-09-03 — Incident déploiement initial : Root Directory obsolète sur le projet Vercel
+
+Le tout premier push a bien déclenché un déploiement Vercel, mais il a **échoué** :
+`The specified Root Directory "dist" does not exist.` Le projet Vercel qui porte
+`mossgames.fr` s'appelle **`ldpdoc`** (project id `prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H`,
+scope `geremy-cambus-projects`) — un nom hérité d'un ancien usage du projet pour héberger
+la doc VitePress d'un autre repo (`Moss-Games/LesDeuxPelos`, "Les Deux Pelos"). Le repo
+Git connecté au projet avait déjà été changé pour `Moss-Games/Website` (par l'utilisateur,
+avant cette session), mais deux réglages du projet trainaient encore de l'ancienne config :
+- `rootDirectory` = `"dist"` (chemin de build VitePress) → cassait tout build Next.js
+- `framework` = non défini
+
+Correction faite via l'API Vercel (`vercel api /v9/projects/<id> -X PATCH`, après
+`vercel login` + `vercel link --project <id>` faits par l'utilisateur) :
+- `rootDirectory` remis à `null`
+- `framework` mis à `"nextjs"`
+
+Puis `vercel redeploy <deploymentId> --target production` pour forcer un nouveau build
+avec les bons réglages → succès, aliasé sur `www.mossgames.fr`, vérifié en curl.
+
+**Point important pour la suite** : tant que le contenu réel de la doc VitePress LDP
+n'existe plus sur ce projet Vercel, il n'y a plus de conflit. Mais le nom du projet
+(`ldpdoc`) et son historique restent trompeurs — si un futur agent voit une erreur de
+build mentionnant `dist`, VitePress, ou un contenu qui ne correspond pas au repo Website,
+c'est probablement un résidu de cet historique. Vérifier les Project Settings sur
+vercel.com (Build & Development Settings) en cas de doute plutôt que de repartir de zéro.

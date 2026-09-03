@@ -11,7 +11,7 @@ Le repo vient d'être initialisé. C'est un squelette Next.js minimal, sans cont
 - Aucun contenu réel (textes, jeux, logo, images, couleurs de marque, liens sociaux,
   contact) n'a encore été intégré — voir `docs/DECISIONS.md` du 2026-09-03.
 - Repo git initialisé et poussé sur `main` de `Moss-Games/Website` (GitHub), lié à Vercel
-  → devrait être live sur mossgames.fr avec la page placeholder.
+  → **confirmé live** sur mossgames.fr avec la page placeholder (vérifié par curl).
 
 ## Prochaine étape attendue
 
@@ -33,6 +33,11 @@ Une fois ce contenu reçu :
 - Le repo `Moss-Games/Website` sur GitHub était vide avant ce commit initial.
 - L'auth GitHub se fait via SSH (clé déjà configurée sur la machine, testée OK avec le
   compte GitHub `GeremC`).
-- Le CLI `vercel` est installé localement mais n'est pas connecté (`vercel whoami` échoue,
-  token invalide) — le déploiement passe uniquement par l'intégration GitHub → Vercel
-  existante, pas besoin du CLI pour l'instant.
+- Le CLI `vercel` est installé et **connecté** (compte `geremc`, login fait le 2026-09-03).
+  Dossier lié au projet Vercel via `vercel link --project prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H`
+  (fichier `.vercel/` créé, gitignoré).
+- **Projet Vercel : `ldpdoc`** (nom historique, à renommer un jour — voir
+  `docs/DECISIONS.md` du 2026-09-03 "Incident déploiement initial"). C'est bien LE projet
+  qui porte le domaine `mossgames.fr` / `www.mossgames.fr`, déjà connecté au repo
+  `Moss-Games/Website` (branche `main`) côté GitHub App Vercel — pas besoin de reconnecter.
+- Project ID Vercel : `prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H` (scope `geremy-cambus-projects`).
