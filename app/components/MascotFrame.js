@@ -49,6 +49,7 @@ export default function MascotFrame({ children }) {
   const idleTimerRef = useRef(null);
   const settleTimerRef = useRef(null);
   const scrollDirRef = useRef(1);
+  const touchYRef = useRef(null);
   const [scrolling, setScrolling] = useState(false);
   const [scrollDir, setScrollDir] = useState(1);
   // Non-null while easing the hands back to rest after a scroll stops; holds
@@ -59,8 +60,11 @@ export default function MascotFrame({ children }) {
     const content = contentRef.current;
     if (!content) return;
 
-    const handleWheel = (event) => {
-      const dir = event.deltaY > 0 ? 1 : -1;
+    // Shared by both the desktop wheel handler and the mobile touch handler
+    // below — `deltaY` follows the wheel-event convention (positive = content
+    // scrolling down) so both input types drive the same wiggle direction.
+    const handleScrollDelta = (deltaY) => {
+      const dir = deltaY > 0 ? 1 : -1;
       if (scrollDirRef.current !== dir) {
         scrollDirRef.current = dir;
         setScrollDir(dir);
@@ -93,9 +97,37 @@ export default function MascotFrame({ children }) {
       }, SCROLL_IDLE_DELAY);
     };
 
+    const handleWheel = (event) => handleScrollDelta(event.deltaY);
+
+    // Mobile/touch devices never fire `wheel` events, so the hands need their
+    // own touch-driven trigger. A finger dragging up scrolls the content down
+    // (same real-world direction as a positive wheel deltaY), so the delta is
+    // expressed as (previous touch Y - current touch Y).
+    const handleTouchStart = (event) => {
+      touchYRef.current = event.touches[0]?.clientY ?? null;
+    };
+
+    const handleTouchMove = (event) => {
+      const y = event.touches[0]?.clientY;
+      if (y == null || touchYRef.current == null) return;
+      const deltaY = touchYRef.current - y;
+      touchYRef.current = y;
+      if (deltaY !== 0) handleScrollDelta(deltaY);
+    };
+
+    const handleTouchEnd = () => {
+      touchYRef.current = null;
+    };
+
     content.addEventListener("wheel", handleWheel, { passive: true });
+    content.addEventListener("touchstart", handleTouchStart, { passive: true });
+    content.addEventListener("touchmove", handleTouchMove, { passive: true });
+    content.addEventListener("touchend", handleTouchEnd, { passive: true });
     return () => {
       content.removeEventListener("wheel", handleWheel);
+      content.removeEventListener("touchstart", handleTouchStart);
+      content.removeEventListener("touchmove", handleTouchMove);
+      content.removeEventListener("touchend", handleTouchEnd);
       clearTimeout(idleTimerRef.current);
       clearTimeout(settleTimerRef.current);
     };
@@ -108,12 +140,19 @@ export default function MascotFrame({ children }) {
       className={`${styles.box} ${scrolling ? styles.scrolling : ""}`}
       style={{ "--mascot-scroll-dir": scrollDir }}
     >
-      <span className={styles.brandLeft}>MOSS</span>
-      <span className={styles.brandRight}>GAMES</span>
+      <Link href="/" className={styles.logo} aria-label="MossGames home">
+        <img src="/images/logo.png" alt="MossGames" />
+      </Link>
+      <Link href="/" className={styles.brandLeft}>
+        MOSS
+      </Link>
+      <Link href="/" className={styles.brandRight}>
+        GAMES
+      </Link>
       <Link href="/about" className={styles.aboutUs}>
         About Us
       </Link>
-      <span className={`${styles.limb} ${styles.head}`} aria-hidden="true" />
+      <Link href="/" className={`${styles.limb} ${styles.head}`} aria-label="MossGames home" />
       <span
         ref={handLeftWrapRef}
         className={styles.handWrap + " " + styles.handLeftWrap}

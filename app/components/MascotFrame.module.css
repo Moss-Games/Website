@@ -113,7 +113,8 @@
 }
 
 /* "MOSS" / "GAMES" wordmark, flanking the head in the top margin (on the black
-   site background, not inside the box). Vertically centered in the margin band. */
+   site background, not inside the box). Vertically centered in the margin band.
+   Doubles as a home link, like the head (see .head below). */
 .brandLeft,
 .brandRight {
   position: absolute;
@@ -124,7 +125,7 @@
   line-height: 1;
   color: var(--foreground);
   white-space: nowrap;
-  pointer-events: none;
+  text-decoration: none;
   user-select: none;
 }
 
@@ -155,6 +156,26 @@
 
 .aboutUs:hover {
   text-decoration: underline;
+}
+
+/* MossGames logo, fixed to the top-left corner of the viewport (not just the
+   box's margin band), so it's always visible as a home link regardless of
+   scroll position. */
+.logo {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 /* Head: real logo crop, top edge, dipping down over the page to "mask" it. */
@@ -302,5 +323,12 @@
   .aboutUs {
     right: 0.5rem;
     font-size: 0.5rem;
+  }
+
+  .logo {
+    top: 0.5rem;
+    left: 0.5rem;
+    width: 2rem;
+    height: 2rem;
   }
 }
