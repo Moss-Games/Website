@@ -4,14 +4,15 @@
  *
  * How it works:
  *   1. `.box` is a bordered rectangle — the border is the mascot's arms.
- *   2. `.head`, `.handLeft`, `.handRight` are AI-illustrated artwork
+ *   2. `.head`, `.handLeftImg`/`.handRightImg` are AI-illustrated artwork
  *      (public/images/mascot-*.png, generated from the logo — see docs/DESIGN.md),
  *      centered on the border line. Each already has its own baked-in black outline,
  *      so it stays legible whether it's sitting on the black page background or
  *      overlapping the white `.content`. Unlike the feet, they sit ABOVE `.content`
  *      (higher z-index), so most of each one overlaps *onto* the page — the mascot
  *      visibly grips/masks the content it's holding, instead of just poking out past
- *      the edge.
+ *      the edge. Each hand image lives inside a zero-size `.handWrap` anchored at the
+ *      wrist (see the hand rules further down) so it can rotate around the wrist.
  *   3. `.footLeft` / `.footRight` are real logo crops too, centered on the bottom
  *      border, but sitting BELOW `.content` (background layer) — only the outward
  *      half is visible, unlike the head/hands which overlap on top.
@@ -36,7 +37,7 @@
   --mascot-frame-margin: 4.5rem; /* space around the box so limbs have room to poke into (the head needs more headroom now that its cut edge sits right at the border) */
 
   /* --- tune each limb's size/position here --- */
-  --mascot-head-offset-x: 54%; /* horizontal position along the top edge */
+  --mascot-head-offset-x: 50%; /* horizontal position along the top edge */
   --mascot-head-width: 7.8rem;
   --mascot-head-height: 9.1rem; /* matches mascot-head.png's ~0.86 aspect ratio (round head + full-length nose — it's an anteater, the nose is a feature, not a defect) */
   --mascot-head-rotation: -4deg;
@@ -57,8 +58,8 @@
   --mascot-foot-right-x: 60%;
   --mascot-foot-drop: -40%; /* translateY: how much of each foot pokes out below the border (below .content, background layer) */
 
-  --mascot-brand-left-x: 45%; /* "MOSS" horizontal position in the top margin */
-  --mascot-brand-right-x: 63%; /* "GAMES" horizontal position in the top margin */
+  --mascot-brand-left-x: 41%; /* "MOSS" horizontal position in the top margin */
+  --mascot-brand-right-x: 59%; /* "GAMES" horizontal position in the top margin */
   --mascot-brand-font-size: 2.3rem;
 
   position: relative;
@@ -161,26 +162,94 @@
   z-index: 4; /* above .content and .frame: visibly overlaps/masks the page it's holding */
 }
 
-/* Hands: real logo crops, mid-height on the left/right edges, gripping onto the page. */
-.handLeft,
-.handRight {
-  width: var(--mascot-hand-width);
-  height: var(--mascot-hand-height);
+/* Hands: real logo crops, mid-height on the left/right edges, gripping onto the page.
+   Structured as a zero-size "wrist" anchor (.handWrap, positioned on the border) with
+   the actual artwork (.handLeftImg/.handRightImg) offset from it. Because the wrap has
+   no size, its own transform-origin (default 50% 50%) sits exactly at the wrist point,
+   so rotating the wrap — the resting -10deg/10deg tilt, plus the scroll wiggle — always
+   pivots around the wrist instead of the image's center. See .scrolling below. */
+.handWrap {
+  position: absolute;
+  width: 0;
+  height: 0;
   z-index: 4; /* above .content and .frame: visibly overlaps/masks the page it's holding */
 }
 
-.handLeft {
+/* The left/right wrist rotations are mirror images of each other (one hand's
+   local +angle reads as visually "up", the other's local -angle does) — the
+   left formula adds --hand-wiggle, the right formula subtracts it, so a given
+   --hand-wiggle value swings both hands the same real-world direction instead
+   of opposite ways. --mascot-scroll-dir (1 = last scroll was down, -1 = up)
+   flips which way the shared wiggle keyframes lean. */
+.handLeftWrap {
   top: var(--mascot-hand-left-offset-y);
   left: 0;
-  background: url("/images/mascot-hand-left.png") center / contain no-repeat;
-  transform: translate(var(--mascot-hand-left-reach), -50%) rotate(-10deg);
+  transform: rotate(calc(-10deg + var(--hand-wiggle, 0deg) * var(--mascot-scroll-dir, 1)));
 }
 
-.handRight {
+.handRightWrap {
   top: var(--mascot-hand-right-offset-y);
   left: 100%;
-  background: url("/images/mascot-hand-right.png") center / contain no-repeat;
-  transform: translate(var(--mascot-hand-right-reach), -50%) rotate(10deg);
+  transform: rotate(calc(10deg - var(--hand-wiggle, 0deg) * var(--mascot-scroll-dir, 1)));
+}
+
+.handLeftImg,
+.handRightImg {
+  position: absolute;
+  top: 0;
+  width: var(--mascot-hand-width);
+  height: var(--mascot-hand-height);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.handLeftImg {
+  left: 0;
+  background-image: url("/images/mascot-hand-left.png");
+  transform: translate(var(--mascot-hand-left-reach), -50%);
+}
+
+.handRightImg {
+  left: 0;
+  background-image: url("/images/mascot-hand-right.png");
+  transform: translate(var(--mascot-hand-right-reach), -50%);
+}
+
+/* Lets --hand-wiggle be animated/transitioned smoothly instead of jumping between
+   keyframe values (plain custom properties aren't interpolated). */
+@property --hand-wiggle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+.handLeftWrap,
+.handRightWrap {
+  transition: --hand-wiggle 0.2s ease-out;
+}
+
+/* While the page is being wheel-scrolled, both hands lean and swing up to 30deg off
+   their resting tilt, around the wrist (see .handWrap above) — as if the mascot were
+   the one dragging the page. MascotFrame.js toggles this class on/off based on wheel
+   activity, snapping back to the resting -10deg/10deg tilt ~150ms after the last wheel
+   event, and sets --mascot-scroll-dir from the wheel event's direction so the lean
+   points the right way (down-scroll -> hands lean up, up-scroll -> hands lean down). */
+.scrolling .handLeftWrap,
+.scrolling .handRightWrap {
+  animation: mascotHandWiggle 0.4s ease-in-out infinite;
+}
+
+@keyframes mascotHandWiggle {
+  0% {
+    --hand-wiggle: 0deg;
+  }
+  50% {
+    --hand-wiggle: -30deg;
+  }
+  100% {
+    --hand-wiggle: 0deg;
+  }
 }
 
 /* Feet: real logo crops, bottom edge, poking out below the box near the center.
@@ -219,7 +288,7 @@
     --mascot-foot-left-height: 2.3rem;
     --mascot-foot-right-width: 2.3rem;
     --mascot-foot-right-height: 2.5rem;
-    --mascot-brand-left-x: 25%;
+    --mascot-brand-left-x: 28%;
     --mascot-brand-right-x: 72%;
     --mascot-brand-font-size: 1.05rem;
   }
