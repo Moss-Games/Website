@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0d0d0d;
+  --foreground: #fafaf7;
 }
 
 @theme inline {
@@ -13,11 +13,11 @@
 }
 
 /*
- * No dark-mode variant on purpose: the MascotFrame (app/components/MascotFrame.module.css)
- * is a fixed black-on-light shell that matches the logo and isn't theme-aware yet. If the
- * page background went dark while the frame stayed black, the frame would disappear
- * (black-on-near-black). Revisit both together once the real brand palette is set — see
- * docs/DESIGN.md.
+ * Single fixed dark palette on purpose (no prefers-color-scheme variant): the mascot
+ * (MascotFrame.module.css) reuses these same --background/--foreground tokens for its
+ * border/limbs and content area, so the whole site — margin, frame, and page content —
+ * stays one consistent black-background/off-white-mascot look regardless of the visitor's
+ * OS theme. See docs/DESIGN.md.
  */
 
 body {

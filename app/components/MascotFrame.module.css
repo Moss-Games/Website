@@ -4,48 +4,51 @@
  *
  * How it works:
  *   1. `.box` is a bordered rectangle — the border is the mascot's arms.
- *   2. Five `.limb` shapes (snout, 2 paws, 2 feet) are plain CSS blobs
- *      (border-radius, no SVG/images) centered ON the border line, so
- *      roughly half of each blob sits outside the box (visible) and half
- *      sits inside (hidden — see next point).
- *   3. `.content` is an opaque layer that exactly fills the box's inside
- *      and sits ABOVE the limbs (higher z-index). It covers the inward
- *      half of every limb, which is what makes them read as "poking out"
- *      instead of floating shapes.
- *
- * These are deliberately simple placeholder shapes (no hand-drawn detail,
- * no fur, no linework) so the concept can be reviewed and repositioned
- * quickly. To swap in real illustrated art later: replace the `.limb`
- * shapes with `background-image` (or inline SVG) instead of a flat
- * `background-color`, keep the same positioning custom properties.
- *
- * To reposition/resize anything, change the custom properties below —
- * you should not need to touch MascotFrame.js or the shape rules further
- * down for routine tweaks.
+ *   2. `.head`, `.handLeft`, `.handRight` are AI-illustrated artwork
+ *      (public/images/mascot-*.png, generated from the logo — see docs/DESIGN.md),
+ *      centered on the border line. Each already has its own baked-in black outline,
+ *      so it stays legible whether it's sitting on the black page background or
+ *      overlapping the white `.content`. Unlike the feet, they sit ABOVE `.content`
+ *      (higher z-index), so most of each one overlaps *onto* the page — the mascot
+ *      visibly grips/masks the content it's holding, instead of just poking out past
+ *      the edge.
+ *   3. `.footLeft` / `.footRight` are real logo crops too, centered on the bottom
+ *      border, but sitting BELOW `.content` (background layer) — only the outward
+ *      half is visible, unlike the head/hands which overlap on top.
+ *   4. `.content` is an opaque layer that exactly fills the box's inside.
+ *      It sits above the feet (hides their inward half) but below the head
+ *      and hands (so they can overlap it).
  */
 
 .box {
   /* --- tune the frame here --- */
-  --mascot-color: #111111; /* arms/paws/feet/border color — matches the logo's black */
-  --mascot-content-bg: #fafaf7; /* inner page background, covers the limbs' inner half */
+  --mascot-color: var(--foreground); /* border/feet/head/hands color — off-white, visible against the black page background */
+  --mascot-content-bg: #ffffff; /* the held page itself: white, independent of the black site background */
   --mascot-border-width: 0.5rem;
   --mascot-border-radius: 1.5rem;
-  --mascot-frame-margin: 2.5rem; /* space around the box so limbs have room to poke into */
+  --mascot-frame-margin: 4.5rem; /* space around the box so limbs have room to poke into (the head needs more headroom now that its cut edge sits right at the border) */
 
   /* --- tune each limb's size/position here --- */
-  --mascot-snout-offset-x: 54%; /* horizontal position along the top edge */
-  --mascot-snout-width: 3.25rem;
-  --mascot-snout-height: 4.5rem;
-  --mascot-snout-rotation: -8deg;
+  --mascot-head-offset-x: 54%; /* horizontal position along the top edge */
+  --mascot-head-width: 7.8rem;
+  --mascot-head-height: 9.1rem; /* matches mascot-head.png's ~0.86 aspect ratio (round head + full-length nose — it's an anteater, the nose is a feature, not a defect) */
+  --mascot-head-rotation: -4deg;
+  --mascot-head-overlap: -43%; /* translateY: the straight cut edge (left side, where the "neck" was trimmed) should sit right at the border line, hidden by it; the nose dips onto the page */
 
-  --mascot-paw-size: 3rem;
-  --mascot-paw-left-offset-y: 38%; /* vertical position along the left edge */
-  --mascot-paw-right-offset-y: 46%; /* vertical position along the right edge */
+  --mascot-hand-width: 6rem;
+  --mascot-hand-height: 2.9rem; /* matches mascot-hand-*.png's ~2.1 aspect ratio (Gemini illustrated art) */
+  --mascot-hand-left-offset-y: 35%; /* vertical position along the left edge */
+  --mascot-hand-right-offset-y: 35%; /* vertical position along the right edge */
+  --mascot-hand-left-reach: -38%; /* translateX: how far the left hand reaches onto the page */
+  --mascot-hand-right-reach: -62%; /* translateX: how far the right hand reaches onto the page */
 
-  --mascot-foot-width: 2.75rem;
-  --mascot-foot-height: 2rem;
+  --mascot-foot-left-width: 3.6rem;
+  --mascot-foot-left-height: 3.45rem; /* matches mascot-foot-left.png's ~1.04 aspect ratio */
+  --mascot-foot-right-width: 3.4rem;
+  --mascot-foot-right-height: 3.75rem; /* matches mascot-foot-right.png's ~0.91 aspect ratio */
   --mascot-foot-left-x: 38%; /* horizontal position along the bottom edge */
   --mascot-foot-right-x: 60%;
+  --mascot-foot-drop: -40%; /* translateY: how much of each foot pokes out below the border (below .content, background layer) */
 
   position: relative;
   flex: 1 1 auto; /* fill the height of the <body> (flex column) minus this margin */
@@ -61,7 +64,7 @@
 .content {
   position: absolute;
   inset: 0;
-  z-index: 2; /* above the limbs: hides their inward half */
+  z-index: 2; /* above the feet (hides their inward half), below the head/hands */
   display: flex;
   flex-direction: column;
   overflow: auto;
@@ -71,57 +74,61 @@
 
 .limb {
   position: absolute;
-  z-index: 1; /* below .content, above the page behind the box */
-  background: var(--mascot-color);
+  z-index: 1; /* feet: below .content, above the page behind the box */
 }
 
-/* Snout: top edge, drooping down like the logo's floppy ear/muzzle. */
-.snout {
+/* Head: real logo crop, top edge, dipping down over the page to "mask" it. */
+.head {
   top: 0;
-  left: var(--mascot-snout-offset-x);
-  width: var(--mascot-snout-width);
-  height: var(--mascot-snout-height);
-  border-radius: 45% 55% 50% 50% / 35% 35% 65% 65%;
-  transform: translate(-50%, -55%) rotate(var(--mascot-snout-rotation));
+  left: var(--mascot-head-offset-x);
+  width: var(--mascot-head-width);
+  height: var(--mascot-head-height);
+  background: url("/images/mascot-head.png") center / contain no-repeat;
+  transform: translate(-50%, var(--mascot-head-overlap)) rotate(var(--mascot-head-rotation));
+  z-index: 3; /* above .content: visibly overlaps/masks the page it's holding */
 }
 
-/* Paws: mid-height on the left/right edges, gripping the box. */
-.pawLeft,
-.pawRight {
-  width: var(--mascot-paw-size);
-  height: var(--mascot-paw-size);
-  border-radius: 45% 55% 50% 50% / 55% 45% 55% 45%;
+/* Hands: real logo crops, mid-height on the left/right edges, gripping onto the page. */
+.handLeft,
+.handRight {
+  width: var(--mascot-hand-width);
+  height: var(--mascot-hand-height);
+  z-index: 3; /* above .content: visibly overlaps/masks the page it's holding */
 }
 
-.pawLeft {
-  top: var(--mascot-paw-left-offset-y);
+.handLeft {
+  top: var(--mascot-hand-left-offset-y);
   left: 0;
-  transform: translate(-55%, -50%) rotate(-10deg);
+  background: url("/images/mascot-hand-left.png") center / contain no-repeat;
+  transform: translate(var(--mascot-hand-left-reach), -50%) rotate(-10deg);
 }
 
-.pawRight {
-  top: var(--mascot-paw-right-offset-y);
+.handRight {
+  top: var(--mascot-hand-right-offset-y);
   left: 100%;
-  transform: translate(-45%, -50%) rotate(10deg);
+  background: url("/images/mascot-hand-right.png") center / contain no-repeat;
+  transform: translate(var(--mascot-hand-right-reach), -50%) rotate(10deg);
 }
 
-/* Feet: bottom edge, poking out below the box near the center. */
-.footLeft,
+/* Feet: real logo crops, bottom edge, poking out below the box near the center.
+   Background layer (below .content, like the original design) — only the outward
+   half is visible, the rest is hidden behind the page it's holding. */
+.footLeft {
+  top: 100%;
+  left: var(--mascot-foot-left-x);
+  width: var(--mascot-foot-left-width);
+  height: var(--mascot-foot-left-height);
+  background: url("/images/mascot-foot-left.png") center / contain no-repeat;
+  transform: translate(-50%, var(--mascot-foot-drop)) rotate(-6deg);
+}
+
 .footRight {
   top: 100%;
-  width: var(--mascot-foot-width);
-  height: var(--mascot-foot-height);
-  border-radius: 50% 50% 55% 45% / 60% 60% 40% 40%;
-}
-
-.footLeft {
-  left: var(--mascot-foot-left-x);
-  transform: translate(-50%, -60%) rotate(-6deg);
-}
-
-.footRight {
   left: var(--mascot-foot-right-x);
-  transform: translate(-50%, -60%) rotate(8deg);
+  width: var(--mascot-foot-right-width);
+  height: var(--mascot-foot-right-height);
+  background: url("/images/mascot-foot-right.png") center / contain no-repeat;
+  transform: translate(-50%, var(--mascot-foot-drop)) rotate(8deg);
 }
 
 /* Smaller viewports: scale the whole frame down so limbs stay proportional
@@ -130,11 +137,14 @@
   .box {
     --mascot-border-width: 0.35rem;
     --mascot-border-radius: 1rem;
-    --mascot-frame-margin: 1.25rem;
-    --mascot-snout-width: 2.25rem;
-    --mascot-snout-height: 3rem;
-    --mascot-paw-size: 2.1rem;
-    --mascot-foot-width: 1.9rem;
-    --mascot-foot-height: 1.4rem;
+    --mascot-frame-margin: 3rem;
+    --mascot-head-width: 5.5rem;
+    --mascot-head-height: 6.4rem;
+    --mascot-hand-width: 4.2rem;
+    --mascot-hand-height: 2rem;
+    --mascot-foot-left-width: 2.4rem;
+    --mascot-foot-left-height: 2.3rem;
+    --mascot-foot-right-width: 2.3rem;
+    --mascot-foot-right-height: 2.5rem;
   }
 }
