@@ -490,3 +490,22 @@ consistency fix — full nose, the *original* reference-image cut (not the later
 line rework), re-run through the same uniform-outline pass. The straight-cut geometry
 experiments above are left in history for context but are no longer what's deployed.
 
+## 2026-09-04 — "MOSS" / "GAMES" wordmark added, flanking the head
+
+The user asked for the studio name split around the mascot's head — "MOSS" in the top
+margin to the left, "GAMES" to the right, both white, set in a specific font: **Super Corn**
+by Ali Hamidi ([fontspace.com/super-corn-font-f102376](https://www.fontspace.com/super-corn-font-f102376)),
+freeware, free for personal and commercial use. It isn't on Google Fonts, so it's
+self-hosted: downloaded, saved as `app/fonts/SuperCorn.ttf`, and wired up with
+`next/font/local` in `app/layout.js` (exposed as the `--font-super-corn` CSS variable,
+same pattern as the existing Geist fonts).
+
+`.brandLeft`/`.brandRight` in `MascotFrame.module.css` are plain text spans, positioned
+in the top margin band (vertically centered via `top: calc(var(--mascot-frame-margin) / -2)`
++ `transform: translate(-50%, -50%)`, so they automatically stay centered in that strip
+if the margin height changes), horizontally on either side of the head with enough
+clearance (`--mascot-brand-left-x`/`-right-x`: `22%`/`82%` desktop, `15%`/`88%` mobile).
+Not part of `.limb` (they're not a body part poking through the border), and
+`pointer-events: none` + `user-select: none` since they're decorative, layered with the
+rest of the frame furniture.
+

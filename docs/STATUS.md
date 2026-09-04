@@ -10,6 +10,9 @@ Last updated: 2026-09-04
   `public/favicon.png` for broader browser compatibility).
 - **"Mascot holding the site in its arms" visual concept implemented**:
   `app/components/MascotFrame.js` wraps the entire site (wired in `app/layout.js`).
+- **"MOSS" / "GAMES" wordmark flanking the head** (2026-09-04), in white, set in the
+  self-hosted Super Corn font (`app/fonts/SuperCorn.ttf`, freeware — see
+  `docs/DECISIONS.md` for the license/attribution).
 - **All content translated to English** (2026-09-04):
   - `app/page.js`: "The site is coming soon."
   - `app/layout.js`: `lang="en"`, English metadata description

@@ -11,6 +11,9 @@ import styles from "./MascotFrame.module.css";
  * mask part of the page they're holding. Nothing here tries to render the
  * whole animal.
  *
+ * "MOSS" / "GAMES" flank the head in the margin, set in the Super Corn display
+ * font (app/fonts/SuperCorn.ttf, wired up in app/layout.js).
+ *
  * Full writeup + the original sketch: docs/DESIGN.md
  * All shape/position tuning lives in MascotFrame.module.css as CSS custom
  * properties — change those before touching this markup.
@@ -18,6 +21,8 @@ import styles from "./MascotFrame.module.css";
 export default function MascotFrame({ children }) {
   return (
     <div className={styles.box}>
+      <span className={styles.brandLeft}>MOSS</span>
+      <span className={styles.brandRight}>GAMES</span>
       <span className={`${styles.limb} ${styles.head}`} aria-hidden="true" />
       <span className={`${styles.limb} ${styles.handLeft}`} aria-hidden="true" />
       <span className={`${styles.limb} ${styles.handRight}`} aria-hidden="true" />
