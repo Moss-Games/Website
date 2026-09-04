@@ -60,3 +60,54 @@ history remain misleading — if a future agent sees a build error mentioning `d
 VitePress, or content that doesn't match the Website repo, it's likely a leftover from
 this history. Check the Project Settings on vercel.com (Build & Development Settings)
 when in doubt rather than starting from scratch.
+
+## 2026-09-04 — All content translated to English
+
+The user requested the entire site be in English. Translated:
+- `app/page.js` placeholder text.
+- `app/layout.js` metadata (title/description) and `lang` attribute `fr` → `en`.
+- All `.md` docs (`README.md`, `docs/STATUS.md`, `docs/DESIGN.md`,
+  `docs/DECISIONS.md`, `docs/ONBOARDING.md`).
+
+Why: the site is public-facing on mossgames.fr and the user wants it in English.
+
+## 2026-09-04 — Favicon switched to the baby logo
+
+Previously the favicon fell back to the default Next.js/Vercel icon in some browsers.
+Change:
+- Added `public/favicon.png` (copy of `public/images/logo.png`).
+- `app/layout.js` `metadata.icons.icon` now lists `/images/logo.png` and
+  `/favicon.png` explicitly.
+
+Why: ensures the MossGames logo shows in the browser tab across all browsers, not the
+Vercel/Next.js default.
+
+## 2026-09-04 — MascotFrame responsiveness fix (huge white side margins)
+
+The user reported enormous white margins left and right of the mascot box in the browser.
+
+Root cause: `.box` used `width: 100%` + `max-width: 72rem` + `margin: auto`. `width: 100%`
+resolves to the parent's content width, but combined with `max-width` and `box-sizing`
+defaults the box ended up being capped/centered with large gaps, and the `auto` margins
+suppressed flex-stretch.
+
+Fix:
+- `width: 100vw` so the frame always spans the full viewport.
+- `box-sizing: border-box` so the border doesn't inflate the total width.
+- `overflow-x: hidden` on `<html>` and `<body>` to prevent a horizontal scrollbar.
+
+Why: full-bleed is the desired look on phones/most laptops, while large monitors get a
+capped, centered frame that doesn't stretch absurdly wide.
+
+### Follow-up same day: side margins had disappeared entirely
+
+The `width: 100vw; margin: var(--mascot-frame-margin) 0` fix above zeroed out the
+left/right margin, so the box's border sat flush against the viewport edges. The paw
+limbs (`.pawLeft`/`.pawRight`), which are positioned to poke out past the border, had no
+room to render and got clipped by the new `overflow-x: hidden`.
+
+Fix: `width: calc(100vw - (var(--mascot-frame-margin) * 2))` with
+`margin: var(--mascot-frame-margin)` on all four sides (same variable already used for
+top/bottom), so the frame keeps a small, consistent gutter on every edge — enough for
+the paws to stay visible — without reintroducing the old large centered-gutter look.
+

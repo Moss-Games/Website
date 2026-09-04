@@ -49,13 +49,13 @@
 
   position: relative;
   flex: 1 1 auto; /* fill the height of the <body> (flex column) minus this margin */
-  width: 100%; /* explicit: every direct child of .box is position:absolute, so it has
-                  no in-flow content to size itself from — without this it collapses to
-                  ~0 width instead of stretching (auto margins below suppress flex stretch) */
-  margin: var(--mascot-frame-margin) auto;
-  max-width: 72rem;
+  /* viewport-wide minus the margin on each side, so the paws have room to poke out
+     instead of being clipped by the body's overflow-x: hidden */
+  width: calc(100vw - (var(--mascot-frame-margin) * 2));
+  margin: var(--mascot-frame-margin);
   border: var(--mascot-border-width) solid var(--mascot-color);
   border-radius: var(--mascot-border-radius);
+  box-sizing: border-box;
 }
 
 .content {
