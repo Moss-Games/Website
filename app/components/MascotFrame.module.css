@@ -90,10 +90,16 @@
    ring looks like it breaks/gets covered wherever a foot crosses it. This copy sits at a
    z-index between the feet and the head/hands, so the feet read as passing behind the
    frame while the head/hands still cross in front of it (they're meant to overlap the
-   page, feet aren't). */
+   page, feet aren't).
+   `inset` on an absolutely positioned element is relative to the containing block's
+   *padding* box, i.e. already inside .box's real border — with a plain `inset: 0` this
+   copy lands a whole border-width further in than the real border and never actually
+   covers it, leaving that outer band undefended by any z-index (a positioned descendant
+   always beats its own ancestor's border-painting step, border-width or not). Pushing
+   the inset out by -border-width re-aligns this copy exactly on top of the real border. */
 .frame {
   position: absolute;
-  inset: 0;
+  inset: calc(-1 * var(--mascot-border-width));
   z-index: 3;
   pointer-events: none;
   border: var(--mascot-border-width) solid var(--mascot-color);
