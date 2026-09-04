@@ -1,63 +1,62 @@
-# Journal des décisions
+# Decision log
 
-Chaque entrée : date, décision, pourquoi. But : qu'un nouvel agent (ou humain) comprenne
-le raisonnement sans avoir à redemander à l'utilisateur.
+Each entry: date, decision, why. Goal: a new agent (or human) can understand
+the reasoning without having to ask the user again.
 
-## 2026-09-03 — Choix de la stack : Next.js (JS, pas TypeScript)
+## 2026-09-03 — Stack choice: Next.js (JS, not TypeScript)
 
-Décidé avec l'utilisateur (question directe, 3 choix proposés : Next.js / Vite+React /
-statique). Next.js retenu pour :
-- meilleure intégration native avec Vercel (où le domaine mossgames.fr est déjà branché) ;
-- routing/pages/SEO/optimisation d'images intégrés, utile pour un site multi-pages de studio ;
-- reste du JS pur (App Router en `.js`), pas de TypeScript — demande explicite de l'utilisateur
-  ("surtout js").
+Decided with the user (direct question, 3 options proposed: Next.js / Vite+React /
+static). Next.js chosen for:
+- better native integration with Vercel (where the mossgames.fr domain is already connected);
+- built-in routing/pages/SEO/image optimization, useful for a multi-page studio site;
+- remains pure JS (App Router in `.js`), no TypeScript — explicit user request ("surtout js").
 
-Alternative écartée : site statique HTML/CSS/JS — plus simple mais moins d'outillage pour
-un site qui va grandir (page par jeu, presse, etc.).
+Alternative ruled out: static HTML/CSS/JS site — simpler but less tooling for a site
+that will grow (page per game, press, etc.).
 
-## 2026-09-03 — Contenu réel reporté
+## 2026-09-03 — Real content deferred
 
-L'utilisateur fournira le contenu du studio (jeux, bio, logo, charte graphique, contacts)
-dans un message ultérieur séparé. Pour cette session : uniquement préparer le squelette
-technique (repo git + Next.js + lien Vercel), pas de contenu inventé/placeholder détaillé
-pour éviter d'avoir à défaire du faux contenu. La page d'accueil est un simple message
-"le site arrive bientôt", pas le template de démo Next.js/Vercel par défaut (qui aurait été
-mis en ligne tel quel sur mossgames.fr sinon).
+The user will provide the studio content (games, bio, logo, brand guidelines, contacts)
+in a separate follow-up message. For this session: only prepare the technical skeleton
+(git repo + Next.js + Vercel link), no invented/detailed placeholder content to avoid
+having to undo fake content. The homepage is just a simple message "the site is coming
+soon", not the default Next.js/Vercel demo template (which would have been deployed as-is
+on mossgames.fr otherwise).
 
-## 2026-09-03 — Push direct sur `main`
+## 2026-09-03 — Direct push to `main`
 
-L'utilisateur a confirmé vouloir que les agents pushent directement sur `main` du repo
-`Moss-Games/Website`, sans étape de validation manuelle avant chaque push. Chaque push sur
-`main` déclenche un déploiement Vercel en production sur mossgames.fr (intégration GitHub
-existante, confirmée par l'utilisateur — le repo était vide avant ce projet).
+The user confirmed they want agents to push directly to `main` on the `Moss-Games/Website`
+repo, without a manual review step before each push. Every push to `main` triggers a Vercel
+production deployment on mossgames.fr (existing GitHub integration, confirmed by user — the
+repo was empty before this project).
 
-Implication pour les agents futurs : pas besoin de demander confirmation avant un
-`git push origin main` sur ce repo, sauf action inhabituelle (force-push, reset, etc. —
-ça reste soumis aux règles de sécurité générales, jamais de force-push sans demander).
+Implication for future agents: no need to ask for confirmation before a
+`git push origin main` on this repo, except for unusual actions (force-push, reset, etc. —
+those remain subject to general security rules, never force-push without asking).
 
-## 2026-09-03 — Incident déploiement initial : Root Directory obsolète sur le projet Vercel
+## 2026-09-03 — Initial deployment incident: obsolete Root Directory on Vercel project
 
-Le tout premier push a bien déclenché un déploiement Vercel, mais il a **échoué** :
-`The specified Root Directory "dist" does not exist.` Le projet Vercel qui porte
-`mossgames.fr` s'appelle **`ldpdoc`** (project id `prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H`,
-scope `geremy-cambus-projects`) — un nom hérité d'un ancien usage du projet pour héberger
-la doc VitePress d'un autre repo (`Moss-Games/LesDeuxPelos`, "Les Deux Pelos"). Le repo
-Git connecté au projet avait déjà été changé pour `Moss-Games/Website` (par l'utilisateur,
-avant cette session), mais deux réglages du projet trainaient encore de l'ancienne config :
-- `rootDirectory` = `"dist"` (chemin de build VitePress) → cassait tout build Next.js
-- `framework` = non défini
+The very first push did trigger a Vercel deployment, but it **failed**:
+`The specified Root Directory "dist" does not exist.` The Vercel project that carries
+`mossgames.fr` is called **`ldpdoc`** (project id `prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H`,
+scope `geremy-cambus-projects`) — a name inherited from an earlier use of the project to
+host the VitePress docs of another repo (`Moss-Games/LesDeuxPelos`, "Les Deux Pelos").
+The Git repo connected to the project had already been changed to `Moss-Games/Website`
+(by the user, before this session), but two project settings still carried the old config:
+- `rootDirectory` = `"dist"` (VitePress build path) → broke every Next.js build
+- `framework` = unset
 
-Correction faite via l'API Vercel (`vercel api /v9/projects/<id> -X PATCH`, après
-`vercel login` + `vercel link --project <id>` faits par l'utilisateur) :
-- `rootDirectory` remis à `null`
-- `framework` mis à `"nextjs"`
+Fixed via the Vercel API (`vercel api /v9/projects/<id> -X PATCH`, after
+`vercel login` + `vercel link --project <id>` done by the user):
+- `rootDirectory` reset to `null`
+- `framework` set to `"nextjs"`
 
-Puis `vercel redeploy <deploymentId> --target production` pour forcer un nouveau build
-avec les bons réglages → succès, aliasé sur `www.mossgames.fr`, vérifié en curl.
+Then `vercel redeploy <deploymentId> --target production` to force a new build with the
+correct settings → success, aliased on `www.mossgames.fr`, verified via curl.
 
-**Point important pour la suite** : tant que le contenu réel de la doc VitePress LDP
-n'existe plus sur ce projet Vercel, il n'y a plus de conflit. Mais le nom du projet
-(`ldpdoc`) et son historique restent trompeurs — si un futur agent voit une erreur de
-build mentionnant `dist`, VitePress, ou un contenu qui ne correspond pas au repo Website,
-c'est probablement un résidu de cet historique. Vérifier les Project Settings sur
-vercel.com (Build & Development Settings) en cas de doute plutôt que de repartir de zéro.
+**Important for the future**: as long as the old VitePress LDP doc content no longer exists
+on this Vercel project, there's no conflict. But the project name (`ldpdoc`) and its
+history remain misleading — if a future agent sees a build error mentioning `dist`,
+VitePress, or content that doesn't match the Website repo, it's likely a leftover from
+this history. Check the Project Settings on vercel.com (Build & Development Settings)
+when in doubt rather than starting from scratch.

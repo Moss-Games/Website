@@ -1,60 +1,59 @@
-# État du projet
+# Project status
 
-Dernière mise à jour : 2026-09-03
+Last updated: 2026-09-03
 
-## Où on en est
+## Where we are
 
-Le repo vient d'être initialisé. C'est un squelette Next.js minimal, avec un premier
-élément de contenu réel (le logo) mais pas encore le reste :
+The repo has just been initialized. It's a minimal Next.js skeleton, with one real
+content element (the logo) but not much else:
 
-- Structure Next.js (App Router) en place, avec Tailwind CSS v4 configuré.
-- Une seule page (`app/page.js`) : placeholder "MossGames — le site arrive bientôt".
-- **Logo intégré** (`public/images/logo.png`) et utilisé comme favicon.
-- **Concept visuel "mascotte qui tient le site dans ses bras" implémenté** :
-  `app/components/MascotFrame.js` enveloppe tout le site (branché dans `app/layout.js`),
-  avec des formes CSS simples (pas d'artwork illustré pour l'instant) pour le museau, les
-  pattes et les pieds qui dépassent du cadre. Détails + comment ajuster :
-  [docs/DESIGN.md](DESIGN.md).
-- Toujours aucun autre contenu réel (textes des jeux, bio du studio, charte graphique
-  complète, contact, liens sociaux) — voir `docs/DECISIONS.md` du 2026-09-03.
-- Repo git initialisé et poussé sur `main` de `Moss-Games/Website` (GitHub), lié à Vercel
-  → **confirmé live** sur mossgames.fr avec la page placeholder (vérifié par curl).
+- Next.js (App Router) structure in place, with Tailwind CSS v4 configured.
+- Single page (`app/page.js`): placeholder "MossGames — the site is coming soon".
+- **Logo integrated** (`public/images/logo.png`) and used as favicon.
+- **"Mascot holding the site in its arms" visual concept implemented**:
+  `app/components/MascotFrame.js` wraps the entire site (wired in `app/layout.js`),
+  using simple CSS shapes (no illustrated artwork yet) for the snout, paws, and feet
+  poking out of the frame. Details + how to adjust: [docs/DESIGN.md](DESIGN.md).
+- Still no other real content (game descriptions, studio bio, full brand guidelines,
+  contact info, social links) — see `docs/DECISIONS.md` from 2026-09-03.
+- Git repo initialized and pushed to `main` on `Moss-Games/Website` (GitHub), linked to Vercel
+  → **confirmed live** on mossgames.fr with the placeholder page (verified via curl).
 
-## Piège déjà rencontré : flex + enfants en `position: absolute`
+## Pitfall already encountered: flex + children in `position: absolute`
 
-Dans `MascotFrame.module.css`, `.box` est un enfant flex de `<body>` (`flex flex-col`)
-mais tous SES enfants à lui (`.content`, les `.limb`) sont en `position: absolute` — donc
-aucun contenu "en flux" pour lui donner une largeur naturelle. Résultat observé en testant
-dans un navigateur : sans `width: 100%` explicite sur `.box`, la boîte s'effondre à une
-largeur quasi nulle (les marges `auto` désactivent le stretch flex par défaut, et il ne
-reste plus rien pour calculer une largeur). Corrigé en ajoutant `width: 100%` — voir le
-commentaire dans le fichier. À garder en tête si `.box` est un jour restructuré.
+In `MascotFrame.module.css`, `.box` is a flex child of `<body>` (`flex flex-col`)
+but all its own children (`.content`, the `.limb` elements) are `position: absolute` —
+so there's no "in-flow" content to give it a natural width. Observed behavior when testing
+in a browser: without explicit `width: 100%` on `.box`, the box collapses to near-zero
+width (the `auto` margins disable the default flex stretch, and nothing else calculates a
+width). Fixed by adding `width: 100%` — see the comment in the file. Keep this in mind if
+`.box` is ever restructured.
 
-## Prochaine étape attendue
+## Expected next step
 
-L'utilisateur (Geremy) doit fournir dans un prochain message le contenu réel du studio :
-nom/description des jeux, bio du studio, logo, charte graphique (couleurs/polices),
-infos de contact, liens réseaux sociaux, structure de pages souhaitée (accueil, jeux,
-à propos, contact, presse/news ?).
+The user (Geremy) needs to provide the actual studio content in a follow-up message:
+game names/descriptions, studio bio, logo, brand guidelines (colors/fonts),
+contact info, social media links, desired page structure (home, games, about,
+press/news, contact?).
 
-Une fois ce contenu reçu :
-1. Mettre à jour ce fichier avec le nouvel état.
-2. Construire les vraies pages (probablement `app/games`, `app/about`, `app/contact` ou
-   équivalent selon la structure demandée).
-3. Ajouter le logo/assets dans `public/`.
-4. Ajuster la charte graphique Tailwind (`app/globals.css` / config) aux couleurs de la marque.
-5. Commit + push sur `main` (déploiement auto Vercel confirmé par l'utilisateur, voir décisions).
+Once this content is received:
+1. Update this file with the new status.
+2. Build the real pages (likely `app/games`, `app/about`, `app/contact` or
+   equivalent based on the requested structure).
+3. Add the logo/assets to `public/`.
+4. Adjust the Tailwind brand theme (`app/globals.css` / config) to match brand colors.
+5. Commit + push to `main` (auto Vercel deployment confirmed by user, see decisions).
 
-## Points d'attention
+## Notes
 
-- Le repo `Moss-Games/Website` sur GitHub était vide avant ce commit initial.
-- L'auth GitHub se fait via SSH (clé déjà configurée sur la machine, testée OK avec le
-  compte GitHub `GeremC`).
-- Le CLI `vercel` est installé et **connecté** (compte `geremc`, login fait le 2026-09-03).
-  Dossier lié au projet Vercel via `vercel link --project prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H`
-  (fichier `.vercel/` créé, gitignoré).
-- **Projet Vercel : `ldpdoc`** (nom historique, à renommer un jour — voir
-  `docs/DECISIONS.md` du 2026-09-03 "Incident déploiement initial"). C'est bien LE projet
-  qui porte le domaine `mossgames.fr` / `www.mossgames.fr`, déjà connecté au repo
-  `Moss-Games/Website` (branche `main`) côté GitHub App Vercel — pas besoin de reconnecter.
-- Project ID Vercel : `prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H` (scope `geremy-cambus-projects`).
+- The `Moss-Games/Website` repo on GitHub was empty before this initial commit.
+- GitHub auth uses SSH (key already configured on the machine, tested OK with the
+  GitHub account `GeremC`).
+- The `vercel` CLI is installed and **connected** (account `geremc`, logged in on 2026-09-03).
+  Folder linked to the Vercel project via `vercel link --project prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H`
+  (`.vercel/` directory created, gitignored).
+- **Vercel project: `ldpdoc`** (historical name, to be renamed one day — see
+  `docs/DECISIONS.md` from 2026-09-03 "Initial deployment incident"). This IS the project
+  that carries the `mossgames.fr` / `www.mossgames.fr` domain, already connected to the
+  `Moss-Games/Website` repo (`main` branch) via the Vercel GitHub App — no need to reconnect.
+- Vercel Project ID: `prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H` (scope `geremy-cambus-projects`).

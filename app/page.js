@@ -5,7 +5,7 @@ export default function Home() {
         MossGames
       </h1>
       <p className="mt-3 max-w-md text-lg text-zinc-600">
-        Le site arrive bientôt.
+        The site is coming soon.
       </p>
     </div>
   );

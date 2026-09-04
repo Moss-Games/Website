@@ -14,16 +14,19 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "MossGames",
-  description: "Studio de jeu vidéo MossGames.",
+  description: "MossGames video game studio.",
   icons: {
-    icon: "/images/logo.png",
+    icon: [
+      { url: "/images/logo.png", type: "image/png" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
   },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
-      lang="fr"
+      lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
