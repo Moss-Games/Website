@@ -18,6 +18,13 @@
  *   4. `.content` is an opaque layer that exactly fills the box's inside.
  *      It sits above the feet (hides their inward half) but below the head
  *      and hands (so they can overlap it).
+ *   5. `.frame` is a second copy of `.box`'s own border, painted above the feet (but
+ *      below the head/hands). A parent's own border always paints *behind* its
+ *      positioned children — there's no z-index that puts a child under its own
+ *      parent's border — so without this, the border ring looks broken wherever a
+ *      foot crosses it. This copy patches that: feet read as passing behind the
+ *      frame, head/hands still cross in front of it (they're meant to overlap the
+ *      page; the feet aren't).
  */
 
 .box {
@@ -33,7 +40,7 @@
   --mascot-head-width: 7.8rem;
   --mascot-head-height: 9.1rem; /* matches mascot-head.png's ~0.86 aspect ratio (round head + full-length nose — it's an anteater, the nose is a feature, not a defect) */
   --mascot-head-rotation: -4deg;
-  --mascot-head-overlap: -43%; /* translateY: the straight cut edge (left side, where the "neck" was trimmed) should sit right at the border line, hidden by it; the nose dips onto the page */
+  --mascot-head-overlap: -43%; /* translateY: how far the head dips onto the page (negative = more inside); the nose is what does most of the visible "masking" */
 
   --mascot-hand-width: 6rem;
   --mascot-hand-height: 2.9rem; /* matches mascot-hand-*.png's ~2.1 aspect ratio (Gemini illustrated art) */
@@ -64,12 +71,29 @@
 .content {
   position: absolute;
   inset: 0;
-  z-index: 2; /* above the feet (hides their inward half), below the head/hands */
+  z-index: 2; /* above the feet (hides their inward half), below the frame/head/hands */
   display: flex;
   flex-direction: column;
   overflow: auto;
   background: var(--mascot-content-bg);
   border-radius: calc(var(--mascot-border-radius) - var(--mascot-border-width));
+}
+
+/* A duplicate of .box's own border, painted above the feet. A parent element's own
+   border always paints *behind* its positioned children (CSS stacking rules — there's no
+   z-index that puts a child under its own parent's border), so without this the border
+   ring looks like it breaks/gets covered wherever a foot crosses it. This copy sits at a
+   z-index between the feet and the head/hands, so the feet read as passing behind the
+   frame while the head/hands still cross in front of it (they're meant to overlap the
+   page, feet aren't). */
+.frame {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border: var(--mascot-border-width) solid var(--mascot-color);
+  border-radius: var(--mascot-border-radius);
+  box-sizing: border-box;
 }
 
 .limb {
@@ -85,7 +109,7 @@
   height: var(--mascot-head-height);
   background: url("/images/mascot-head.png") center / contain no-repeat;
   transform: translate(-50%, var(--mascot-head-overlap)) rotate(var(--mascot-head-rotation));
-  z-index: 3; /* above .content: visibly overlaps/masks the page it's holding */
+  z-index: 4; /* above .content and .frame: visibly overlaps/masks the page it's holding */
 }
 
 /* Hands: real logo crops, mid-height on the left/right edges, gripping onto the page. */
@@ -93,7 +117,7 @@
 .handRight {
   width: var(--mascot-hand-width);
   height: var(--mascot-hand-height);
-  z-index: 3; /* above .content: visibly overlaps/masks the page it's holding */
+  z-index: 4; /* above .content and .frame: visibly overlaps/masks the page it's holding */
 }
 
 .handLeft {

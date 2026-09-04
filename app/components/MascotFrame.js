@@ -24,6 +24,7 @@ export default function MascotFrame({ children }) {
       <span className={`${styles.limb} ${styles.footLeft}`} aria-hidden="true" />
       <span className={`${styles.limb} ${styles.footRight}`} aria-hidden="true" />
       <div className={styles.content}>{children}</div>
+      <span className={styles.frame} aria-hidden="true" />
     </div>
   );
 }

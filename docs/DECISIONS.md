@@ -463,3 +463,30 @@ the cause is more likely something other than z-index (e.g. the feet's now-thick
 detailed outline reading as visually "foreground-weight" even while technically layered
 behind the page) — flagged back to the user rather than guessed at further.
 
+### The actual bug: a foot crossing the border visually broke the border line
+
+Turned out there *was* a real bug, just not in `.content`'s z-index. `.box`'s border is
+painted as part of the box's own background/border layer, and **a parent's own border
+always paints before (behind) its positioned children** — there is no z-index value on a
+child that puts it behind its own parent's border. So `.footLeft`/`.footRight`
+(`z-index: 1`) always painted on top of `.box`'s border wherever a foot's shape crossed it,
+covering that section of the border ring with the foot's fill — the foot looked like it
+broke *through* the frame rather than emerging from behind it. Confirmed by zooming into a
+screenshot at that exact crossing point: the border line visibly stopped where each foot
+crossed it.
+
+Fixed with a second element, `.frame` — a duplicate of `.box`'s border (same width, color,
+radius), absolutely positioned at `inset: 0`, `pointer-events: none`, at a z-index *between*
+the feet and the head/hands (`.content: 2`, `.frame: 3`, head/hands bumped from `3` to `4`
+to stay above it). It's pixel-identical to the real border everywhere except where it now
+also paints over the feet, patching the crossing without affecting how the head/hands cross
+the border (they're still meant to overlap on top, unaffected since they're above `.frame`
+too).
+
+### Head reverted to the pre-straight-cut version
+
+Per direct request, rolled `mascot-head.png` back to the state right after the outline-
+consistency fix — full nose, the *original* reference-image cut (not the later straight-
+line rework), re-run through the same uniform-outline pass. The straight-cut geometry
+experiments above are left in history for context but are no longer what's deployed.
+
