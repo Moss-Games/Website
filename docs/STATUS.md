@@ -61,8 +61,60 @@ Last updated: 2026-09-04
   `#fafaf7`; the mascot (border/feet/head/hands) uses `--foreground`, while `.content`
   (the page a visitor actually reads) is its own explicit `#ffffff`, independent of
   `--background`. Details: `docs/DESIGN.md`, `docs/DECISIONS.md`.
-- Still no other real content (game descriptions, studio bio, full brand guidelines,
-  contact info, social links) — see `docs/DECISIONS.md` from 2026-09-03.
+- **Game carousel + per-game pages added** (2026-09-04): homepage now shows an
+  automatic carousel (`app/components/GameCarousel.js`) built from
+  `public/games/<Name>/` — every subfolder is one game, no code change needed to
+  add another. Clicking a card goes to `/games/<slug>` (`app/games/[slug]/page.js`)
+  with the full presentation (header image, description, trailer, screenshots,
+  system requirements, store link). Full file-naming contract and rationale:
+  `docs/GAMES.md`.
+  - **Digitum** (flagship, `order.txt` = 1) is fully populated from its
+    [Steam page](https://store.steampowered.com/app/3431490/Digitum/): header/cover
+    images, all 6 screenshots, the trailer (self-hosted `.mp4`, re-encoded from
+    Steam's HLS stream via `ffmpeg`), full description, genres, system
+    requirements, etc.
+  - **Gwaver** (`order.txt` = 2) exists as a deliberate test-only entry proving the
+    carousel handles multiple games — it has no cover image or real description
+    (itch.io's Cloudflare challenge blocks scraping it, see `docs/GAMES.md`).
+    Kept as-is per the user's choice on 2026-09-04; needs real assets from the
+    user (or a manual browser session) before it's presentable.
+  - "The Way It Was" (another in-progress MossGames title) has no folder yet — no
+    visuals exist for it yet, text-only content pending from the user.
+- **"About Us" nav link** (2026-09-04): top-right corner of the screen, white text,
+  rendered by `MascotFrame.js` (same margin band as the MOSS/GAMES wordmark) so it
+  shows on every page. Links to `/about`, currently a "coming soon" placeholder —
+  real studio info pending from the user.
+- Homepage no longer has the "MossGames" / "the site is coming soon" placeholder
+  text (2026-09-04) — removed once the carousel gave the page real content.
+- **Carousel enlarged, one game at a time** (2026-09-04): cards now fill the whole
+  carousel width (`min(76rem, 94vw)`) instead of several being visible side by
+  side; the arrow buttons page through games one full-screen-width card at a
+  time.
+- **Moss decoration tried, then removed** (2026-09-04): spent several rounds on
+  procedurally-generated moss (SVG circle-fusion blobs) for the frame's corners
+  and edges — PNG crops, then round clumps, then a wavy arc — but never landed
+  on a look the user was happy with, and it was fully reverted the same day.
+  `app/components/MascotFrame.js`/`.module.css` are back to their pre-moss
+  state; `MossPatch.js`/`lib/moss.js` deleted. **There is currently no moss on
+  the site.** Full history (what was tried, why each attempt fell short, and a
+  suggestion to try real illustrated art instead of procedural circles next
+  time) is in `docs/DECISIONS.md`.
+- **Discord card added below the carousel** (2026-09-04): `app/components/DiscordCard.js`,
+  a custom card (icon, name, total member count) linking to
+  `https://discord.gg/sEzbqYjmZ4` — built instead of embedding Discord's official
+  iframe widget because that widget can only show who's online, not the total
+  member count the user wanted. Data comes from `lib/discord.js` (public invite
+  API, no auth). The page now scrolls (mascot frame/border/limbs stay fixed,
+  `.content` scrolls internally — pre-existing CSS behavior, see `docs/DECISIONS.md`).
+- **Game page hero image switched to Steam's "library hero" asset** (2026-09-04):
+  the store page's own `header.jpg` is only 460×215 and looked visibly blurry
+  stretched across a full-width banner. `public/games/Digitum/library-hero.jpg`
+  (1920×620, fetched from `cdn.akamai.steamstatic.com/steam/apps/<id>/library_hero.jpg`
+  — no content-hash needed in that URL, unlike the store page's own asset
+  links) is now preferred for the hero; `lib/games.js`'s `heroImage` falls back
+  to the first screenshot, then `header.jpg`, for a game that doesn't have one.
+- Still missing: studio bio, full brand guidelines, contact info, social links,
+  and real About Us content — see `docs/DECISIONS.md` from 2026-09-03.
 - Git repo pushed to `main` on `Moss-Games/Website` (GitHub), linked to Vercel
   → **confirmed live** on mossgames.fr.
 

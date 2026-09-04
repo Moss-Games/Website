@@ -36,3 +36,5 @@ See [docs/DECISIONS.md](docs/DECISIONS.md) for the rationale behind this choice.
 - [docs/DECISIONS.md](docs/DECISIONS.md) — technical decision log and why
 - [docs/DESIGN.md](docs/DESIGN.md) — the mascot-holding-the-site visual concept (`MascotFrame`),
   and how to tweak it
+- [docs/GAMES.md](docs/GAMES.md) — the game carousel: the `public/games/<Name>/` file
+  contract, how to add a game, and how the Digitum assets were sourced from Steam

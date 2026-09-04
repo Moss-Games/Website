@@ -1,0 +1,15 @@
+Minimum:
+OS: Windows 10/11 64-bit
+Processor: Intel Core i3
+RAM: 8 GB
+Graphics: Nvidia GTX 1060 / Radeon RX 580
+DirectX: Version 11
+Storage: 2 GB
+
+Recommended:
+OS: Windows 10/11 64-bit
+Processor: Intel Core i5
+RAM: 8 GB
+Graphics: Nvidia GTX 2060 / Radeon RX 7600
+DirectX: Version 11
+Storage: 2 GB

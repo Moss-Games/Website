@@ -509,3 +509,293 @@ Not part of `.limb` (they're not a body part poking through the border), and
 `pointer-events: none` + `user-select: none` since they're decorative, layered with the
 rest of the frame furniture.
 
+## 2026-09-04 — Game carousel: file-based per-game folders, not a JSON/CMS
+
+The user wants a homepage carousel of MossGames' games (only Digitum for now, more
+later — e.g. "The Way It Was", still text-only, no folder yet) where **adding a
+game means adding a folder** to `public/games/<Name>/`, auto-detected, no code
+change. Explicit requirement: define the game's content as individual files
+(png/txt/md with precise names), not a single JSON blob — easier for a
+non-technical person to edit one fact at a time. Full contract in `docs/GAMES.md`;
+implementation is `lib/games.js` (`fs.readdirSync` over `public/games/`) +
+`app/components/GameCarousel.js` (homepage) + `app/games/[slug]/page.js` (per-game
+page).
+
+Decided **not** to hotlink Steam's CDN image/video URLs directly — they carry a
+`?t=...` token that can rotate/expire — so all Digitum media (header, cover, 6
+screenshots, 1 trailer) was downloaded and committed into
+`public/games/Digitum/`. The trailer in particular: Steam only serves HLS/DASH
+manifests, no direct `.mp4`, so it was pulled and re-encoded with `ffmpeg`
+(`-c copy` from the HLS manifest → 18.8MB raw 1080p60, then re-encoded to 1280px
+width / CRF 23 → 7.4MB, plus a `trailer-poster.jpg` extracted as a still frame).
+Source data for Digitum: the Steam store page embeds a JSON blob (`data-props` on
+the `gamehighlight_desktopcarousel` div) with the full screenshot list and trailer
+manifest URLs — more complete/reliable than what renders in the visible HTML, and
+is how all 6 screenshots (not just the 1 that shows in a plain fetch) were found.
+
+Field naming: the storefront link is `store-url.txt` → `storeUrl`, not
+`steam-url.txt` — chosen generically from the start of the second game (itch.io)
+because not every MossGames title will be on Steam. The "View on Steam" button
+label is derived from the URL's domain (`storeLabel()` in `lib/games.js`) rather
+than hardcoded, so an itch.io link renders "View on itch.io" automatically; add a
+case there if a new storefront shows up.
+
+**itch.io can't be scraped like Steam.** Tried adding a second game
+(`tiom311.itch.io/gwaver`) as a test of the multi-game carousel: itch.io serves a
+Cloudflare JS challenge that blocks plain `curl` and headless Chrome alike (tried
+`--headless=new` with a spoofed user-agent and a 15s virtual-time budget — still
+only gets the "Just a moment..." interstitial). `WebSearch` surfaced a one-line
+description but no images. The user declined installing the `claude-in-chrome`
+extension (real-browser automation) when offered as the fallback. Result: a
+`public/games/Gwaver/` folder exists as `order.txt` = 2, with only a title and
+that one-line tagline — no cover image, no description — kept as-is per the
+user's explicit choice, purely to prove the carousel handles more than one entry.
+Needs real assets before it's presentable; either the user supplies them directly,
+or a future agent tries again with real browser access.
+
+Also that same session: removed the "MossGames" / "the site is coming soon"
+placeholder text from the homepage once the carousel gave it real content
+("le site n'est plus coming soon"), and added an "About Us" link — top-right
+corner of the screen, white text — to `MascotFrame.js` (renders on every page,
+same margin band as the MOSS/GAMES wordmark) linking to a new `/about` page.
+That page is a placeholder ("Studio information coming soon.") since real About
+Us content is still pending from the user.
+
+## 2026-09-04 — Discord card, and confirming the "content scrolls, mascot stays put" behavior
+
+Added a Discord section below the carousel, per the user's request, linking to
+the studio's invite (`https://discord.gg/sEzbqYjmZ4`). No architecture change was
+needed for "the page should scroll but the mascot frame stays where it is" — that
+was already how `MascotFrame.module.css` worked (`.content` is `position: absolute;
+inset: 0; overflow: auto` inside a `.box` whose height is fixed to the viewport;
+`.head`/`.handLeft`/`.handRight`/`.footLeft`/`.footRight`/`.frame` are siblings of
+`.content`, not inside it, so they never move when `.content`'s own content
+overflows and scrolls). Adding the Discord section was simply adding enough
+content to make that existing scroll behavior visible; verified with a headless
+screenshot showing `.content`'s own scrollbar.
+
+Discord's official `discord.com/widget` iframe only ever shows who's currently
+online (with an online-member list/avatar strip), and that's a fixed, non-
+configurable feature of the widget — it cannot be made to show the total member
+count instead. The user wanted total count, not online count, so rather than
+embedding that iframe, `lib/discord.js` fetches the invite's public info
+server-side (`GET https://discord.com/api/v10/invites/{code}?with_counts=true`,
+no auth required — returns `approximate_member_count` and resolves the numeric
+guild ID needed for the icon URL) and `app/components/DiscordCard.js` renders a
+small custom card (icon, server name, "N members") linking out to the invite.
+Fetched with `next: { revalidate: 3600 }` so it's not re-fetched on every request.
+
+## 2026-09-04 — MOSS/GAMES brought closer together; fixed a pre-existing mobile overlap
+
+Direct request: bring "MOSS" and "GAMES" closer to the head on desktop
+(`--mascot-brand-left-x`/`-right-x`: `39%`/`68%` → `45%`/`63%`), with an explicit
+warning to be careful on mobile since they were already cramped there.
+
+Checking the mobile breakpoint turned up a real, pre-existing bug (not caused by
+this change): `--mascot-head-offset-x` (`54%`) isn't overridden in the
+`@media (max-width: 640px)` block, but the mobile head is much smaller in
+absolute size while the *box* is also much narrower — so as a fraction of box
+width the head is actually wider on mobile (~±15% of box width) than the
+desktop math assumed. The old mobile `--mascot-brand-right-x` (`58%`) landed
+right inside that span, so "GAMES" was rendering partly behind/under the head.
+Fixed by moving the mobile values further out — `--mascot-brand-left-x: 25%`,
+`--mascot-brand-right-x: 72%` — clear of the head on both sides.
+
+That in turn collided with `.aboutUs` (top-right corner, `right: 1.5rem` desktop):
+on mobile "GAMES" and "ABOUT US" were landing on top of each other. Shrunk
+`.aboutUs`'s mobile-only override further (`right: 0.5rem`, `font-size: 0.5rem`,
+was `0.75rem`/`0.6rem`) so all three (MOSS, GAMES, About Us) fit on one line
+without touching. This is a tight fit by nature — three text elements sharing one
+narrow margin band — so re-check this trio any time `--mascot-head-width` or
+either brand offset changes on mobile again.
+
+## 2026-09-04 — Carousel: one project at a time, much bigger
+
+Direct request: show only one game at a time (not several side by side) and make
+the carousel considerably larger. `app/components/GameCarousel.module.css`:
+`.carousel` max-width grew to `min(76rem, 94vw)`; `.card` changed from a fixed
+`min(42rem, 88vw)` card among several visible at once to `flex: 0 0 100%; width:
+100%` — each card now exactly fills the carousel, so scrolling to the next one
+(via the arrow buttons) fully replaces what's on screen instead of sliding
+partially into view. Also dropped `.track`'s `padding: 0.5rem` (it was leaving an
+~8px sliver of the next card visible at the edge, working against "only one at a
+time") and the `justify-content: safe center` trick from the previous
+multiple-cards-visible layout (no longer needed — a single full-width card has
+nothing to center against). `GameCarousel.js`'s `scrollByCard` simplified to
+scroll by `el.clientWidth` directly instead of measuring a card's own width plus
+an assumed gap, since card width now always equals the track's visible width.
+
+## 2026-09-04 — Literal moss on the frame's corners and edges (first pass: PNG crops)
+
+The user supplied a reference sheet (a grid of green, black-outlined moss/lichen
+clusters, cartoon-illustration style — visually close to the mascot's own
+black-outline-on-flat-fill look) and asked for that kind of moss on the frame's
+edges and corners, "coherent" with the existing design — an on-the-nose pun on
+the studio name that fits the existing "mascot literally holds the site" bit.
+
+First implementation extracted 8 crops from that reference sheet as static PNGs
+(same white-background-masking technique as the mascot's own head/hand/foot
+art, using `scipy.ndimage.label` to split the sheet's 15 already-separate
+clusters) and positioned them with `background-image` on 8 `MascotFrame.module.css`
+classes. **Superseded same day** — see the next entry — by a fully procedural
+version; kept this entry for the "how the reference was sourced/analyzed" trail,
+but the PNG files themselves were deleted.
+
+## 2026-09-04 — Moss redone as procedural flat blobs, not PNGs
+
+Follow-up request: generate the moss procedurally instead of using the PNG
+crops above, and make it flatter and snugger against the edges/corners. A
+second reference image (icon mockups of moss growing into picture-frame
+corners) clarified the target look: a bumpy, cauliflower/lichen-like silhouette
+with many small fused lobes, tucked right into the corner — not the smooth
+single blob the first PNG-crop pass produced.
+
+New approach, no image assets at all:
+- `lib/moss.js`: a seeded PRNG (`mulberry32` keyed off a string hash of the
+  piece's name, e.g. `"corner-tl"`) scatters N small circles around the center
+  of a 0–100 local coordinate box, distance-biased toward the center
+  (`rand^1.4`) for a denser core with looser edges. Deterministic — same seed
+  always produces the same shape — specifically so this can run in
+  `MascotFrame.js` as a plain Server Component with no hydration risk (no
+  `Math.random()`, no client component needed).
+- `app/components/MossPatch.js`: renders that circle set as inline SVG, fused
+  into one lumpy silhouette via the classic "goo" filter
+  (`feGaussianBlur` + `feColorMatrix` sharp-thresholding the blurred alpha).
+  Drawn twice — a black layer of slightly larger circles first (becomes the
+  outline), a green layer of the same circles on top (two alternating flat
+  greens, `#5a8c3d`/`#4c7a33`, sampled from the reference sheet's median green —
+  no gradients, stays flat per the request).
+- Getting the bumpy look right took two tuning passes: the first attempt (6-8
+  large circles, blur `stdDeviation=3.2`) read as one smooth rounded blob, not
+  lobed. Fixed by using many more, smaller circles (14-16 for corners, 6 for
+  the smaller edge tufts) with less blur (`1.8`) and a steeper alpha threshold
+  — keeps individual lobes visible while still fusing overlapping ones at the
+  seams.
+
+Two real bugs hit while wiring this up as a `<svg>` sized via CSS custom
+properties (same tunable-via-CSS convention as the rest of the frame):
+1. An inline `style={{ width: "100%", height: "100%" }}` on the `<svg>`
+   overrode the sizing classes entirely — inline `style` always wins over a
+   CSS Module class regardless of specificity — and since the `<svg>` is
+   `position: absolute`, `100%` resolved against `.box` itself, blowing every
+   moss patch up to cover almost the whole frame. Fixed by dropping the inline
+   width/height and letting the `.mossCornerTl` etc. classes' own
+   width/height custom properties size the element.
+2. The edge tufts (non-square containers, e.g. `4.4rem × 2.4rem`) rendered
+   tiny and squeezed into one corner of their box. Cause: a plain `<svg
+   viewBox="0 0 100 100">` with no `preserveAspectRatio` override defaults to
+   `xMidYMid meet`, which uniformly scales the square viewBox to fit the
+   *smaller* dimension of a non-square container and letterboxes the rest —
+   so the circle cluster (generated for a square coordinate space) rendered
+   far smaller than intended. Fixed with `preserveAspectRatio="none"`, which
+   also conveniently means the container's own aspect ratio now does the
+   elongation for edge tufts (a circle becomes a flat ellipse for free) — no
+   need for a separate `stretchX`/`stretchY` cluster parameter, which was
+   removed after making things worse when combined with the aspect-ratio fix
+   (double elongation).
+
+Positioning mechanism is unchanged from the PNG version: each piece centers on
+its corner/edge point via `translate(-50%, -50%)` (`.moss` + 8 per-piece
+classes in `MascotFrame.module.css`), same trick as the head/hands, so it
+grows onto the border, margin, and content at once. Sizes collapsed from 7
+per-piece width/height custom properties down to `--mascot-moss-corner-size`
+(all 4 corners share one size — the generator supplies shape variety, not
+pre-baked art, so they don't need individually-tuned aspect ratios anymore)
+plus `--mascot-moss-edge-top-tuft-width`/`-height` and
+`--mascot-moss-edge-side-tuft-width`/`-height`. Corner/edge-tuft *positions*
+(top tufts at 15%/85%, side tufts at 62%/68% down the edges) are unchanged
+from the PNG version — still chosen to clear the head/hands/feet, still no
+tuft on the bottom edge for the same reason (too close to the feet).
+
+## 2026-09-04 — Moss: stop overlapping the box, monochrome green, a lot more of it
+
+Follow-up round on the procedural moss above, from a screenshot showing the
+corner/edge clumps still spilling onto the white `.content` (the previous
+`translate(-50%, -50%)` centering — copied from the head/hand mechanic, which
+is *supposed* to overlap the content — was wrong for moss, which the user
+wants flush against the frame instead) plus a second reference image (icon
+mockups of moss tucked into a room/frame corner, one solid green, clearly
+bumpy-lobed) and three explicit asks: stop the overlap, monochrome green (drop
+the two-tone fill from the previous pass), and more of it — including some
+loose in the black margin bands near the actual screen edge, not just
+attached to the box.
+
+**No more overlap.** `lib/moss.js`'s `generateMossCluster` gained
+`anchorX`/`anchorY` (where in the local 0-100 box the cluster's mass
+concentrates — previously hardcoded to the center, `50,50`) and
+`angleStart`/`angleSpan` (restrict which directions circles scatter in,
+radians). Each corner/edge container is now shifted with `transform` so the
+*entire* container sits on the margin side of its anchor point (e.g. the
+top-left corner container is `translate(-100%, -100%)`, not `-50%, -50%`, so
+it occupies the region up-and-left of the box's corner, touching it only at
+one point) — and the generator's `anchorX`/`anchorY` is set to whichever
+corner of the *container's own* local box now coincides with that touch point
+(e.g. `(100, 100)` for the top-left piece, since translating the container by
+its own full size moves local point `(100,100)` onto the true corner). Circles
+are then restricted to the quarter-circle (`angleSpan = π/2`) or half-circle
+(edges, `angleSpan = π`) sweep pointing away from the border, so no circle
+can extend back across the touch point onto the content. All of this is
+computed per-piece in `MascotFrame.js` (`CORNER_MOSS`/`EDGE_MOSS` config
+arrays) rather than by hand per class, since getting the anchor/angle/transform
+combination right for each of the 4 corners + 4 edges by hand would be
+error-prone — see the arrays there for the actual angle values per piece.
+
+**Monochrome.** `MossPatch.js`'s two alternating greens collapsed to one flat
+`MOSS_GREEN` constant — still a black outline, still flat (no gradient), just
+one green instead of two.
+
+**A lot more of it.** Edge tufts went from 1 per side to 2 (8 total, config in
+`MascotFrame.js`'s `EDGE_MOSS`, positioned in the gaps between the corners and
+the head/hands/feet — including the bottom edge now, which the first
+procedural pass had skipped as "too close to the feet"; moving the tufts fully
+into the margin via the same anchor/angle mechanism above means they no longer
+compete with the feet for the same visual space, so two now sit at 15%/85%
+along the bottom). Plus 4 new clumps (`OUTER_MOSS`) with `position: fixed`
+near the actual viewport corners (`0.75rem` from the true screen edge,
+`--mascot-moss-outer-size`, `3rem` desktop / `1.8rem` mobile) — independent of
+`.box` entirely, since reaching the true screen edge from a box-relative
+element isn't possible with plain `top`/`left` percentages. These scatter in a
+full circle (no angle restriction) since they sit in open black space with
+nothing to avoid overlapping.
+
+### Follow-up: corners changed to a wavy arc/vine, not a round clump
+
+A second reference image (icon mockups of a wavy black line curving around a
+picture-frame corner) showed the actual target shape: a thin, wavy rope/vine
+tracing a diagonal arc near the corner, not a round clump sitting on the
+point. Added `generateMossArc` to `lib/moss.js` — same circle-fusion technique,
+but circles are placed roughly evenly along an arc at a near-fixed radius
+(with jitter for waviness) instead of scattered randomly around a center.
+`MossPatch.js` gained a `variant` prop (`"blob"` default, `"arc"` for corners)
+switching which generator it calls; `CORNER_MOSS` in `MascotFrame.js` switched
+to `variant: "arc"`. Took a few rounds of tuning `radius` (how far the arc sits
+from the corner — too large left a visible gap to the frame, too small
+collapsed the lobes into one blob) before landing on `radius: 18`ish with
+small (5-7 unit) circles.
+
+### Follow-up: corner moss reverted, then all moss removed from the site
+
+Next round of feedback: the corner arc looked "unie" (a single united mass)
+was actually failing — a small separate blob kept appearing right next to the
+main corner shape, breaking the "one piece" look the user wanted, and they
+also asked for it thicker. Root cause turned out to be `OUTER_MOSS` (the
+`position: fixed` clumps near the true viewport corners, added in an earlier
+round) rendering right next to the corner arc and reading as a broken-off
+piece rather than a second, intentional decoration. Mid-fix (bumping corner
+circle size from 5-7 to 9-12 units, tightening `radiusJitter`, and moving edge
+tufts further from the corners for clearer separation), the user decided moss
+across the whole site wasn't working and asked to remove it entirely.
+
+**Moss was fully reverted** — `app/components/MascotFrame.js` and
+`MascotFrame.module.css` restored to their pre-moss state (just the box,
+head/hands/feet, brand wordmark, About Us link, and the `.frame` border
+patch), `app/components/MossPatch.js` and `lib/moss.js` deleted. The
+`public/games/*` game-carousel work and the Discord card from earlier the same
+day are unaffected — this reverts only the corner/edge moss decoration
+described in the three entries above. If moss comes back, treat it as a fresh
+attempt rather than resuming this one: the round/arc-blob approach was tried
+fairly thoroughly across several iterations without landing on something the
+user was happy with — a different technique (hand-drawn/illustrated art,
+closer to how the head/hand/foot assets were done, rather than procedural
+circle-fusion) might be worth trying first.
+

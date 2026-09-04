@@ -57,8 +57,8 @@
   --mascot-foot-right-x: 60%;
   --mascot-foot-drop: -40%; /* translateY: how much of each foot pokes out below the border (below .content, background layer) */
 
-  --mascot-brand-left-x: 39%; /* "MOSS" horizontal position in the top margin */
-  --mascot-brand-right-x: 68%; /* "GAMES" horizontal position in the top margin */
+  --mascot-brand-left-x: 45%; /* "MOSS" horizontal position in the top margin */
+  --mascot-brand-right-x: 63%; /* "GAMES" horizontal position in the top margin */
   --mascot-brand-font-size: 2.3rem;
 
   position: relative;
@@ -127,6 +127,27 @@
 
 .brandRight {
   left: var(--mascot-brand-right-x);
+}
+
+/* "About Us" nav link, top-right corner of the screen — same margin band as
+   the brand wordmark, but anchored to the right edge instead of flanking the
+   head, and (unlike the decorative wordmark) actually clickable. */
+.aboutUs {
+  position: absolute;
+  top: calc(var(--mascot-frame-margin) / -2);
+  right: 1.5rem;
+  transform: translateY(-50%);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--foreground);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.aboutUs:hover {
+  text-decoration: underline;
 }
 
 /* Head: real logo crop, top edge, dipping down over the page to "mask" it. */
@@ -198,8 +219,13 @@
     --mascot-foot-left-height: 2.3rem;
     --mascot-foot-right-width: 2.3rem;
     --mascot-foot-right-height: 2.5rem;
-    --mascot-brand-left-x: 33%;
+    --mascot-brand-left-x: 25%;
     --mascot-brand-right-x: 72%;
     --mascot-brand-font-size: 1.05rem;
+  }
+
+  .aboutUs {
+    right: 0.5rem;
+    font-size: 0.5rem;
   }
 }

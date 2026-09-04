@@ -80,6 +80,18 @@ treatment, mask+crop the logo's leg/foot region the same way and swap that rule 
 the head/hands now do) or stay tucked behind it (current behavior) is a design call to make
 when that art is ready.
 
+## Moss on the frame (tried and removed)
+
+Procedurally-generated moss decoration (SVG circle-fusion "goo" blobs) was
+tried on the frame's corners and edges over several rounds on 2026-09-04, then
+removed the same day — it never landed on a look the user was happy with
+across multiple attempts (round clumps overlapping the content, then
+contained-but-round, then a wavy arc, then a thicker arc that still read as
+visually "broken" next to a nearby separate piece). Full history — including
+why each attempt didn't work and what to maybe try differently next time (real
+illustrated art instead of procedural circles) — is in `docs/DECISIONS.md`.
+There is currently no moss on the site.
+
 ## Color palette
 
 Deliberately a single fixed dark theme — no `prefers-color-scheme` variant:

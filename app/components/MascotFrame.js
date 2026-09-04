@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./MascotFrame.module.css";
 
 /**
@@ -23,6 +24,9 @@ export default function MascotFrame({ children }) {
     <div className={styles.box}>
       <span className={styles.brandLeft}>MOSS</span>
       <span className={styles.brandRight}>GAMES</span>
+      <Link href="/about" className={styles.aboutUs}>
+        About Us
+      </Link>
       <span className={`${styles.limb} ${styles.head}`} aria-hidden="true" />
       <span className={`${styles.limb} ${styles.handLeft}`} aria-hidden="true" />
       <span className={`${styles.limb} ${styles.handRight}`} aria-hidden="true" />

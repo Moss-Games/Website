@@ -1,0 +1,74 @@
+.carousel {
+  position: relative;
+  width: 100%;
+  max-width: min(76rem, 94vw);
+}
+
+.track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  flex: 0 0 100%;
+  width: 100%;
+  scroll-snap-align: start;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid #e4e4e7;
+  background: #fff;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.25);
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 616 / 353;
+  object-fit: cover;
+  display: block;
+  background: #18181b;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.navButton {
+  border: 1px solid #d4d4d8;
+  background: #fff;
+  color: #18181b;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.navButton:hover {
+  background: #f4f4f5;
+}
+
+.navButton:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
