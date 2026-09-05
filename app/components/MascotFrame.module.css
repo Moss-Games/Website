@@ -34,7 +34,8 @@
   --mascot-content-bg: #ffffff; /* the held page itself: white, independent of the black site background */
   --mascot-border-width: 0.5rem;
   --mascot-border-radius: 1.5rem;
-  --mascot-frame-margin: 4.5rem; /* space around the box so limbs have room to poke into (the head needs more headroom now that its cut edge sits right at the border) */
+  --mascot-frame-margin: 4.5rem; /* top/bottom space around the box so limbs have room to poke into (the head needs more headroom now that its cut edge sits right at the border) */
+  --mascot-frame-margin-x: var(--mascot-frame-margin); /* left/right space; separate var so mobile can shrink the side gutters without losing head/foot headroom */
 
   /* --- tune each limb's size/position here --- */
   --mascot-head-offset-x: 50%; /* horizontal position along the top edge */
@@ -66,8 +67,8 @@
   flex: 1 1 auto; /* fill the height of the <body> (flex column) minus this margin */
   /* viewport-wide minus the margin on each side, so the paws have room to poke out
      instead of being clipped by the body's overflow-x: hidden */
-  width: calc(100vw - (var(--mascot-frame-margin) * 2));
-  margin: var(--mascot-frame-margin);
+  width: calc(100vw - (var(--mascot-frame-margin-x) * 2));
+  margin: var(--mascot-frame-margin) var(--mascot-frame-margin-x);
   border: var(--mascot-border-width) solid var(--mascot-color);
   border-radius: var(--mascot-border-radius);
   box-sizing: border-box;
@@ -361,6 +362,7 @@
     --mascot-border-width: 0.35rem;
     --mascot-border-radius: 1rem;
     --mascot-frame-margin: 3rem;
+    --mascot-frame-margin-x: 1.25rem; /* less than half the desktop side gutter — mobile screens can't spare much width */
     --mascot-head-width: 5.5rem;
     --mascot-head-height: 6.4rem;
     --mascot-hand-width: 4.2rem;
