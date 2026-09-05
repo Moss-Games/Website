@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import styles from "./MascotFrame.module.css";
 
-// How long (ms) after the last wheel event before the hands settle back down.
+// How long (ms) after the last scroll event before the hands settle back down.
 const SCROLL_IDLE_DELAY = 150;
 // Must match the `--hand-wiggle` transition duration in MascotFrame.module.css.
 const SETTLE_DURATION = 200;
@@ -23,9 +23,10 @@ const SETTLE_DURATION = 200;
  * "MOSS" / "GAMES" flank the head in the margin, set in the Super Corn display
  * font (app/fonts/SuperCorn.ttf, wired up in app/layout.js).
  *
- * While the page content is being wheel-scrolled, the hands wiggle back and
- * forth (rotating around the wrist, where they meet the border) as if the
- * mascot were the one dragging the page — see .scrolling in the CSS module.
+ * While the page content is scrolling — wheel, touch drag, or momentum/
+ * inertial scroll after a finger lifts — the hands wiggle back and forth
+ * (rotating around the wrist, where they meet the border) as if the mascot
+ * were the one dragging the page — see .scrolling in the CSS module.
  * Scrolling down leans both hands upward (as if pulling the page down past
  * them); scrolling up leans them downward. --mascot-scroll-dir carries that
  * sign into the CSS; the two hands' rotation formulas are mirrored (one adds
@@ -34,7 +35,7 @@ const SETTLE_DURATION = 200;
  *
  * Stopping a running CSS animation snaps its property to its resting value
  * instantly — transitions don't pick up where an animation left off. So on
- * the last wheel event, instead of just dropping .scrolling, we read the
+ * the last scroll event, instead of just dropping .scrolling, we read the
  * hands' current mid-wiggle angle, freeze it as an inline override, stop the
  * animation, then (a frame later) transition that frozen angle down to 0 —
  * handing off from animation to transition smoothly instead of snapping.
@@ -49,7 +50,7 @@ export default function MascotFrame({ children }) {
   const idleTimerRef = useRef(null);
   const settleTimerRef = useRef(null);
   const scrollDirRef = useRef(1);
-  const touchYRef = useRef(null);
+  const scrollTopRef = useRef(0);
   const [scrolling, setScrolling] = useState(false);
   const [scrollDir, setScrollDir] = useState(1);
   // Non-null while easing the hands back to rest after a scroll stops; holds
@@ -60,9 +61,10 @@ export default function MascotFrame({ children }) {
     const content = contentRef.current;
     if (!content) return;
 
-    // Shared by both the desktop wheel handler and the mobile touch handler
-    // below — `deltaY` follows the wheel-event convention (positive = content
-    // scrolling down) so both input types drive the same wiggle direction.
+    scrollTopRef.current = content.scrollTop;
+
+    // `deltaY` follows the wheel-event convention (positive = content
+    // scrolling down).
     const handleScrollDelta = (deltaY) => {
       const dir = deltaY > 0 ? 1 : -1;
       if (scrollDirRef.current !== dir) {
@@ -97,37 +99,22 @@ export default function MascotFrame({ children }) {
       }, SCROLL_IDLE_DELAY);
     };
 
-    const handleWheel = (event) => handleScrollDelta(event.deltaY);
-
-    // Mobile/touch devices never fire `wheel` events, so the hands need their
-    // own touch-driven trigger. A finger dragging up scrolls the content down
-    // (same real-world direction as a positive wheel deltaY), so the delta is
-    // expressed as (previous touch Y - current touch Y).
-    const handleTouchStart = (event) => {
-      touchYRef.current = event.touches[0]?.clientY ?? null;
-    };
-
-    const handleTouchMove = (event) => {
-      const y = event.touches[0]?.clientY;
-      if (y == null || touchYRef.current == null) return;
-      const deltaY = touchYRef.current - y;
-      touchYRef.current = y;
+    // Driven off the actual `scroll` event rather than `wheel`/`touchmove`:
+    // those only fire while an input device is actively moving, so on mobile
+    // the hands would freeze the moment a finger lifts even though the page
+    // keeps gliding from momentum/inertial scrolling — `scroll` keeps firing
+    // for as long as scrollTop is actually changing, covering wheel, touch
+    // drag, and momentum scroll alike with one code path.
+    const handleScroll = () => {
+      const top = content.scrollTop;
+      const deltaY = top - scrollTopRef.current;
+      scrollTopRef.current = top;
       if (deltaY !== 0) handleScrollDelta(deltaY);
     };
 
-    const handleTouchEnd = () => {
-      touchYRef.current = null;
-    };
-
-    content.addEventListener("wheel", handleWheel, { passive: true });
-    content.addEventListener("touchstart", handleTouchStart, { passive: true });
-    content.addEventListener("touchmove", handleTouchMove, { passive: true });
-    content.addEventListener("touchend", handleTouchEnd, { passive: true });
+    content.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
-      content.removeEventListener("wheel", handleWheel);
-      content.removeEventListener("touchstart", handleTouchStart);
-      content.removeEventListener("touchmove", handleTouchMove);
-      content.removeEventListener("touchend", handleTouchEnd);
+      content.removeEventListener("scroll", handleScroll);
       clearTimeout(idleTimerRef.current);
       clearTimeout(settleTimerRef.current);
     };
