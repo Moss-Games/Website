@@ -71,6 +71,12 @@
   border: var(--mascot-border-width) solid var(--mascot-color);
   border-radius: var(--mascot-border-radius);
   box-sizing: border-box;
+  /* Tight contact shadow, not an ambient glow: offset and blur are small
+     enough that it stays fully hidden behind the box on the top/sides (blur
+     never reaches past the box's own top edge) and only pokes out below —
+     right at the feet's level — giving them just enough contrast to read as
+     planted on the ground instead of a wash around the whole card. */
+  box-shadow: 0 0.6rem 1rem -0.35rem rgba(0, 0, 0, 0.55);
 }
 
 .content {
@@ -187,6 +193,10 @@
   background: url("/images/mascot-head.png") center / contain no-repeat;
   transform: translate(-50%, var(--mascot-head-overlap)) rotate(var(--mascot-head-rotation));
   z-index: 4; /* above .content and .frame: visibly overlaps/masks the page it's holding */
+  /* Follows the PNG's alpha silhouette, so the shadow hugs the nose/head shape
+     itself instead of a rectangular box — reads as the head pressing down onto
+     the page it's masking. */
+  filter: drop-shadow(0 0.4rem 0.5rem rgba(0, 0, 0, 0.5));
 }
 
 /* Hands: real logo crops, mid-height on the left/right edges, gripping onto the page.
@@ -229,6 +239,10 @@
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
+  /* Grip shadow: a soft shadow cast toward the card by the paw's own alpha
+     shape, anchoring it onto the page instead of looking like it floats on
+     top — this is the "claws digging in" cue. */
+  filter: drop-shadow(0 0.35rem 0.4rem rgba(0, 0, 0, 0.45));
 }
 
 .handLeftImg {
@@ -282,6 +296,13 @@
 /* Feet: real logo crops, bottom edge, poking out below the box near the center.
    Background layer (below .content, like the original design) — only the outward
    half is visible, the rest is hidden behind the page it's holding. */
+.footLeft,
+.footRight {
+  /* Same grip-shadow treatment as the hands, so the feet read as pressing
+     into the page rather than pasted flat on top of it. */
+  filter: drop-shadow(0 0.3rem 0.35rem rgba(0, 0, 0, 0.5));
+}
+
 .footLeft {
   top: 100%;
   left: var(--mascot-foot-left-x);
@@ -298,6 +319,39 @@
   height: var(--mascot-foot-right-height);
   background: url("/images/mascot-foot-right.png") center / contain no-repeat;
   transform: translate(-50%, var(--mascot-foot-drop)) rotate(8deg);
+}
+
+/* The card (.content) sits in FRONT of the feet — feet are the lower
+   z-index layer, tucked behind/under it — so it's the card's bottom edge
+   that should occlude light and cast a shadow onto the feet, not the other
+   way around. Each ::after is masked by that same foot's own artwork (its
+   alpha channel), so the shadow is shaped to the real silhouette instead of
+   a rectangular patch, then blurred — same soft, blurred-halo treatment as
+   the hands' grip shadow (see .handLeftImg/.handRightImg's drop-shadow
+   filter above) instead of a flat, hard-edged recolor. */
+.footLeft::after,
+.footRight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  filter: blur(0.3rem);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.footLeft::after {
+  mask-image: url("/images/mascot-foot-left.png");
+  -webkit-mask-image: url("/images/mascot-foot-left.png");
+}
+
+.footRight::after {
+  mask-image: url("/images/mascot-foot-right.png");
+  -webkit-mask-image: url("/images/mascot-foot-right.png");
 }
 
 /* Smaller viewports: scale the whole frame down so limbs stay proportional
