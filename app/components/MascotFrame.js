@@ -136,9 +136,14 @@ export default function MascotFrame({ children }) {
       <Link href="/" className={styles.brandRight}>
         GAMES
       </Link>
-      <Link href="/about" className={styles.aboutUs}>
-        About Us
-      </Link>
+      <div className={styles.topNav}>
+        <Link href="/news" className={styles.navLink}>
+          News
+        </Link>
+        <Link href="/about" className={styles.navLink}>
+          About Us
+        </Link>
+      </div>
       <Link href="/" className={`${styles.limb} ${styles.head}`} aria-label="MossGames home" />
       <span
         ref={handLeftWrapRef}

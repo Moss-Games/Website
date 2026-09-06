@@ -4,21 +4,31 @@
   max-width: min(76rem, 94vw);
 }
 
+/* `.track` is a plain clipping viewport — NOT a scroll container (no
+   overflow-x: auto) — on purpose. An element that only scrolls horizontally
+   is exactly the shape of thing some browsers/input devices redirect a
+   plain vertical mouse-wheel scroll into (scrolling it sideways instead of
+   letting the gesture bubble up the page), and that redirect can be
+   intermittent depending on the wheel/trackpad hardware — no CSS knob
+   reliably rules it out. Removing the ability to scroll here at all removes
+   the whole class of bug: `.content` (MascotFrame) stays the only
+   scrollable element on the page, so wheel behavior over the carousel is
+   identical to anywhere else, by construction. Card-to-card movement is
+   `.slider`'s `transform: translateX(...)`, driven by the prev/next buttons
+   and by a touch-swipe gesture (see GameCarousel.js) instead of native
+   scrolling. */
 .track {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
+  overflow: hidden;
 }
 
-.track::-webkit-scrollbar {
-  display: none;
+.slider {
+  display: flex;
+  transition: transform 0.35s ease;
 }
 
 .card {
   flex: 0 0 100%;
   width: 100%;
-  scroll-snap-align: start;
   border-radius: 1rem;
   overflow: hidden;
   border: 1px solid #e4e4e7;
@@ -26,12 +36,12 @@
   text-align: left;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-4px) scale(1.015) rotate(-0.4deg);
+  box-shadow: 0 16px 28px -12px rgba(0, 0, 0, 0.3);
 }
 
 .cover {

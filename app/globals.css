@@ -10,6 +10,10 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Brand display font (Super Corn) for headings across the site — body copy
+     stays on --font-sans for readability. Usable as the `font-display`
+     Tailwind utility, or directly as `var(--font-display)` in CSS modules. */
+  --font-display: var(--font-super-corn), cursive;
 }
 
 /*

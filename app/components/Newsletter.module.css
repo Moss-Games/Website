@@ -1,0 +1,74 @@
+.card {
+  width: 100%;
+  max-width: 28rem;
+  padding: 1.75rem 2rem;
+  background: #fafafa;
+  border: 1px solid #e4e4e7;
+  border-radius: 1rem;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-super-corn), cursive;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #18181b;
+  margin: 0 0 0.4rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #71717a;
+  margin: 0 0 1.25rem;
+}
+
+.form {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  color: #18181b;
+  background: #fff;
+  border: 1px solid #d4d4d8;
+  border-radius: 0.5rem;
+}
+
+.input:focus {
+  outline: 2px solid #18181b;
+  outline-offset: 1px;
+}
+
+.button {
+  flex-shrink: 0;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  background: #18181b;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.button:hover {
+  background: #3f3f46;
+  transform: translateY(-1px) scale(1.03);
+}
+
+.thanks {
+  font-size: 0.9rem;
+  color: #3f3f46;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .form {
+    flex-direction: column;
+  }
+}
