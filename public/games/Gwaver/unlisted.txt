@@ -1,3 +1,0 @@
-Hidden from the homepage until it has real assets (cover/screenshots) and a
-dedicated "All Games" entry point. See docs/GAMES.md and docs/DECISIONS.md
-(2026-09-06). Delete this file to relist it on the homepage.

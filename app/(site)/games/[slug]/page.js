@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PortableText } from "@portabletext/react";
 import { getGame, getGames } from "@/lib/games";
-import MarkdownText from "@/app/(site)/components/MarkdownText";
 import styles from "./page.module.css";
 
-export function generateStaticParams() {
-  return getGames().map((game) => ({ slug: game.slug }));
+export async function generateStaticParams() {
+  const games = await getGames();
+  return games.map((game) => ({ slug: game.slug }));
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const game = getGame(slug);
+  const game = await getGame(slug);
   if (!game) return {};
   return {
     title: `${game.title} — MossGames`,
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }) {
 
 export default async function GamePage({ params }) {
   const { slug } = await params;
-  const game = getGame(slug);
+  const game = await getGame(slug);
   if (!game) notFound();
 
   return (
@@ -92,7 +93,7 @@ export default async function GamePage({ params }) {
 
         {game.description && (
           <div className={styles.description}>
-            <MarkdownText content={game.description} />
+            <PortableText value={game.description} />
           </div>
         )}
 

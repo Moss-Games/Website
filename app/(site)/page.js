@@ -4,12 +4,13 @@ import GameCard from "./components/GameCard";
 import GameTeaserCard from "./components/GameTeaserCard";
 import DiscordCard from "./components/DiscordCard";
 import InstagramCard from "./components/InstagramCard";
+import LatestNewsCard from "./components/LatestNewsCard";
 import Newsletter from "./components/Newsletter";
 import Reveal from "./components/Reveal";
 import Footer from "./components/Footer";
 
 export default async function Home() {
-  const games = getGames().filter((game) => !game.unlisted);
+  const games = (await getGames()).filter((game) => !game.unlisted);
   const discord = await getDiscordInvite();
 
   return (
@@ -28,7 +29,8 @@ export default async function Home() {
         <GameTeaserCard />
       </Reveal>
 
-      <Reveal className="flex justify-center">
+      <Reveal className="flex w-full flex-wrap items-stretch justify-center gap-6">
+        <LatestNewsCard />
         <Newsletter />
       </Reveal>
 

@@ -913,3 +913,74 @@ viewport's bottom edge and the white content box gets more of the viewport heigh
 the site's visibility" — without touching the top margin, which still needs the original
 headroom for the head and the MOSS/GAMES wordmark.
 
+## 2026-09-06 — Games moved from file folders to Sanity, with a "Fetch from Steam" action
+
+The user found the file-per-field `public/games/<Name>/` convention (see the 2026-09-04
+entry above) harder to maintain than it was worth once there was more than one game, and
+asked for games to be manageable through Sanity instead — same CMS as `/news`. Requirement:
+pasting a Steam URL should auto-fill the page; a game not on Steam must still be fully
+editable by hand in the same document type. Confirmed with the user: the trigger is a
+button inside the Sanity Studio document editor (self-service), not a script run on request.
+
+**Verified live** (`curl` against `store.steampowered.com/api/appdetails?appids=3431490`,
+Digitum's real app id) before building anything, since `docs/GAMES.md` already flagged
+uncertainty here:
+- The endpoint is public, unauthenticated, and returns `name`, `short_description`,
+  `is_free`/`price_overview`, `release_date.date`, `genres[].description`, `platforms`
+  (three booleans), `supported_languages` (an HTML string needing tag-stripping),
+  `header_image` (tokened URL), and `screenshots[].path_full` (1920x1080, tokened) — all
+  fetchable and uploadable straightforwardly.
+- **`movies[]` only ever contains `dash_h264`/`dash_av1`/`hls_h264` adaptive-streaming
+  manifest URLs, never a direct `.mp4`** — confirms the trailer can never be auto-filled
+  this way; it stays a manual `ffmpeg`-pull-and-upload step even with the button built.
+- Steam's predictable no-token CDN URL trick (`cdn.akamai.steamstatic.com/steam/apps/<id>/
+  <name>.jpg`) only works for `library_hero.jpg` (curl confirmed 200) — `capsule_616x353.jpg`
+  and `header.jpg` both 404 without the appdetails-provided token. So "cover" (the homepage
+  card's ~616:353 image) is sourced from `screenshots[0]` (1920x1080, crops fine) rather than
+  a nonexistent capsule asset.
+
+**Architecture**: `sanity/schemaTypes/gameType.js` defines the `game` document type (field
+list mirrors the old file contract 1:1, plus a new `steamUrl` field, separate from
+`storeUrl` since an itch.io game has the latter but not the former).
+`app/api/sanity/import-steam/route.js` does the actual Steam fetch + image download/upload +
+document patch, using a new **write**-scoped client (`sanity/lib/writeClient.js`,
+`SANITY_API_WRITE_TOKEN` — this env var already existed, provisioned by the Sanity
+integration, but was unused until now) that must stay server-only.
+`sanity/actions/fetchFromSteamAction.js` is the Studio-side "Fetch from Steam" button (a
+custom document action, registered in `sanity.config.js`'s `document.actions`) — it just
+POSTs to the route above and shows a toast; Sanity's own real-time document subscription
+reflects the patched fields in the open editor without any manual client-side state update.
+The action function is intentionally lowercase-named per Sanity's documented custom-action
+shape even though it calls React hooks internally — this trips eslint's `rules-of-hooks`
+(a known false positive for this exact Sanity pattern), disabled inline with a comment
+explaining why.
+
+**Security tradeoff, accepted rather than engineered around**: the import route has no auth
+of its own beyond confirming the target document is actually `_type == "game"` before
+patching — it only proxies public Steam data and `/studio` is already unlisted from nav and
+login-gated (per `docs/NEWS.md`), so the blast radius of someone hitting it directly is low
+for a project at this scale.
+
+`lib/games.js` was rewritten to query Sanity (GROQ, same `client.fetch`/`revalidate: 30`
+pattern as `lib/news.js`) instead of `fs.readdirSync`, keeping the exact same returned field
+shape so `GameCard.js`/`games/[slug]/page.js` needed no changes for images (image/file
+fields are expanded to plain URL strings via `sanity/lib/image.js` inside `lib/games.js`
+itself). Both `getGames()`/`getGame()` became `async`, propagated through their callers
+(`app/page.js`, `app/games/[slug]/page.js`'s `generateStaticParams`/`generateMetadata`/the
+page component). `description` moved from the old markdown-subset string
+(`description.md`, rendered via the now-deleted `lib/markdown.js` + `MarkdownText.js`) to
+Sanity portable text, rendered via `<PortableText>` from `@portabletext/react` — same as
+news post bodies, one fewer bespoke renderer to maintain. `unlisted` became a plain Studio
+checkbox, replacing the `unlisted.txt` flag-file trick from the previous entry.
+
+**Migration**: `scripts/migrate-games-to-sanity.mjs`, a one-off script (not part of the app,
+run once with `node --env-file=.env.local scripts/migrate-games-to-sanity.mjs`) that read
+the existing Digitum (full asset set) and Gwaver (title/tagline/store-url only) folders and
+created the two `game` documents, uploading local files as Sanity assets. Verified in a
+running dev server: both pages render identically to the file-based versions; the
+`fetchFromSteamAction`'s underlying route was exercised directly (not through a logged-in
+Studio session, which this session had no credentials for) against the real Digitum
+document and correctly re-populated title/tagline/price/genres/platforms/languages/
+storeUrl/cover/headerImage/libraryHeroImage/6 screenshots from Steam. `public/games/` was
+then deleted — Sanity is now the sole source of truth for game content.
+
