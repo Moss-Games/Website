@@ -118,7 +118,10 @@ export default async function GamePage({ params }) {
             )}
 
             <div className={styles.tagGroups}>
-              <TagList label="Platforms" items={game.platforms} />
+              {/* Steam's own store page already shows platform support —
+                  redundant here, and this site can't keep it in sync with
+                  Steam anyway. */}
+              {!steamAppId && <TagList label="Platforms" items={game.platforms} />}
               <TagList label="Genres" items={game.genres} />
               <TagList label="Languages" items={game.languages} />
             </div>
