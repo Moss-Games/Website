@@ -821,3 +821,48 @@ custom domain is keyed to the project ID (not the name) and stayed attached, and
 the repo hardcoded the old `*.vercel.app` preview URLs. Local `.vercel/project.json` and
 `docs/ONBOARDING.md` / `docs/STATUS.md` updated to the new name.
 
+## 2026-09-06 — Welcome email moved entirely into Resend (Template + Automation)
+
+Follow-up to the entry above: the user asked to manage the welcome email "entirely from
+Resend" rather than have its HTML hardcoded in this repo. The `resend` npm SDK (installed
+version) exposes a much richer API than typical transactional-email usage suggests —
+`templates`, `automations`, `contacts`, `events`, `topics`, `segments`, `webhooks` — confirmed
+by reading `node_modules/resend/dist/index.d.mts` rather than assuming from training data.
+
+What's in Resend now (created via one-off provisioning scripts, not checked into the repo):
+- A published **Template** "Newsletter welcome email" (HTML with the MossGames logo), using
+  the *reserved* merge tag `{{{RESEND_UNSUBSCRIBE_URL}}}` for the unsubscribe link.
+- An **Automation** "Newsletter welcome email" (id captured only in Resend, not in code):
+  trigger step on custom event `newsletter.signup` -> `send_email` step referencing that
+  Template.
+- A **Webhook** (`resend.webhooks.create`) posting `contact.updated` / `contact.deleted` to
+  `https://www.mossgames.fr/api/webhooks/resend`, signing secret stored as
+  `RESEND_WEBHOOK_SECRET` in Vercel env vars (production + development; adding it to preview
+  kept hitting a CLI prompt for a git branch even with `--yes`/`--non-interactive` — skipped
+  since this repo pushes straight to `main` and doesn't use preview deploys).
+
+**Important, verified empirically (not from docs, which don't cover this clearly)**:
+`{{{RESEND_UNSUBSCRIBE_URL}}}` only renders a real signed URL when the send happens inside a
+Contact + Automation/Broadcast context. Tested calling `resend.emails.send()` directly with a
+template containing that variable and no Contact involved — it rendered **blank**. This is why
+the app no longer calls `emails.send()` for the welcome email at all.
+
+Current app-side flow (`app/api/newsletter/route.js` -> `lib/emails/send.js`):
+1. Signup is still stored in Neon (`newsletter_signups`, unchanged from the previous entry).
+2. `resend.contacts.create({ email, unsubscribed: false })` — confirmed idempotent (calling
+   twice with the same email returns the same contact id, no error), so this is safe to call
+   on every signup attempt without checking for an existing contact first.
+3. `resend.events.send({ event: "newsletter.signup", email })` fires the trigger; the
+   Automation (configured entirely on Resend's side) does the actual send.
+
+`lib/emails/welcome.js` (the old hardcoded HTML template) was deleted — the template content
+now lives only in Resend's dashboard, which is the whole point of this change. If the welcome
+email needs to change, edit the Template in Resend (Storage sidebar -> the Resend integration
+-> "Open in Resend", or resend.com directly), not a file in this repo.
+
+`app/api/newsletter/unsubscribe/route.js` (the old token-based unsubscribe route from the
+previous entry) is **left in place** and still works — a couple of real welcome emails had
+already gone out with that link before this change (real team-member signups, confirmed via
+`resend.emails.list()`, not test data — see Resend's dashboard for who, not this file). New
+welcome emails no longer use it.
+
