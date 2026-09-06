@@ -1003,3 +1003,15 @@ contains `steampowered.com`, the "Fetch from Steam" action
 (`sanity/actions/fetchFromSteamAction.js`'s guard changed from `doc.steamUrl` to
 `doc.storeUrl?.includes("steampowered.com")`, and it now POSTs `doc.storeUrl` as the route's
 `steamUrl` body param). One field to fill in instead of two that needed to agree.
+
+**Third follow-up same day**: replaced `GameTeaserCard.js` (the hardcoded, non-Sanity static
+placeholder for an unannounced second project, added 2026-09-06) with a plain `badge` string
+field on the `game` schema — free text ("Coming Soon", "Coming Q1 2026", "Demo available",
+anything, or empty for no badge), rendered by `GameCard.js` as a small pill over the cover
+image's top-left corner. First iteration tried a `comingSoon` boolean + reusing the existing
+`releaseDate` field to build the badge text ("Coming <releaseDate>" / "Coming Soon"); the
+user stopped that mid-implementation and asked for a single manually-filled string field
+instead — simpler, no derived text, no second field to keep in sync. An unannounced project
+is now just a sparse `game` document (title/tagline filled in, everything else empty) instead
+of a one-off component — its `/games/<slug>` page renders thin until there's more to show,
+which is fine.

@@ -60,6 +60,12 @@ export const gameType = defineType({
       initialValue: false,
       description: "Hide from the homepage while keeping its /games/<slug> page live.",
     }),
+    defineField({
+      name: "badge",
+      type: "string",
+      description:
+        "Optional badge shown on the homepage card (e.g. \"Coming Soon\", \"Coming Q1 2026\", \"Demo available\"). Leave empty to show nothing.",
+    }),
   ],
   preview: {
     select: { title: "title", subtitle: "tagline", media: "headerImage" },

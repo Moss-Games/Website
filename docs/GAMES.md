@@ -40,15 +40,22 @@ Digitum) and drag the resulting file into the **Trailer** field in Studio.
 Toggling **Unlisted** hides a game from the homepage row while keeping its own
 `/games/<slug>` page live — replaces the old `unlisted.txt` flag-file trick.
 
+An unannounced project (no store link, no images yet) is just a `game` document like any
+other — fill in title/tagline and leave the rest empty, its `/games/<slug>` page will simply
+render sparsely until there's more to show. Set **Badge** (free text — "Coming Soon",
+"Coming Q1 2026", "Demo available", anything) to show a small pill on its homepage card;
+leave it empty for no badge. Replaces the old hardcoded `GameTeaserCard.js` placeholder.
+
 ## Code
 
 - `sanity/schemaTypes/gameType.js` — the `game` document's fields (title, slug, tagline,
   description, storeUrl, price, releaseDate, genres/platforms/languages/features,
   systemRequirements, headerImage/libraryHeroImage/trailerPoster/screenshots, trailer,
-  order, unlisted). No separate "cover" field — `headerImage` doubles as the homepage
-  card's image. Also no separate "steamUrl" field (tried, undone same day — see
+  order, unlisted, badge). No separate "cover" field — `headerImage` doubles as the
+  homepage card's image. Also no separate "steamUrl" field (tried, undone same day — see
   `docs/DECISIONS.md`): `storeUrl` alone drives both the store button and the Steam
-  auto-fill action.
+  auto-fill action. `badge` is a free-text field, manually filled in — no boolean/date
+  pair, deliberately kept as simple as possible.
 - `sanity/actions/fetchFromSteamAction.js` — the Studio "Fetch from Steam" button, shown
   only on `game` documents whose `storeUrl` contains `steampowered.com`. Registered in
   `sanity.config.js`'s `document.actions`.
@@ -68,10 +75,11 @@ Toggling **Unlisted** hides a game from the homepage row while keeping its own
   `heroImage` (the per-game page's own banner) keeps its old preference order: library
   hero > first screenshot > header. The homepage card (`GameCard.js`) just uses
   `headerImage` directly.
-- `app/(site)/components/GameCard.js` / `GameTeaserCard.js` — homepage cards, unchanged by
-  this migration. `GameTeaserCard.js` stays a static, non-Sanity-backed placeholder for an
-  unannounced project; once it has real content, give it a normal Sanity `game` document
-  and drop the component's usage instead of editing it.
+- `app/(site)/components/GameCard.js` — the homepage card. Renders `game.badge` as a small
+  pill overlaid on the cover image's top-left corner when set. The old hardcoded
+  `GameTeaserCard.js` (a static, non-Sanity-backed placeholder for an unannounced project)
+  was deleted the same day `badge` was added — an unannounced project is now just a sparse
+  `game` document instead of a one-off component.
 - `app/(site)/games/[slug]/page.js` + `page.module.css` — the per-game page. `description`
   renders via `@portabletext/react`'s `<PortableText>` (same as news post bodies) — the old
   markdown-subset renderer (`lib/markdown.js`, `MarkdownText.js`) was deleted.

@@ -1,7 +1,6 @@
 import { getGames } from "@/lib/games";
 import { getDiscordInvite } from "@/lib/discord";
 import GameCard from "./components/GameCard";
-import GameTeaserCard from "./components/GameTeaserCard";
 import DiscordCard from "./components/DiscordCard";
 import InstagramCard from "./components/InstagramCard";
 import LatestNewsCard from "./components/LatestNewsCard";
@@ -26,7 +25,6 @@ export default async function Home() {
         {games.map((game) => (
           <GameCard key={game.slug} game={game} />
         ))}
-        <GameTeaserCard />
       </Reveal>
 
       <Reveal className="flex w-full flex-wrap items-stretch justify-center gap-6">
