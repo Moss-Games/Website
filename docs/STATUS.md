@@ -152,8 +152,9 @@ GitHub CLI (`gh`) is used for authentication on this machine:
 ## Notes
 
 - The `Moss-Games/Website` repo on GitHub was empty before the initial commit.
-- **Vercel project: `ldpdoc`** (historical name — see `docs/DECISIONS.md` from 2026-09-03
-  "Initial deployment incident"). This IS the project that carries the
+- **Vercel project: `mossgames-website`** (renamed from `ldpdoc` on 2026-09-06 — see
+  `docs/DECISIONS.md` from 2026-09-03 "Initial deployment incident" for the history).
+  This IS the project that carries the
   `mossgames.fr` / `www.mossgames.fr` domain, already connected to the
   `Moss-Games/Website` repo (`main` branch) via the Vercel GitHub App.
 - Vercel Project ID: `prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H` (scope `geremy-cambus-projects`).

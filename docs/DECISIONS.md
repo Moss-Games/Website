@@ -799,3 +799,25 @@ user was happy with — a different technique (hand-drawn/illustrated art,
 closer to how the head/hand/foot assets were done, rather than procedural
 circle-fusion) might be worth trying first.
 
+## 2026-09-06 — Newsletter signups (Neon Postgres + Resend), Vercel project renamed
+
+Newsletter signup form (`app/components/Newsletter.js`) wired to a real backend:
+- **Storage**: user was offered Google Sheets/Drive vs. storing on Vercel directly, and
+  chose Vercel. Provisioned **Neon Postgres** via the Vercel Marketplace
+  (`vercel integration add neon`, resource `neon-erin-fence`, region `fra1`). Table
+  `newsletter_signups` (email, created_at), managed in `lib/newsletter.js`, written to by
+  `app/api/newsletter/route.js`.
+- **Outbound email**: provisioned **Resend** via the Vercel Marketplace (`resend/resend-email`,
+  resource `resend-email-coffee-magnet`, region `eu-west-1`, domain `mossgames.fr`) to send
+  an automatic welcome email on signup, with an unsubscribe link. Domain DNS verification
+  with Resend is a manual step the user still needs to complete before sending to arbitrary
+  recipients (sandbox mode only reaches the account's own verified address until then).
+
+Also renamed the Vercel project itself from the historical `ldpdoc` name (see the
+2026-09-03 "Initial deployment incident" entry above) to **`mossgames-website`**
+(`vercel project rename ldpdoc mossgames-website`), at the user's request. Confirmed safe:
+same project ID (`prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H`), the `mossgames.fr` / `www.mossgames.fr`
+custom domain is keyed to the project ID (not the name) and stayed attached, and nothing in
+the repo hardcoded the old `*.vercel.app` preview URLs. Local `.vercel/project.json` and
+`docs/ONBOARDING.md` / `docs/STATUS.md` updated to the new name.
+

@@ -21,7 +21,7 @@ deployed on Vercel, served at **mossgames.fr**.
 - Working branch: `main` only for now, no feature branches. Agents can push directly to
   `main` (explicit user agreement, see DECISIONS.md 2026-09-03 "Direct push to main").
 
-### 2. Vercel — project `ldpdoc`
+### 2. Vercel — project `mossgames-website`
 
 - CLI: `vercel` (installed via npm, `npm i -g vercel` if missing).
 - Auth: `vercel login` (device flow — gives a URL + code to validate in a browser,
@@ -31,9 +31,9 @@ deployed on Vercel, served at **mossgames.fr**.
   ```bash
   vercel link --yes --project=prj_2qPvUUb9hUfoFSPqxTc6kIZukT3H
   ```
-- The project is called **`ldpdoc`** in the Vercel dashboard (scope
-  `geremy-cambus-projects`) — a misleading name inherited from an earlier use (VitePress
-  docs for another repo, `Moss-Games/LesDeuxPelos`). This IS the project that carries
+- The project was renamed from `ldpdoc` to **`mossgames-website`** on 2026-09-06 (was
+  a misleading name inherited from an earlier use — VitePress docs for another repo,
+  `Moss-Games/LesDeuxPelos`). This IS the project that carries
   the `mossgames.fr` / `www.mossgames.fr` domain and is connected to the
   `Moss-Games/Website` repo (`main` branch) via the Vercel GitHub App integration.
   Don't be fooled by the name — see DECISIONS.md 2026-09-03 "Initial deployment incident"
