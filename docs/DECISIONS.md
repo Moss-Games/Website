@@ -1015,3 +1015,110 @@ instead — simpler, no derived text, no second field to keep in sync. An unanno
 is now just a sparse `game` document (title/tagline filled in, everything else empty) instead
 of a one-off component — its `/games/<slug>` page renders thin until there's more to show,
 which is fine.
+
+## 2026-09-06 — Live Steam price/review widget, a real Steam-branded button, two-column game page
+
+Follow-up requests on the game page, same day as the Sanity migration above.
+
+**Live Steam widget.** The user wanted more from Steam than the one-time import already
+pulls (title/price/etc., frozen at whatever they were when "Fetch from Steam" was last
+clicked) — specifically current price/discount and the review score, kept live rather than
+re-fetched by hand. Scoped via a direct question: price+discount and review score/summary,
+game page only (not also a compact version on the homepage card).
+
+`lib/steam.js` gained `fetchSteamLiveStats(appId)`, independent of the existing
+`fetchSteamAppDetails` (which throws — fine for a one-off import action, wrong for something
+rendered on every page view). It calls `appdetails` (for `price_overview`/`is_free`) and the
+separate `store.steampowered.com/appreviews/<id>?json=1&num_per_page=0` endpoint (review
+`query_summary` — total/positive counts and Valve's own `review_score_desc` string) in
+parallel, `next: { revalidate: 3600 }` each, and never throws — any failure (private/delisted
+app, Steam rate-limiting, network blip) just yields `null` fields, so the widget silently
+renders nothing rather than breaking the page. `app/(site)/components/SteamWidget.js` (+
+`.module.css`) renders it: a colored review pill (green/yellow/red by percent-positive
+threshold, not by parsing Valve's description string, which would need a hardcoded list of
+every possible value) and price with a strikethrough original + green discount badge when on
+sale. `games/[slug]/page.js` calls it only when `storeUrl` parses as a Steam app id
+(`parseSteamAppId`, already existed for the import action) — itch.io etc. get nothing.
+
+**Real Steam-branded button.** The generic black "View on Steam" button was replaced, for
+Steam links specifically, with Steam's own dark-blue chrome gradient (`#171a21` →
+`#2a475e`, lightening toward `#1a9fff` on hover) and the official Steam glyph (SVG path from
+Simple Icons, verified against `raw.githubusercontent.com/simple-icons/simple-icons` rather
+than reproduced from memory) tinted Steam's light blue (`#66c0f4`). This is deliberately the
+*only* place on the site borrowing an external brand's palette — every other button/badge
+stays the site's own black-pill language — since it's a link out to that brand's own store.
+Non-Steam storefronts (itch.io) keep the plain black button, `game.storeLabel`-driven as
+before.
+
+**Two-column layout.** The page originally cascaded everything — trailer, description,
+features, screenshots, and the store button/widget/meta/tags — down one narrow centered
+column even on wide viewports, wasted horizontal space the user flagged directly ("tout est
+a la suite en cascade... met aussi des elements cote a cote"). `games/[slug]/page.js`'s
+`.layout` now wraps two children: `.sidebar` (store button, Steam widget, release date/
+price, platform/genre/language tag chips) and `.main` (trailer/description/features/
+screenshots/system requirements). Below `60rem` it's a plain flex column in source order
+(sidebar first, so the CTA stays above the fold on mobile — verified this is a plain
+viewport-width media query, so it applies uniformly, not just to a narrow desktop window);
+past `60rem` it becomes a row with `.sidebar` pinned to a `sticky`, fixed-width (`18rem`)
+right column via `order: 2`, `.body`'s own `max-width` growing from `48rem` to `68rem` to
+give the two columns room. Verified with real screenshots (`npx playwright screenshot
+--viewport-size=... --wait-for-timeout=...` — no `chromium-cli` or local Playwright browser
+install in this environment, but `~/.cache/ms-playwright`'s Chromium was already present, so
+`npx playwright screenshot` worked without an install step) at both a desktop and a mobile
+width, including on the itch.io game (Gwaver — no Steam widget, no genres/platforms data)
+to confirm nothing about the new layout assumes Steam-only fields exist. Note for anyone
+scripting screenshots of this page: `Reveal.js`'s `IntersectionObserver`-driven fade-in
+needs either an actual delay (`--wait-for-timeout`) or a tall-enough viewport that
+everything is already "in view" on load, or a same-page screenshot taken immediately after
+navigation will show the whole `.main` column blank (opacity 0, mid-transition).
+
+**Platforms hidden for Steam games, sidebar spacing tightened.** Per direct feedback: Steam's
+own store page already shows platform support redundantly, and this site has no way to keep
+it in sync, so the "Platforms" tag group is now skipped (`!steamAppId &&`) for Steam
+listings — itch.io games keep it, since there's no other source for that fact. This exposed
+a spacing bug: each sidebar piece (`storeButton`/`SteamWidget`/`metaGrid`/`tagGroups`) had
+carried its own `margin-bottom`, which read fine when every piece was present but left
+visibly uneven gaps once the Platforms tag group (or the widget/price row, for a
+free-to-play game with no `price` string) wasn't there. Replaced with one `gap: 1rem` on
+`.sidebar` itself (a flex column) and removed each child's own bottom margin — the
+`metaGrid`'s padded/background "card" styling around Release date/Price was also dropped
+entirely (it was flush-indented relative to the tag groups below it, per direct feedback:
+"alogne release date avec les genres et le reste") so it's now plain text at the same left
+edge as "Genres"/"Languages", visually one continuous list rather than a boxed fact plus a
+separate tag cloud.
+
+## 2026-09-06 — Digitum's trailer had no audio track; re-pulled from Steam with sound
+
+The user reported the trailer's unmute button did nothing. Diagnosed with `ffprobe` against
+the deployed file (`https://cdn.sanity.io/files/.../<hash>.mp4`, downloaded via `curl`
+first): a single H.264 video stream, **no audio stream at all** — not a playback/CSS bug, the
+uploaded asset genuinely carries no sound.
+
+Root cause, traced back to the 2026-09-04 game-carousel entry above: the original pull
+re-encoded the raw `ffmpeg -c copy` HLS output ("re-encoded to 1280px width / CRF 23 →
+7.4MB") without an explicit audio codec/map, and that re-encode pass dropped the audio
+stream. The `-c copy` step itself was fine; the follow-up re-encode wasn't.
+
+Fix: re-fetched `store.steampowered.com/api/appdetails?appids=3431490` fresh (Steam's
+manifest URLs carry short-lived tokens, so a months-old URL from the first pull wouldn't
+still work) to get the current `movies[0].hls_h264` URL, then `ffmpeg -i "<hls url>" -c copy
+trailer_with_audio.mp4` — remux only, no re-encode this time, avoiding whatever the earlier
+re-encode step did wrong. Confirmed via `ffprobe` the output carries both an H.264 video
+stream and an AAC audio stream. Result is larger (~19MB vs. the old 7.4MB, since it keeps
+the manifest's ~5.8Mbps variant rather than being recompressed) but still a reasonable size
+for a 26.5s trailer.
+
+Uploaded directly to Sanity and patched onto the Digitum document (a one-off Node script
+using `@sanity/client` + `SANITY_API_WRITE_TOKEN` from `.env.local`, placed temporarily
+inside the repo root so Node's ESM resolver could find `node_modules/@sanity/client` — a
+script under `/tmp` can't resolve project dependencies — then deleted after running; not
+committed, this was a one-off content fix, not a reusable tool). **This write was blocked by
+the auto-mode classifier on the first attempt** (a script mutating production Sanity content
+via the write token) and only run after the user explicitly confirmed via `AskUserQuestion`
+— worth remembering that any future one-off write-token script here will hit the same gate
+and needs the same explicit go-ahead, not just being technically capable of running it.
+
+If another game's trailer needs the same fix: check with `ffprobe` first (don't assume every
+existing trailer has this bug — only Digitum's was verified), and prefer a straight
+`-c copy` remux from the *current* `hls_h264`/`dash_h264` manifest URL over any re-encode
+step, since re-encoding is what silently dropped the audio here.

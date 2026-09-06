@@ -20,9 +20,23 @@ up automatically whenever **Store URL** looks like a Steam link.
 
 **The trailer video always stays a manual step**, even for a Steam game: Steam's API only
 exposes streaming manifests (DASH/HLS), never a direct `.mp4` — confirmed by testing it live
-during this migration. Pull it the same way as before (`ffmpeg -i "<hls_manifest_url>" -c
-copy trailer-raw.mp4`, then re-encode — see the git history for the exact commands used for
-Digitum) and drag the resulting file into the **Trailer** field in Studio.
+during this migration. Pull it with `ffmpeg -i "<hls_manifest_url>" -c copy trailer.mp4`
+(the manifest URL is `movies[0].hls_h264` from a fresh `appdetails` call — its token is
+short-lived, so don't reuse an old URL) and drag the resulting file into the **Trailer**
+field in Studio. **Don't re-encode after the `-c copy` pull** — Digitum's original trailer
+(2026-09-04) was re-encoded down to 1280px/CRF 23 after the copy step and that re-encode
+silently dropped the audio track entirely (no `-map`/audio codec given), which went unnoticed
+until a user report months later; see `docs/DECISIONS.md`'s 2026-09-06 entry for the fix and
+verify any trailer with `ffprobe -show_streams` before trusting it has sound.
+
+On Steam listings, the game page also shows a **live price/review widget**
+(`app/(site)/components/SteamWidget.js`, data from `lib/steam.js`'s `fetchSteamLiveStats`) —
+current price/discount and Valve's review score, fetched fresh (hourly revalidate) rather
+than frozen at whatever "Fetch from Steam" last saved. This needs no Studio action; it just
+follows `storeUrl` whenever it's a Steam link. The **Platforms** tag is hidden on the game
+page for Steam listings specifically (Steam's own store page already shows it, and there's
+no way to keep this site's copy in sync) — still shown for non-Steam games, where it's the
+only source for that fact.
 
 ## Adding a game
 
@@ -68,7 +82,12 @@ leave it empty for no badge. Replaces the old hardcoded `GameTeaserCard.js` plac
   `/studio` itself is unlisted/login-gated, so the blast radius of someone hitting it
   directly is low. See `docs/DECISIONS.md`.
 - `lib/steam.js` — the Steam response → field mapping (`parseSteamAppId`,
-  `fetchSteamAppDetails`, `mapSteamDataToGameFields`), used by the API route above.
+  `fetchSteamAppDetails`, `mapSteamDataToGameFields`), used by the API route above. Also
+  `fetchSteamLiveStats(appId)` — separate from the import-time functions above, called on
+  every game page render (not just the one-off import), so unlike `fetchSteamAppDetails` it
+  never throws: any failure just yields `null` price/review fields.
+- `app/(site)/components/SteamWidget.js` (+ `.module.css`) — renders `fetchSteamLiveStats`'s
+  output (price/discount, review score) on the game page. Renders nothing if both are `null`.
 - `lib/games.js` — `getGames()`/`getGame(slug)`, GROQ queries against Sanity (same pattern
   as `lib/news.js`), expanding image/file fields to plain URLs via `sanity/lib/image.js` so
   nothing downstream (`GameCard.js`, `games/[slug]/page.js`) needs to know about Sanity.
@@ -82,7 +101,11 @@ leave it empty for no badge. Replaces the old hardcoded `GameTeaserCard.js` plac
   `game` document instead of a one-off component.
 - `app/(site)/games/[slug]/page.js` + `page.module.css` — the per-game page. `description`
   renders via `@portabletext/react`'s `<PortableText>` (same as news post bodies) — the old
-  markdown-subset renderer (`lib/markdown.js`, `MarkdownText.js`) was deleted.
+  markdown-subset renderer (`lib/markdown.js`, `MarkdownText.js`) was deleted. Two-column
+  past `60rem` (sidebar — store button/SteamWidget/meta/tags — pinned right via `sticky`;
+  trailer/description/features/screenshots on the left), single stacked column below that
+  (sidebar first, so the store button stays above the fold on mobile) — see
+  `docs/DECISIONS.md`'s 2026-09-06 entry.
 - `scripts/migrate-games-to-sanity.mjs` — the one-off script that moved the original
   Digitum/Gwaver file-based data into Sanity. Not part of the app; kept for reference in
   case a similar bulk-import is ever needed again.
