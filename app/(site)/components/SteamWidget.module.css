@@ -1,0 +1,64 @@
+.widget {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  margin: 0 0 1.75rem;
+}
+
+.reviews {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 0.5rem;
+  background: #fafafa;
+}
+
+.reviewsDesc {
+  font-weight: 600;
+}
+
+.reviewsCount {
+  color: #71717a;
+  font-size: 0.78rem;
+}
+
+.reviewsPositive .reviewsDesc {
+  color: #15803d;
+}
+
+.reviewsMixed .reviewsDesc {
+  color: #a16207;
+}
+
+.reviewsNegative .reviewsDesc {
+  color: #b91c1c;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.discount {
+  background: #15803d;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.35rem;
+}
+
+.priceInitial {
+  color: #a1a1aa;
+  text-decoration: line-through;
+}
+
+.priceFinal {
+  color: #18181b;
+  font-weight: 600;
+}

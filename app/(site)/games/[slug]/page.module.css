@@ -2,11 +2,32 @@
   width: 100%;
 }
 
+.headerWrap {
+  position: relative;
+  margin-bottom: -1.5rem;
+}
+
 .header {
   width: 100%;
   max-height: 22rem;
   object-fit: cover;
   display: block;
+}
+
+/* The body card floats up over the header's bottom edge on a rounded lip,
+   rather than the header and body meeting on a hard straight line. */
+.headerWrap::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5rem;
+  /* Matches MascotFrame.module.css's --mascot-content-bg: the page pane is
+     white regardless of the site's dark background, and this lip is meant
+     to blend into that pane, not the dark surroundings. */
+  background: #fff;
+  border-radius: 1.5rem 1.5rem 0 0;
 }
 
 .body {
@@ -63,8 +84,10 @@
   margin: 0 0 1.25rem;
 }
 
-.steamButton {
-  display: inline-block;
+.storeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   background: #18181b;
   color: #fff;
   text-decoration: none;
@@ -76,12 +99,28 @@
   transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
-.steamButton:hover {
+.storeButton:hover {
   /* See app/components/GameCard.module.css's cardHoverIn for why enter/leave
      are asymmetric: a keyframe shake+grow going in, a plain transition
      shrink-back going out. */
   animation: steamButtonHoverIn 0.2s ease forwards;
   background: #3f3f46;
+}
+
+/* Steam's own dark-blue chrome (#171a21 → #2a475e) instead of the generic
+   black button — this is the one spot on the site borrowing an external
+   brand's palette, since it's linking out to that brand's own storefront. */
+.steamButton {
+  background: linear-gradient(135deg, #171a21 0%, #2a475e 100%);
+}
+
+.steamButton:hover {
+  background: linear-gradient(135deg, #2a475e 0%, #1a9fff 100%);
+}
+
+.steamIcon {
+  color: #66c0f4;
+  flex-shrink: 0;
 }
 
 @keyframes steamButtonHoverIn {
@@ -121,6 +160,51 @@
   font-size: 0.9rem;
   color: #27272a;
   margin: 0;
+}
+
+.tagGroups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.tagGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tagLabel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #a1a1aa;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* A little "scattered stickers" tilt per chip (--tilt, set inline per
+   index in TagList), straightened out and lifted on hover — same
+   shake-then-settle language as GameCard.module.css's cardHoverIn. */
+.tag {
+  display: inline-block;
+  background: #18181b;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.2s ease;
+}
+
+.tag:hover {
+  transform: rotate(0deg) translateY(-2px) scale(1.06);
 }
 
 .trailer {
@@ -166,6 +250,29 @@
   object-fit: cover;
   border-radius: 0.5rem;
   display: block;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.screenshotGrid img:hover {
+  /* Same shake+grow-in language as GameCard.module.css's cardHoverIn, just
+     lighter amplitude since these sit in a tight grid. */
+  animation: screenshotHoverIn 0.2s ease forwards;
+  box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes screenshotHoverIn {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  30% {
+    transform: scale(1.05) rotate(-1.5deg);
+  }
+  60% {
+    transform: scale(1.01) rotate(1.5deg);
+  }
+  100% {
+    transform: scale(1.03) rotate(0deg);
+  }
 }
 
 .systemRequirements {
