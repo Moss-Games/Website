@@ -67,6 +67,20 @@
   text-transform: uppercase;
 }
 
+/* Same pill, but in normal flow above the title — used instead of .badge
+   (which overlays the cover image) when there's no image to overlay. */
+.badgeInline {
+  align-self: flex-start;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #18181b;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .body {
   display: flex;
   flex: 1;
