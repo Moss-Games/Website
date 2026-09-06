@@ -37,6 +37,43 @@
   text-align: left;
 }
 
+@media (min-width: 60rem) {
+  .body {
+    max-width: 68rem;
+  }
+}
+
+/* Single column (sidebar bits, then main content, in that source order —
+   keeps the store button/CTA above the fold on mobile) below 60rem; a row
+   with the sidebar pinned to the right past that. */
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 60rem) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 3rem;
+  }
+
+  .sidebar {
+    order: 2;
+    width: 18rem;
+    flex-shrink: 0;
+    position: sticky;
+    top: 1.5rem;
+  }
+
+  .main {
+    order: 1;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 .backLink {
   display: inline-block;
   font-size: 0.85rem;
@@ -164,8 +201,8 @@
 
 .tagGroups {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.25rem 2rem;
+  flex-direction: column;
+  gap: 1.25rem;
   margin-bottom: 2rem;
 }
 
