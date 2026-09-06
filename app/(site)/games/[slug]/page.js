@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getGame, getGames } from "@/lib/games";
-import MarkdownText from "@/app/components/MarkdownText";
+import MarkdownText from "@/app/(site)/components/MarkdownText";
 import styles from "./page.module.css";
 
 export function generateStaticParams() {

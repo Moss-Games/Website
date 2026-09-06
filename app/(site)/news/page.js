@@ -1,13 +1,14 @@
+import { PortableText } from "@portabletext/react";
 import { getNewsPosts } from "@/lib/news";
-import MarkdownText from "@/app/components/MarkdownText";
+import { urlForImage } from "@/sanity/lib/image";
 import styles from "./page.module.css";
 
 export const metadata = {
   title: "News — MossGames",
 };
 
-export default function NewsPage() {
-  const posts = getNewsPosts();
+export default async function NewsPage() {
+  const posts = await getNewsPosts();
 
   return (
     <div className={styles.page}>
@@ -20,13 +21,25 @@ export default function NewsPage() {
           {posts.map((post) => (
             <article key={post.slug} className={styles.post}>
               {post.cover && (
-                <img className={styles.cover} src={post.cover} alt="" />
+                <img
+                  className={styles.cover}
+                  src={urlForImage(post.cover).width(1200).url()}
+                  alt=""
+                />
               )}
-              {post.date && <p className={styles.date}>{post.date}</p>}
+              {post.publishedAt && (
+                <p className={styles.date}>
+                  {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+              )}
               <h2 className={styles.postTitle}>{post.title}</h2>
               {post.body && (
                 <div className={styles.postBody}>
-                  <MarkdownText content={post.body} />
+                  <PortableText value={post.body} />
                 </div>
               )}
             </article>

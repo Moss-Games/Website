@@ -1,42 +1,53 @@
-# News page — `public/news/`
+# News page — Sanity Studio
 
 ## The idea
 
-Same convention as `public/games/` (see `docs/GAMES.md`): the `/news` page is
-generated automatically from `public/news/`. **Every subfolder is one post**,
-discovered by scanning the filesystem server-side (`lib/news.js`,
-`fs.readdirSync`) — there's no list of posts to maintain in the code. Adding a
-post means adding a folder with the files below; removing one means deleting
-the folder. Plain `.txt`/`.md` files, not JSON, for the same reason as
-`GAMES.md` gives: easy for a non-technical person (or a future agent) to edit
-one fact at a time. Missing files are fine — every field is optional.
+The `/news` page is content-managed through **Sanity** (a headless CMS, provisioned via
+the Vercel Marketplace) instead of files in the repo. Writing, editing, and publishing
+posts happens entirely at **`/studio`** on the live site — no code change, no git commit,
+no redeploy needed to add or edit a post. This replaced an earlier `public/news/`
+file-per-post convention (see `docs/DECISIONS.md`, 2026-09-06 entry) once the user asked
+for something closer to how the newsletter's welcome email is managed in Resend: content
+lives in an external dashboard, not in this codebase.
 
-Posts are sorted **newest first** by `date.txt` (string-sorted, so it must be
-an ISO date `YYYY-MM-DD`).
+## Writing a post
 
-## File contract
+1. Go to `https://www.mossgames.fr/studio` and log in with your Sanity account (Google or
+   GitHub — same account used when the integration was set up).
+2. Click **Post** in the left sidebar, then the **+** button to create one.
+3. Fill in the title (the URL slug auto-generates from it, editable), a publish date, an
+   optional cover image, and the body (rich text — bold, headings, lists, links all work).
+4. Click **Publish**. The post appears on `/news` within ~30 seconds (see `revalidate` in
+   `lib/news.js`) — no deploy required.
 
-```
-public/news/<post-slug>/
-├── title.txt        → post title (falls back to the folder name)
-├── date.txt          → ISO date (YYYY-MM-DD), used for sort order and display
-├── body.md             → post content. Only **bold** + paragraph breaks are
-│                        supported (lib/markdown.js, same minimal renderer
-│                        `description.md` uses for games) — not full Markdown.
-└── cover.jpg|png|webp   → optional banner image at the top of the post
-```
-
-The folder name doubles as the post's identifier (lowercased), though there's
-currently no per-post page — `/news` renders every post's full body inline on
-one page. If posts get long or numerous enough to want their own URLs, add
-`/news/[slug]/page.js` the same way `/games/[slug]` was added, reusing
-`lib/news.js`'s `slug` field.
+Un-publishing (deleting the post, or unpublishing a draft) removes it from `/news` the
+same way.
 
 ## Code
 
-- `lib/news.js` — `getNewsPosts()`, the only place that knows the file
-  contract above.
-- `app/news/page.js` + `page.module.css` — the news list page. Empty state
-  ("No news yet — check back soon.") until the first post folder exists.
-- Linked from the top-right nav (`app/components/MascotFrame.js`, alongside
-  "About Us").
+- `sanity.config.js` (repo root) — Studio configuration: schema, plugins, project id/dataset.
+- `sanity/schemaTypes/postType.js` — the `post` document's fields (title, slug, publishedAt,
+  cover, body). Add a field here to add one to the Studio form.
+- `sanity/lib/client.js` — the read-only Sanity client used by the public site.
+- `sanity/lib/image.js` — builds image URLs from Sanity's CDN for the cover image.
+- `lib/news.js` — `getNewsPosts()`, a GROQ query for all posts, newest first.
+- `app/(site)/news/page.js` + `page.module.css` — the news list page, rendering the rich
+  text body via `@portabletext/react`. Empty state ("No news yet — check back soon.")
+  until the first post is published.
+- `app/studio/[[...tool]]/page.js` + `app/studio/layout.js` — embeds the Studio at
+  `/studio`. It has its own root layout (no MascotFrame, no site CSS) via the
+  `app/(site)/` vs `app/studio/` route-group split introduced alongside this — see
+  `docs/DECISIONS.md`.
+- Linked from the top-right nav (`app/(site)/components/MascotFrame.js`, alongside
+  "About Us"). `/studio` itself is intentionally not linked from the site nav — it's for
+  the team only, reachable by typing the URL.
+
+## Sanity project details
+
+- Project id `fk9d1x48`, dataset `production`, region/plan: free tier, provisioned via
+  `vercel integration add sanity/project` under the `mossgames-website` Vercel project.
+  API keys are Vercel-managed env vars (`SANITY_API_READ_TOKEN`, `SANITY_API_WRITE_TOKEN`,
+  `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`) — not stored in the repo.
+- Manage the Sanity project itself (members, dataset, billing) from
+  `https://www.sanity.io/manage`, or via **Open in Sanity** from the integration's page in
+  the Vercel dashboard (Storage sidebar).
