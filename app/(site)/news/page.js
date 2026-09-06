@@ -1,5 +1,5 @@
-import { PortableText } from "@portabletext/react";
-import { getNewsPosts } from "@/lib/news";
+import Link from "next/link";
+import { getNewsPosts, firstSentence } from "@/lib/news";
 import { urlForImage } from "@/sanity/lib/image";
 import styles from "./page.module.css";
 
@@ -19,11 +19,11 @@ export default async function NewsPage() {
       ) : (
         <div className={styles.list}>
           {posts.map((post) => (
-            <article key={post.slug} className={styles.post}>
+            <Link key={post.slug} href={`/news/${post.slug}`} className={styles.post}>
               {post.cover && (
                 <img
                   className={styles.cover}
-                  src={urlForImage(post.cover).width(1200).url()}
+                  src={urlForImage(post.cover).width(800).height(450).url()}
                   alt=""
                 />
               )}
@@ -37,12 +37,8 @@ export default async function NewsPage() {
                 </p>
               )}
               <h2 className={styles.postTitle}>{post.title}</h2>
-              {post.body && (
-                <div className={styles.postBody}>
-                  <PortableText value={post.body} />
-                </div>
-              )}
-            </article>
+              {post.excerpt && <p className={styles.excerpt}>{firstSentence(post.excerpt)}</p>}
+            </Link>
           ))}
         </div>
       )}

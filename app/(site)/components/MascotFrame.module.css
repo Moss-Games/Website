@@ -123,7 +123,8 @@
    site background, not inside the box). Vertically centered in the margin band.
    Doubles as a home link, like the head (see .head below). */
 .brandLeft,
-.brandRight {
+.brandRight,
+.brandMobile {
   position: absolute;
   top: calc(var(--mascot-frame-margin) / -2);
   transform: translate(-50%, -50%);
@@ -142,6 +143,18 @@
 
 .brandRight {
   left: var(--mascot-brand-right-x);
+}
+
+/* Mobile-only consolidated wordmark — replaces the logo icon and the
+   MOSS/GAMES pair flanking the head (see the @media block below), freeing
+   width on small screens so the News/About Us nav stays readable. Shares
+   brandLeft/brandRight's positioning (absolute within .box, vertically
+   centered in the margin band) so it lines up the same way; only its
+   horizontal position differs — the midpoint between the box's left edge
+   (0%) and the head (var(--mascot-head-offset-x), 50%). Hidden on desktop. */
+.brandMobile {
+  display: none;
+  left: var(--mascot-brand-mobile-x, 25%);
 }
 
 /* Nav links ("News", "About Us"), top-right corner of the screen — same
@@ -380,22 +393,29 @@
     --mascot-foot-right-height: 2.5rem;
     --mascot-brand-left-x: 28%;
     --mascot-brand-right-x: 72%;
+    --mascot-brand-mobile-x: 25%; /* midpoint between the box's left edge (0%) and the head (50%) */
     --mascot-brand-font-size: 1.05rem;
   }
 
   .topNav {
-    right: 0.5rem;
-    gap: 0.5rem;
+    right: 0.6rem;
+    gap: 0.7rem;
   }
 
   .navLink {
-    font-size: 0.5rem;
+    font-size: 0.75rem;
   }
 
   .logo {
-    top: 0.5rem;
-    left: 0.5rem;
-    width: 2rem;
-    height: 2rem;
+    display: none;
+  }
+
+  .brandLeft,
+  .brandRight {
+    display: none;
+  }
+
+  .brandMobile {
+    display: block;
   }
 }

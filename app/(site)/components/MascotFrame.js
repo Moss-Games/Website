@@ -136,6 +136,9 @@ export default function MascotFrame({ children }) {
       <Link href="/" className={styles.brandRight}>
         GAMES
       </Link>
+      <Link href="/" className={styles.brandMobile} aria-label="MossGames home">
+        MOSS GAMES
+      </Link>
       <div className={styles.topNav}>
         <Link href="/news" className={styles.navLink}>
           News
