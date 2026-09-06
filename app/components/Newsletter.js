@@ -3,14 +3,24 @@
 import { useState } from "react";
 import styles from "./Newsletter.module.css";
 
-// No email collection wired up yet — submitting just swaps in a placeholder
-// message. Comes later once there's somewhere to actually send addresses.
 export default function Newsletter() {
-  const [submitted, setSubmitted] = useState(false);
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle"); // idle | loading | done | error
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    setSubmitted(true);
+    setStatus("loading");
+
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      setStatus(res.ok ? "done" : "error");
+    } catch {
+      setStatus("error");
+    }
   }
 
   return (
@@ -20,23 +30,32 @@ export default function Newsletter() {
         Get updates on new games and devlogs. No spam, unsubscribe anytime.
       </p>
 
-      {submitted ? (
-        <p className={styles.thanks}>
-          Thanks! Newsletter signup is coming soon — stay tuned.
-        </p>
+      {status === "done" ? (
+        <p className={styles.thanks}>Thanks for signing up!</p>
       ) : (
         <form className={styles.form} onSubmit={handleSubmit}>
           <input
             type="email"
             required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
             aria-label="Email address"
             className={styles.input}
           />
-          <button type="submit" className={styles.button}>
-            Subscribe
+          <button
+            type="submit"
+            className={styles.button}
+            disabled={status === "loading"}
+          >
+            {status === "loading" ? "Subscribing…" : "Subscribe"}
           </button>
         </form>
+      )}
+      {status === "error" && (
+        <p className={styles.error}>
+          Something went wrong — please try again.
+        </p>
       )}
     </section>
   );
