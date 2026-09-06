@@ -8,8 +8,8 @@ import styles from "./GameCard.module.css";
 export default function GameCard({ game }) {
   return (
     <Link href={`/games/${game.slug}`} className={styles.card}>
-      {game.cover ? (
-        <img className={styles.cover} src={game.cover} alt={game.title} />
+      {game.header ? (
+        <img className={styles.cover} src={game.header} alt={game.title} />
       ) : (
         <div className={styles.cover} />
       )}

@@ -15,7 +15,7 @@ export default defineConfig({
   plugins: [structureTool(), visionTool({ defaultApiVersion: apiVersion })],
   document: {
     // fetchFromSteamAction self-guards on document type ("game") and on
-    // steamUrl being set — see sanity/actions/fetchFromSteamAction.js.
+    // storeUrl pointing at Steam — see sanity/actions/fetchFromSteamAction.js.
     actions: (prev) => [...prev, fetchFromSteamAction],
   },
 });

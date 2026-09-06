@@ -984,3 +984,22 @@ document and correctly re-populated title/tagline/price/genres/platforms/languag
 storeUrl/cover/headerImage/libraryHeroImage/6 screenshots from Steam. `public/games/` was
 then deleted — Sanity is now the sole source of truth for game content.
 
+**Follow-up same day**: dropped the separate `cover` field — the user wanted the homepage
+card to show the Steam header image specifically, and since nothing else read `cover`
+(`GameCard.js` was its only consumer), keeping both was a redundant, confusing pair rather
+than a real distinction. `GameCard.js` now reads `game.header` directly; `cover` was removed
+from `gameType.js`, `lib/games.js`, `lib/steam.js`'s mapping, the import route, and the
+migration script. Existing documents may still carry an orphaned `cover` asset reference
+from the initial migration/test import — harmless, just unread.
+
+**Second follow-up same day**: the user couldn't find the "Fetch from Steam" button in
+Studio at all. Root cause: the migration script only ever set `storeUrl`, never the separate
+`steamUrl` field the button's visibility was conditioned on — so both migrated games had an
+empty `steamUrl` and the button silently never rendered. Patched Digitum's document directly
+(`steamUrl` set to its existing `storeUrl` value) as an immediate fix, then removed the
+`steamUrl` field from the schema entirely rather than just documenting "remember to fill
+both": `storeUrl` alone now drives everything — the store button (as before) and, when it
+contains `steampowered.com`, the "Fetch from Steam" action
+(`sanity/actions/fetchFromSteamAction.js`'s guard changed from `doc.steamUrl` to
+`doc.storeUrl?.includes("steampowered.com")`, and it now POSTs `doc.storeUrl` as the route's
+`steamUrl` body param). One field to fill in instead of two that needed to agree.

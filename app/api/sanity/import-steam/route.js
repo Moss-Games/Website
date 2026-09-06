@@ -47,8 +47,7 @@ export async function POST(request) {
     const data = await fetchSteamAppDetails(appId);
     const { fields, images } = mapSteamDataToGameFields(data);
 
-    const [cover, headerImage, libraryHeroImage, screenshots] = await Promise.all([
-      images.cover ? uploadImage(images.cover, "cover.jpg") : null,
+    const [headerImage, libraryHeroImage, screenshots] = await Promise.all([
       images.header ? uploadImage(images.header, "header.jpg") : null,
       uploadImage(libraryHeroUrl(appId), "library-hero.jpg"), // silently null on 404
       Promise.all(
@@ -62,7 +61,6 @@ export async function POST(request) {
     const patch = {
       ...fields,
       storeUrl: steamUrl,
-      ...(cover ? { cover } : {}),
       ...(headerImage ? { headerImage } : {}),
       ...(libraryHeroImage ? { libraryHeroImage } : {}),
       ...(screenshots.some(Boolean) ? { screenshots: screenshots.filter(Boolean) } : {}),

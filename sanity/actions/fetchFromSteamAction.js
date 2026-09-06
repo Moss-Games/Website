@@ -1,7 +1,9 @@
 import { useCallback, useState } from "react";
 
 // Registered in sanity.config.js's `document.actions`. Only renders for
-// "game" documents that currently have a steamUrl typed in. The actual
+// "game" documents whose storeUrl currently points at Steam — same field
+// as the page's store button, no separate steamUrl field (see
+// sanity/schemaTypes/gameType.js for why that split was undone). The actual
 // fetch-from-Steam + asset-upload + patch logic lives server-side in
 // app/api/sanity/import-steam/route.js (needs the write token, which must
 // never reach the Studio's client-side bundle) — this is just the button.
@@ -22,7 +24,7 @@ export function fetchFromSteamAction(props) {
       const response = await fetch("/api/sanity/import-steam", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ documentId: doc._id, steamUrl: doc.steamUrl }),
+        body: JSON.stringify({ documentId: doc._id, steamUrl: doc.storeUrl }),
       });
       const result = await response.json().catch(() => ({ ok: false }));
       if (!result.ok) throw new Error(result.error || "import_failed");
@@ -35,7 +37,7 @@ export function fetchFromSteamAction(props) {
     }
   }, [doc, onComplete]);
 
-  if (type !== "game" || !doc?.steamUrl) return null;
+  if (type !== "game" || !doc?.storeUrl?.includes("steampowered.com")) return null;
 
   return {
     label:

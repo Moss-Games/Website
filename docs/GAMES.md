@@ -9,12 +9,14 @@ replaced the 2026-09-04 file-based convention (see `docs/DECISIONS.md`) once the
 more than one game and the per-file editing got tedious — see `docs/DECISIONS.md`'s
 2026-09-06 migration entry for the full reasoning and what was verified about Steam's API.
 
-For a game that's on Steam, paste its store URL into the **Steam URL** field and click
-**Fetch from Steam** — title, tagline, price, release date, genres, platforms, languages,
-and images (cover/header/library hero/screenshots) all auto-fill from Steam's public
-`appdetails` API, as an editable draft you can still tweak before publishing. For a game
-that isn't on Steam (itch.io, or an unannounced project), leave **Steam URL** empty and
-fill every field by hand — it's the same document type either way.
+For a game that's on Steam, paste its store URL into the **Store URL** field (a
+`store.steampowered.com/app/<id>/...` link) and click **Fetch from Steam** — title,
+tagline, price, release date, genres, platforms, languages, and images (header/library
+hero/screenshots) all auto-fill from Steam's public `appdetails` API, as an editable draft
+you can still tweak before publishing. For a game that isn't on Steam (itch.io, or an
+unannounced project), just fill every field by hand — it's the same document type either
+way, there's no separate "is this a Steam game" field to remember to set: the button shows
+up automatically whenever **Store URL** looks like a Steam link.
 
 **The trailer video always stays a manual step**, even for a Steam game: Steam's API only
 exposes streaming manifests (DASH/HLS), never a direct `.mp4` — confirmed by testing it live
@@ -26,7 +28,7 @@ Digitum) and drag the resulting file into the **Trailer** field in Studio.
 
 1. Go to `/studio`, log in (same account as for news posts).
 2. Click **Game** in the sidebar, then **+**.
-3. **On Steam**: paste the Steam store URL into **Steam URL**, save as a draft, click
+3. **On Steam**: paste the Steam store URL into **Store URL**, save as a draft, click
    **Fetch from Steam** in the action menu, wait for it to finish, review the filled-in
    fields (the raw Steam genre list may need trimming — e.g. "Free To Play" isn't really a
    genre), add the trailer manually if there is one, then **Publish**.
@@ -40,13 +42,16 @@ Toggling **Unlisted** hides a game from the homepage row while keeping its own
 
 ## Code
 
-- `sanity/schemaTypes/gameType.js` — the `game` document's fields (title, slug, steamUrl,
-  tagline, description, storeUrl, price, releaseDate, genres/platforms/languages/features,
-  systemRequirements, cover/headerImage/libraryHeroImage/trailerPoster/screenshots,
-  trailer, order, unlisted).
+- `sanity/schemaTypes/gameType.js` — the `game` document's fields (title, slug, tagline,
+  description, storeUrl, price, releaseDate, genres/platforms/languages/features,
+  systemRequirements, headerImage/libraryHeroImage/trailerPoster/screenshots, trailer,
+  order, unlisted). No separate "cover" field — `headerImage` doubles as the homepage
+  card's image. Also no separate "steamUrl" field (tried, undone same day — see
+  `docs/DECISIONS.md`): `storeUrl` alone drives both the store button and the Steam
+  auto-fill action.
 - `sanity/actions/fetchFromSteamAction.js` — the Studio "Fetch from Steam" button, shown
-  only on `game` documents with a `steamUrl` set. Registered in `sanity.config.js`'s
-  `document.actions`.
+  only on `game` documents whose `storeUrl` contains `steampowered.com`. Registered in
+  `sanity.config.js`'s `document.actions`.
 - `app/api/sanity/import-steam/route.js` — does the actual work: parses the Steam app id,
   calls `store.steampowered.com/api/appdetails`, downloads the resulting image URLs,
   uploads them as Sanity assets via a **write**-scoped client (`sanity/lib/writeClient.js`,
@@ -60,10 +65,9 @@ Toggling **Unlisted** hides a game from the homepage row while keeping its own
 - `lib/games.js` — `getGames()`/`getGame(slug)`, GROQ queries against Sanity (same pattern
   as `lib/news.js`), expanding image/file fields to plain URLs via `sanity/lib/image.js` so
   nothing downstream (`GameCard.js`, `games/[slug]/page.js`) needs to know about Sanity.
-  `heroImage` keeps its old preference order: library hero > first screenshot > header.
-  "Cover" (the homepage card image) comes from the first screenshot, not a Steam capsule
-  image — no capsule size matching the card's ~616:353 ratio is reachable without Steam's
-  tokened URLs, and `appdetails` doesn't expose one either.
+  `heroImage` (the per-game page's own banner) keeps its old preference order: library
+  hero > first screenshot > header. The homepage card (`GameCard.js`) just uses
+  `headerImage` directly.
 - `app/(site)/components/GameCard.js` / `GameTeaserCard.js` — homepage cards, unchanged by
   this migration. `GameTeaserCard.js` stays a static, non-Sanity-backed placeholder for an
   unannounced project; once it has real content, give it a normal Sanity `game` document

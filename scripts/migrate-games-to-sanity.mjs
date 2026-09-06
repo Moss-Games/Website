@@ -120,7 +120,6 @@ async function migrateGame(folderName) {
   const order =
     orderRaw && !Number.isNaN(parseInt(orderRaw, 10)) ? parseInt(orderRaw, 10) : undefined;
 
-  const coverFile = findAsset(dir, "cover", ["jpg", "png", "webp"]);
   const headerFile = findAsset(dir, "header", ["jpg", "png", "webp"]);
   const libraryHeroFile = findAsset(dir, "library-hero", ["jpg", "png", "webp"]);
   const trailerPosterFile = findAsset(dir, "trailer-poster", ["jpg", "png"]);
@@ -128,15 +127,16 @@ async function migrateGame(folderName) {
   const hasTrailer = fs.existsSync(trailerPath);
   const screenshotPaths = readScreenshots(dir);
 
-  const [cover, headerImage, libraryHeroImage, trailerPoster, trailer, screenshots] =
+  // headerImage also serves as the homepage card's image (GameCard.js) — no
+  // separate "cover" field/upload, see docs/DECISIONS.md 2026-09-06.
+  const [headerImage, libraryHeroImage, trailerPoster, trailer, screenshots] =
     await Promise.all([
-      uploadImage(coverFile && path.join(dir, coverFile)),
       uploadImage(headerFile && path.join(dir, headerFile)),
       uploadImage(libraryHeroFile && path.join(dir, libraryHeroFile)),
       uploadImage(trailerPosterFile && path.join(dir, trailerPosterFile)),
       hasTrailer ? uploadFile(trailerPath, "video/mp4") : null,
       // Array-of-object fields need a _key per item (Sanity requirement) —
-      // single image fields like cover/headerImage above don't.
+      // single image fields like headerImage above don't.
       Promise.all(
         screenshotPaths.map(async (p) => {
           const image = await uploadImage(p);
@@ -161,7 +161,6 @@ async function migrateGame(folderName) {
     systemRequirements: readFileIfExists(path.join(dir, "system-requirements.txt")) || undefined,
     order,
     unlisted: fs.existsSync(path.join(dir, "unlisted.txt")),
-    ...(cover ? { cover } : {}),
     ...(headerImage ? { headerImage } : {}),
     ...(libraryHeroImage ? { libraryHeroImage } : {}),
     ...(trailerPoster ? { trailerPoster } : {}),
