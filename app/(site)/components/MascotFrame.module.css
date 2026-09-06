@@ -34,8 +34,9 @@
   --mascot-content-bg: #ffffff; /* the held page itself: white, independent of the black site background */
   --mascot-border-width: 0.5rem;
   --mascot-border-radius: 1.5rem;
-  --mascot-frame-margin: 4.5rem; /* top/bottom space around the box so limbs have room to poke into (the head needs more headroom now that its cut edge sits right at the border) */
+  --mascot-frame-margin: 4.5rem; /* top space so the head/brand wordmark have room to poke into (the head needs more headroom now that its cut edge sits right at the border) */
   --mascot-frame-margin-x: var(--mascot-frame-margin); /* left/right space; separate var so mobile can shrink the side gutters without losing head/foot headroom */
+  --mascot-frame-margin-bottom: 2.25rem; /* bottom space is its own (smaller) var: the feet only need room to poke out (~2rem, see --mascot-foot-drop below), not the full top margin — shrinking it maximizes the visible white content area without cramping the feet */
 
   /* --- tune each limb's size/position here --- */
   --mascot-head-offset-x: 50%; /* horizontal position along the top edge */
@@ -68,7 +69,7 @@
   /* viewport-wide minus the margin on each side, so the paws have room to poke out
      instead of being clipped by the body's overflow-x: hidden */
   width: calc(100vw - (var(--mascot-frame-margin-x) * 2));
-  margin: var(--mascot-frame-margin) var(--mascot-frame-margin-x);
+  margin: var(--mascot-frame-margin) var(--mascot-frame-margin-x) var(--mascot-frame-margin-bottom);
   border: var(--mascot-border-width) solid var(--mascot-color);
   border-radius: var(--mascot-border-radius);
   box-sizing: border-box;
@@ -135,6 +136,32 @@
   white-space: nowrap;
   text-decoration: none;
   user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.brandLeft:hover,
+.brandRight:hover,
+.brandMobile:hover {
+  /* See app/components/GameCard.module.css's cardHoverIn for why enter/leave
+     are asymmetric: a keyframe shake+grow going in, a plain transition
+     shrink-back going out. Keeps the base translate(-50%, -50%) centering
+     throughout — only scale/rotate/lift jitter on top of it. */
+  animation: brandHoverIn 0.2s ease forwards;
+}
+
+@keyframes brandHoverIn {
+  0% {
+    transform: translate(-50%, -50%) translateY(0) scale(1) rotate(0deg);
+  }
+  30% {
+    transform: translate(-50%, -50%) translateY(-3px) scale(1.08) rotate(-4deg);
+  }
+  60% {
+    transform: translate(-50%, -50%) translateY(-1px) scale(1.02) rotate(4deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) translateY(-2px) scale(1.05) rotate(0deg);
+  }
 }
 
 .brandLeft {
@@ -172,6 +199,7 @@
 }
 
 .navLink {
+  display: inline-block;
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -179,10 +207,31 @@
   color: var(--foreground);
   text-decoration: none;
   white-space: nowrap;
+  transition: transform 0.2s ease;
 }
 
 .navLink:hover {
+  /* See app/components/GameCard.module.css's cardHoverIn for why enter/leave
+     are asymmetric: a keyframe shake+grow going in, a plain transition
+     shrink-back going out. Lighter amplitude than a card — this is inline
+     text, not a block. */
+  animation: navLinkHoverIn 0.2s ease forwards;
   text-decoration: underline;
+}
+
+@keyframes navLinkHoverIn {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-2px) scale(1.08) rotate(-3deg);
+  }
+  60% {
+    transform: translateY(0) scale(1.02) rotate(3deg);
+  }
+  100% {
+    transform: translateY(-1px) scale(1.05) rotate(0deg);
+  }
 }
 
 /* MossGames logo, fixed to the top-left corner of the viewport (not just the
@@ -196,6 +245,29 @@
   display: block;
   width: 2.75rem;
   height: 2.75rem;
+  transition: transform 0.2s ease;
+}
+
+.logo:hover {
+  /* See app/components/GameCard.module.css's cardHoverIn for why enter/leave
+     are asymmetric: a keyframe shake+grow going in, a plain transition
+     shrink-back going out. */
+  animation: logoHoverIn 0.2s ease forwards;
+}
+
+@keyframes logoHoverIn {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-3px) scale(1.08) rotate(-4deg);
+  }
+  60% {
+    transform: translateY(-1px) scale(1.02) rotate(4deg);
+  }
+  100% {
+    transform: translateY(-2px) scale(1.05) rotate(0deg);
+  }
 }
 
 .logo img {
@@ -218,6 +290,31 @@
      itself instead of a rectangular box — reads as the head pressing down onto
      the page it's masking. */
   filter: drop-shadow(0 0.4rem 0.5rem rgba(0, 0, 0, 0.5));
+  transition: transform 0.2s ease;
+}
+
+.head:hover {
+  /* See app/components/GameCard.module.css's cardHoverIn for why enter/leave
+     are asymmetric: a keyframe shake+grow going in, a plain transition
+     shrink-back going out. Keeps the base translate/rotate (head position +
+     resting tilt) throughout — only an extra rotate wobble + scale jitter on
+     top of it, same trick as .brandLeft/.brandRight/.brandMobile above. */
+  animation: headHoverIn 0.2s ease forwards;
+}
+
+@keyframes headHoverIn {
+  0% {
+    transform: translate(-50%, var(--mascot-head-overlap)) rotate(var(--mascot-head-rotation)) scale(1);
+  }
+  30% {
+    transform: translate(-50%, var(--mascot-head-overlap)) rotate(calc(var(--mascot-head-rotation) - 5deg)) scale(1.05);
+  }
+  60% {
+    transform: translate(-50%, var(--mascot-head-overlap)) rotate(calc(var(--mascot-head-rotation) + 5deg)) scale(1.02);
+  }
+  100% {
+    transform: translate(-50%, var(--mascot-head-overlap)) rotate(var(--mascot-head-rotation)) scale(1.04);
+  }
 }
 
 /* Hands: real logo crops, mid-height on the left/right edges, gripping onto the page.
@@ -383,6 +480,7 @@
     --mascot-border-radius: 1rem;
     --mascot-frame-margin: 3rem;
     --mascot-frame-margin-x: 1.25rem; /* less than half the desktop side gutter — mobile screens can't spare much width */
+    --mascot-frame-margin-bottom: 1.5rem; /* scaled down with the smaller mobile feet, same reasoning as the desktop value above */
     --mascot-head-width: 5.5rem;
     --mascot-head-height: 6.4rem;
     --mascot-hand-width: 4.2rem;

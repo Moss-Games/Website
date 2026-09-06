@@ -21,7 +21,12 @@ files are fine: every field is optional and simply doesn't render if absent
 
 ```
 public/games/<GameName>/
-├── order.txt               → integer; carousel position (ascending). Missing = sorts last.
+├── order.txt               → integer; homepage card position (ascending). Missing = sorts last.
+├── unlisted.txt              → presence (any content, or empty) hides this game from the
+│                              homepage while keeping its /games/<slug> page and
+│                              generateStaticParams entry working. Delete the file to
+│                              relist it. Used for Gwaver (no real assets yet) — see
+│                              docs/DECISIONS.md (2026-09-06).
 ├── title.txt                → display name (falls back to the folder name)
 ├── tagline.txt               → one-line hook (carousel card alt text, page subtitle)
 ├── description.md            → long-form description. Only **bold** + paragraph
@@ -93,15 +98,20 @@ practical options for an itch.io game: ask the user for a real Chrome session
 (the `claude-in-chrome` skill, if the user installs the extension) or have
 them hand over the cover/screenshots/description directly.
 
-## Adding the carousel/game-page code itself
+## Adding the game-card/game-page code itself
 
 - `lib/games.js` — `getGames()` (all games, sorted by `order.txt`) and
   `getGame(slug)` (one game). This is the only place that knows the file
   contract above.
-- `app/components/GameCarousel.js` + `.module.css` — homepage carousel,
-  client component (needs scroll/button state). Renders **only the cover
-  image** per card (2026-09-04 — title/tagline were dropped from the card by
-  request; they still show on the game's own page).
+- `app/components/GameCard.js` + `.module.css` — one homepage game card
+  (cover, title, tagline, "Discover <title> →" CTA). Not a carousel: the
+  homepage renders every listed game's card side by side (wrapping on
+  narrow screens), plus `GameTeaserCard.js` for an in-production project
+  that isn't ready to reveal yet. See docs/DECISIONS.md (2026-09-06) for why
+  the earlier single-slide-carousel design (2026-09-04) was replaced — it
+  read as an oversized image, not a clickable button, and title/tagline were
+  brought back onto the card (they'd been dropped 2026-09-04) as part of
+  that fix.
 - `app/games/[slug]/page.js` + `page.module.css` — the per-game page.
 - `app/components/MarkdownText.js` + `lib/markdown.js` — the minimal
   paragraph/bold renderer for `description.md`.

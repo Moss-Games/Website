@@ -57,8 +57,26 @@
 }
 
 .button:hover {
+  /* See app/components/GameCard.module.css's cardHoverIn for why enter/leave
+     are asymmetric: a keyframe shake+grow going in, a plain transition
+     shrink-back going out. */
+  animation: newsletterButtonHoverIn 0.2s ease forwards;
   background: #3f3f46;
-  transform: translateY(-1px) scale(1.03);
+}
+
+@keyframes newsletterButtonHoverIn {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-3px) scale(1.07) rotate(-3deg);
+  }
+  60% {
+    transform: translateY(0) scale(1.01) rotate(3deg);
+  }
+  100% {
+    transform: translateY(-1px) scale(1.03) rotate(0deg);
+  }
 }
 
 .thanks {

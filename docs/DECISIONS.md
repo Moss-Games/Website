@@ -866,3 +866,50 @@ already gone out with that link before this change (real team-member signups, co
 `resend.emails.list()`, not test data — see Resend's dashboard for who, not this file). New
 welcome emails no longer use it.
 
+## 2026-09-06 — Homepage games: dropped the single-slide carousel for small cards, teaser for a second project, Gwaver unlisted
+
+The user didn't like how the homepage carousel rendered: with only Digitum having real
+assets, the 2026-09-04 "one project at a time, much bigger" design (`docs/DECISIONS.md`
+above) read as one oversized bare image dominating the page, with nothing on it signaling
+"this is clickable" — no title, no tagline, no CTA (those had been explicitly dropped from
+the card that same day, per `docs/GAMES.md`'s prior note).
+
+Also new context: a second, already-in-production project will start being marketed soon
+and should get a second card — but it isn't ready to reveal (no title/assets to show yet).
+And `Gwaver` (the itch.io title added 2026-09-04 purely to prove the carousel handled more
+than one entry, still no cover/description) should stop appearing on the homepage — the user
+plans a future "All Games" nav entry for it instead, not a homepage slot.
+
+Decided, discussing tradeoffs with the user directly:
+- **Replace the swipeable single-card carousel with small cards laid out side by side**
+  (`app/components/GameCard.js`, `flex flex-wrap` in `app/page.js`) rather than turning it
+  into a multi-card carousel or keeping swipe/nav-arrow mechanics — with at most 2-3 cards
+  total there's no need for pagination, and a carousel would imply parity between a real game
+  and a content-free teaser, which doesn't fit.
+- **Brought title + tagline + an explicit CTA line back onto the card** ("Discover
+  {title} →", arrow slides right on hover) — reverses the 2026-09-04 "cover image only"
+  decision; confirmed with the user first since it undoes an explicit prior choice. This is
+  what actually fixes "doesn't look like a button", more than the resize does.
+  `GameCard.module.css`: card shrunk from the old `min(76rem, 94vw)`/full-bleed-image size to
+  a fixed `20rem` wide card (matches the existing `DiscordCard`/`InstagramCard` sizing
+  language: white bg, `1px solid #e4e4e7` border, rounded 1rem, `translateY(-4px)
+  scale(1.015)` hover).
+- **`GameTeaserCard.js`**: a static, content-free placeholder (dashed border, "Coming soon"
+  badge, generic copy, links out to Instagram to follow the announcement) for the
+  unrevealed second project — deliberately *not* wired through `public/games/` (no slug, no
+  store link, nothing to show yet). Once that project has real assets, give it a normal
+  `public/games/<Name>/` folder and drop this component's usage instead of editing it.
+- **Gwaver hidden via a new `unlisted.txt` flag file** in its folder (`lib/games.js`'s
+  `unlisted` field, filtered out in `app/page.js`) rather than deleting its data or
+  hardcoding a slug exclusion — keeps `/games/gwaver` and its `generateStaticParams` entry
+  working, and matches the existing file-based-flag convention (`order.txt`, `tagline.txt`,
+  ...). Delete the file whenever it's ready to resurface (the future "All Games" tab, or the
+  homepage again).
+
+Also, separately requested same session: shrunk `MascotFrame`'s **bottom** margin only
+(`--mascot-frame-margin-bottom`, new var split off from the shared `--mascot-frame-margin`:
+`4.5rem` → `2.25rem` desktop, `3rem` → `1.5rem` mobile) so the feet sit closer to the
+viewport's bottom edge and the white content box gets more of the viewport height — "maximize
+the site's visibility" — without touching the top margin, which still needs the original
+headroom for the head and the MOSS/GAMES wordmark.
+

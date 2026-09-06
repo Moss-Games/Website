@@ -20,24 +20,31 @@ export default async function NewsPage() {
         <div className={styles.list}>
           {posts.map((post) => (
             <Link key={post.slug} href={`/news/${post.slug}`} className={styles.post}>
-              {post.cover && (
+              {post.cover ? (
                 <img
                   className={styles.cover}
                   src={urlForImage(post.cover).width(800).height(450).url()}
                   alt=""
                 />
+              ) : (
+                <div className={styles.cover} />
               )}
-              {post.publishedAt && (
-                <p className={styles.date}>
-                  {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-              )}
-              <h2 className={styles.postTitle}>{post.title}</h2>
-              {post.excerpt && <p className={styles.excerpt}>{firstSentence(post.excerpt)}</p>}
+              <div className={styles.body}>
+                {post.publishedAt && (
+                  <p className={styles.date}>
+                    {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                )}
+                <h2 className={styles.postTitle}>{post.title}</h2>
+                {post.excerpt && <p className={styles.excerpt}>{firstSentence(post.excerpt)}</p>}
+                <span className={styles.readMore}>
+                  Read more <span className={styles.arrow}>→</span>
+                </span>
+              </div>
             </Link>
           ))}
         </div>

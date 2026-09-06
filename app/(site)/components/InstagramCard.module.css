@@ -12,8 +12,26 @@
 }
 
 .card:hover {
-  transform: translateY(-3px) scale(1.03);
+  /* See app/components/GameCard.module.css's cardHoverIn for why enter/leave
+     are asymmetric: a keyframe shake+grow going in, a plain transition
+     shrink-back going out. */
+  animation: instagramCardHoverIn 0.2s ease forwards;
   box-shadow: 0 12px 24px -12px rgba(238, 42, 123, 0.55);
+}
+
+@keyframes instagramCardHoverIn {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-5px) scale(1.06) rotate(-2deg);
+  }
+  60% {
+    transform: translateY(-1px) scale(1.01) rotate(2deg);
+  }
+  100% {
+    transform: translateY(-3px) scale(1.03) rotate(0deg);
+  }
 }
 
 .icon {

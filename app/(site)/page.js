@@ -1,6 +1,7 @@
 import { getGames } from "@/lib/games";
 import { getDiscordInvite } from "@/lib/discord";
-import GameCarousel from "./components/GameCarousel";
+import GameCard from "./components/GameCard";
+import GameTeaserCard from "./components/GameTeaserCard";
 import DiscordCard from "./components/DiscordCard";
 import InstagramCard from "./components/InstagramCard";
 import Newsletter from "./components/Newsletter";
@@ -8,7 +9,7 @@ import Reveal from "./components/Reveal";
 import Footer from "./components/Footer";
 
 export default async function Home() {
-  const games = getGames();
+  const games = getGames().filter((game) => !game.unlisted);
   const discord = await getDiscordInvite();
 
   return (
@@ -20,7 +21,12 @@ export default async function Home() {
         our ideas to life.
       </p>
 
-      <GameCarousel games={games} />
+      <Reveal className="flex flex-wrap items-stretch justify-center gap-6">
+        {games.map((game) => (
+          <GameCard key={game.slug} game={game} />
+        ))}
+        <GameTeaserCard />
+      </Reveal>
 
       <Reveal className="flex justify-center">
         <Newsletter />
