@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { addNewsletterSignup } from "@/lib/newsletter";
-import { sendWelcomeEmail } from "@/lib/emails/send";
+import { triggerWelcomeEmail } from "@/lib/emails/send";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -15,10 +15,10 @@ export async function POST(request) {
     const result = await addNewsletterSignup(email.trim().toLowerCase());
 
     if (result.status === "created") {
-      // Don't fail the signup if the welcome email can't be sent — the
-      // subscriber is already stored either way.
+      // Don't fail the signup if Resend can't be reached — the subscriber
+      // is already stored either way.
       try {
-        await sendWelcomeEmail(email.trim().toLowerCase(), result.unsubscribeToken);
+        await triggerWelcomeEmail(email.trim().toLowerCase());
       } catch (error) {
         console.error("welcome email failed to send", error);
       }
