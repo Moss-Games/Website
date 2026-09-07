@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import MascotFrame from "./components/MascotFrame";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full w-full flex flex-col">
         <MascotFrame>{children}</MascotFrame>
+        <Analytics />
       </body>
     </html>
   );
