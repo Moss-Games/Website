@@ -24,13 +24,23 @@ const superCorn = localFont({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://mossgames.fr"),
   title: "MossGames",
-  description: "MossGames video game studio.",
+  description:
+    "MossGames is a small video game studio based in Toulouse, France, crafting story-driven games and immersive environments.",
   icons: {
     icon: [
       { url: "/images/logo.png", type: "image/png" },
       { url: "/favicon.png", type: "image/png" },
     ],
+  },
+  openGraph: {
+    siteName: "MossGames",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
   },
 };
 

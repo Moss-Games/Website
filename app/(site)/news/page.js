@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getNewsPosts, firstSentence } from "@/lib/news";
 import { urlForImage } from "@/sanity/lib/image";
@@ -5,6 +6,7 @@ import styles from "./page.module.css";
 
 export const metadata = {
   title: "News — MossGames",
+  description: "The latest updates, devlogs, and announcements from MossGames.",
 };
 
 export default async function NewsPage() {
@@ -20,15 +22,17 @@ export default async function NewsPage() {
         <div className={styles.list}>
           {posts.map((post) => (
             <Link key={post.slug} href={`/news/${post.slug}`} className={styles.post}>
-              {post.cover ? (
-                <img
-                  className={styles.cover}
-                  src={urlForImage(post.cover).width(800).height(450).url()}
-                  alt=""
-                />
-              ) : (
-                <div className={styles.cover} />
-              )}
+              <div className={styles.coverWrap}>
+                {post.cover && (
+                  <Image
+                    className={styles.cover}
+                    src={urlForImage(post.cover).width(800).height(450).url()}
+                    alt=""
+                    fill
+                    sizes="(min-width: 20rem) 20rem, 90vw"
+                  />
+                )}
+              </div>
               <div className={styles.body}>
                 {post.publishedAt && (
                   <p className={styles.date}>

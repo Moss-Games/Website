@@ -1,3 +1,4 @@
+import Image from "next/image";
 import styles from "./DiscordCard.module.css";
 
 export default function DiscordCard({ discord }) {
@@ -12,7 +13,7 @@ export default function DiscordCard({ discord }) {
     >
       <span className={styles.iconWrap}>
         {discord.iconUrl ? (
-          <img className={styles.icon} src={discord.iconUrl} alt="" />
+          <Image className={styles.icon} src={discord.iconUrl} alt="" width={48} height={48} />
         ) : (
           <span className={styles.icon} />
         )}

@@ -55,10 +55,12 @@ export const gameType = defineType({
     defineField({ name: "screenshots", type: "array", of: [{ type: "image", options: { hotspot: true } }] }),
     defineField({ name: "order", type: "number", description: "Homepage card position, ascending." }),
     defineField({
-      name: "unlisted",
+      name: "showOnHomepage",
       type: "boolean",
+      title: "Show on homepage carousel",
       initialValue: false,
-      description: "Hide from the homepage while keeping its /games/<slug> page live.",
+      description:
+        "When checked, this game appears in the homepage carousel. Every game always appears on the /games page regardless of this setting.",
     }),
     defineField({
       name: "badge",

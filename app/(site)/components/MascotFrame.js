@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import styles from "./MascotFrame.module.css";
@@ -128,7 +129,7 @@ export default function MascotFrame({ children }) {
       style={{ "--mascot-scroll-dir": scrollDir }}
     >
       <Link href="/" className={styles.logo} aria-label="MossGames home">
-        <img src="/images/logo.png" alt="MossGames" />
+        <Image src="/images/logo.png" alt="MossGames" width={288} height={288} priority />
       </Link>
       <Link href="/" className={styles.brandLeft}>
         MOSS

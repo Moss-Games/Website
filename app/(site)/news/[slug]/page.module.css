@@ -39,13 +39,16 @@
   }
 }
 
-.cover {
-  width: 100%;
+.coverWrap {
+  position: relative;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
   border-radius: 0.75rem;
-  display: block;
+  overflow: hidden;
   margin-bottom: 1.25rem;
+}
+
+.cover {
+  object-fit: cover;
 }
 
 .date {

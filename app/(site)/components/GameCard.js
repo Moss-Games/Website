@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import styles from "./GameCard.module.css";
 
@@ -9,12 +10,25 @@ import styles from "./GameCard.module.css";
 // image area entirely rather than showing an empty placeholder box — just
 // title/tagline/badge/CTA, same idea as the old GameTeaserCard's text-only
 // layout (see docs/DECISIONS.md).
-export default function GameCard({ game }) {
+//
+// `large` is used on the /games page, where cards render bigger than the
+// homepage carousel's — same component/markup, just a size modifier class
+// (see GameCard.module.css) so both stay visually the same family of card.
+export default function GameCard({ game, large = false }) {
   return (
-    <Link href={`/games/${game.slug}`} className={styles.card}>
+    <Link
+      href={`/games/${game.slug}`}
+      className={`${styles.card} ${large ? styles.cardLarge : ""}`}
+    >
       {game.header && (
         <div className={styles.coverWrap}>
-          <img className={styles.cover} src={game.header} alt={game.title} />
+          <Image
+            className={styles.cover}
+            src={game.header}
+            alt={game.title}
+            fill
+            sizes={large ? "(min-width: 768px) 28rem, 90vw" : "(min-width: 768px) 20rem, 90vw"}
+          />
           {game.badge && <span className={styles.badge}>{game.badge}</span>}
         </div>
       )}
@@ -22,8 +36,14 @@ export default function GameCard({ game }) {
         {!game.header && game.badge && (
           <span className={styles.badgeInline}>{game.badge}</span>
         )}
-        <h3 className={styles.title}>{game.title}</h3>
-        {game.tagline && <p className={styles.tagline}>{game.tagline}</p>}
+        <h3 className={`${styles.title} ${large ? styles.titleLarge : ""}`}>
+          {game.title}
+        </h3>
+        {game.tagline && (
+          <p className={`${styles.tagline} ${large ? styles.taglineLarge : ""}`}>
+            {game.tagline}
+          </p>
+        )}
         <span className={styles.cta}>
           Discover {game.title} <span className={styles.arrow}>→</span>
         </span>

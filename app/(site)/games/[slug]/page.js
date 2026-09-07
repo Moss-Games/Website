@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
@@ -16,9 +17,14 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const game = await getGame(slug);
   if (!game) return {};
+  const title = `${game.title} — MossGames`;
+  const description = game.tagline || undefined;
   return {
-    title: `${game.title} — MossGames`,
-    description: game.tagline || undefined,
+    title,
+    description,
+    // The route's own opengraph-image.js supplies the image.
+    openGraph: { title, description, siteName: "MossGames", type: "website" },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
@@ -61,7 +67,14 @@ export default async function GamePage({ params }) {
     <article className={styles.page}>
       {game.heroImage && (
         <div className={styles.headerWrap}>
-          <img className={styles.header} src={game.heroImage} alt={game.title} />
+          <Image
+            className={styles.header}
+            src={game.heroImage}
+            alt={game.title}
+            fill
+            priority
+            sizes="100vw"
+          />
         </div>
       )}
 
@@ -166,7 +179,14 @@ export default async function GamePage({ params }) {
                   <h2 className={styles.sectionTitle}>Screenshots</h2>
                   <div className={styles.screenshotGrid}>
                     {game.screenshots.map((src) => (
-                      <img key={src} src={src} alt={`${game.title} screenshot`} />
+                      <div key={src} className={styles.screenshot}>
+                        <Image
+                          src={src}
+                          alt={`${game.title} screenshot`}
+                          fill
+                          sizes="(min-width: 60rem) 33vw, 45vw"
+                        />
+                      </div>
                     ))}
                   </div>
                 </section>

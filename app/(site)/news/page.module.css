@@ -67,12 +67,14 @@
   }
 }
 
-.cover {
-  width: 100%;
+.coverWrap {
+  position: relative;
   aspect-ratio: 616 / 353;
-  object-fit: cover;
-  display: block;
   background: #18181b;
+}
+
+.cover {
+  object-fit: cover;
 }
 
 .body {

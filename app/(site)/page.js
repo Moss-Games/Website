@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getGames } from "@/lib/games";
 import { getDiscordInvite } from "@/lib/discord";
 import GameCard from "./components/GameCard";
@@ -8,8 +9,13 @@ import Newsletter from "./components/Newsletter";
 import Reveal from "./components/Reveal";
 import Footer from "./components/Footer";
 
+export const metadata = {
+  description:
+    "MossGames is a small video game studio based in Toulouse, France, crafting story-driven games and immersive environments.",
+};
+
 export default async function Home() {
-  const games = (await getGames()).filter((game) => !game.unlisted);
+  const games = (await getGames()).filter((game) => game.showOnHomepage);
   const discord = await getDiscordInvite();
 
   return (
@@ -21,10 +27,18 @@ export default async function Home() {
         our ideas to life.
       </p>
 
-      <Reveal className="flex flex-wrap items-stretch justify-center gap-6">
-        {games.map((game) => (
-          <GameCard key={game.slug} game={game} />
-        ))}
+      <Reveal className="flex flex-col items-center gap-8">
+        <div className="flex flex-wrap items-stretch justify-center gap-6">
+          {games.map((game) => (
+            <GameCard key={game.slug} game={game} />
+          ))}
+        </div>
+        <Link
+          href="/games"
+          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700"
+        >
+          See All Games <span aria-hidden="true">→</span>
+        </Link>
       </Reveal>
 
       <Reveal className="flex w-full flex-wrap items-stretch justify-center gap-6">

@@ -4,14 +4,13 @@
 
 .headerWrap {
   position: relative;
+  aspect-ratio: 1920 / 620;
+  max-height: 22rem;
   margin-bottom: -1.5rem;
 }
 
 .header {
-  width: 100%;
-  max-height: 22rem;
   object-fit: cover;
-  display: block;
 }
 
 /* The body card floats up over the header's bottom edge on a rounded lip,
@@ -288,16 +287,19 @@
   gap: 0.9rem;
 }
 
-.screenshotGrid img {
-  width: 100%;
+.screenshot {
+  position: relative;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
   border-radius: 0.5rem;
-  display: block;
+  overflow: hidden;
+}
+
+.screenshot img {
+  object-fit: cover;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.screenshotGrid img:hover {
+.screenshot:hover img {
   /* Same shake+grow-in language as GameCard.module.css's cardHoverIn, just
      lighter amplitude since these sit in a tight grid. */
   animation: screenshotHoverIn 0.2s ease forwards;

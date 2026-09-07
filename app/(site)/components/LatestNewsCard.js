@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getNewsPosts, firstSentence } from "@/lib/news";
 import { urlForImage } from "@/sanity/lib/image";
@@ -34,10 +35,12 @@ export default async function LatestNewsCard() {
             </span>
           </div>
           {latest.cover ? (
-            <img
+            <Image
               className={styles.cover}
               src={urlForImage(latest.cover).width(160).height(160).url()}
               alt=""
+              width={160}
+              height={160}
             />
           ) : (
             <div className={styles.cover} />

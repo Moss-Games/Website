@@ -43,14 +43,16 @@
 
 .coverWrap {
   position: relative;
+  aspect-ratio: 616 / 353;
+  background: #18181b;
 }
 
 .cover {
-  width: 100%;
-  aspect-ratio: 616 / 353;
   object-fit: cover;
-  display: block;
-  background: #18181b;
+}
+
+.cardLarge {
+  width: 28rem;
 }
 
 .badge {
@@ -96,6 +98,10 @@
   color: #18181b;
 }
 
+.titleLarge {
+  font-size: 1.7rem;
+}
+
 .tagline {
   display: -webkit-box;
   overflow: hidden;
@@ -105,6 +111,11 @@
   line-height: 1.4;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.taglineLarge {
+  font-size: 1rem;
+  -webkit-line-clamp: 3;
 }
 
 .cta {
