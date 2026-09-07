@@ -7,7 +7,7 @@ export const metadata = {
 const team = [
   {
     name: "Camille Guerraz",
-    bio: "Graduated from MJM Graphic Design school in 2025, specializing in 3D Realization. She handles all the narrative side and the art direction of the project. She also does the sociological interviews.",
+    bio: "Fine Arts degree in 2021, Sociology degree in 2023, graduated from MJM Graphic Design school in 2025, specializing in 3D Realization. She handles all the narrative side and the art direction of the project.",
   },
   {
     name: "Geremy Cambus",
@@ -15,7 +15,7 @@ const team = [
   },
   {
     name: "Tom Merville",
-    bio: "Graduated from MJM Graphic Design school in 2025, specializing in 3D Realization, and holding a STD2A Baccalaureate (Technological Sciences of Design and Applied Arts). They oversee the musical, artistic, and visual branches of the projects.",
+    bio: "Graduated from MJM Graphic Design school in 2025, specializing in 3D Realization, and holding a STD2A Baccalaureate (Technological Sciences of Design and Applied Arts). He oversees the musical, artistic, and visual branches of the projects.",
   },
 ];
 
