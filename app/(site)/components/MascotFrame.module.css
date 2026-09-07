@@ -516,4 +516,10 @@
   .brandMobile {
     display: block;
   }
+
+  /* "All Games" — desktop only, no room for a third nav link once the
+     side gutters shrink this much (see --mascot-frame-margin-x above). */
+  .navLinkDesktopOnly {
+    display: none;
+  }
 }
