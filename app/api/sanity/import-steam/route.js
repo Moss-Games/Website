@@ -84,10 +84,10 @@ export async function POST(request) {
 
     // Most games (especially demos) never get a dedicated Library Assets set
     // uploaded in Steamworks, so libraryHeroUrl() 404s more often than not —
-    // fall back to the store page's own wide backdrop image, which is a much
-    // closer match to a banner than the next fallback (a plain screenshot).
-    const libraryHeroImage =
-      libraryHero || (images.background ? await uploadImage(images.background, "library-hero.jpg") : null);
+    // fall back to the header image (an actual curated promo asset) rather
+    // than leaving libraryHeroImage unset, which fell through to a plain
+    // screenshot instead.
+    const libraryHeroImage = libraryHero || headerImage;
 
     const patch = {
       ...fields,
