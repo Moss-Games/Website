@@ -12,9 +12,33 @@ import {
 // data and patches one already-existing "game" document — see
 // docs/DECISIONS.md for the accepted-risk note on why this route has no
 // auth of its own.
-async function downloadImage(url) {
-  const response = await fetch(url);
-  if (!response.ok) return null;
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Fetching header + library hero + every screenshot concurrently (see
+// Promise.all below) is exactly the kind of burst that trips Steam's CDN
+// rate limiting — a single transient failure used to just silently drop
+// that one image with no retry. 3 attempts with backoff absorbs that
+// without slowing down the common case where nothing fails.
+async function downloadImage(url, attempt = 1) {
+  let response;
+  try {
+    response = await fetch(url);
+  } catch (error) {
+    if (attempt < 3) {
+      await sleep(attempt * 500);
+      return downloadImage(url, attempt + 1);
+    }
+    console.error(`Steam import: image download errored after 3 attempts`, url, error);
+    return null;
+  }
+  if (!response.ok) {
+    if (attempt < 3) {
+      await sleep(attempt * 500);
+      return downloadImage(url, attempt + 1);
+    }
+    console.error(`Steam import: image download failed (${response.status}) after 3 attempts`, url);
+    return null;
+  }
   const arrayBuffer = await response.arrayBuffer();
   return Buffer.from(arrayBuffer);
 }
@@ -47,7 +71,7 @@ export async function POST(request) {
     const data = await fetchSteamAppDetails(appId);
     const { fields, images } = mapSteamDataToGameFields(data);
 
-    const [headerImage, libraryHeroImage, screenshots] = await Promise.all([
+    const [headerImage, libraryHero, screenshots] = await Promise.all([
       images.header ? uploadImage(images.header, "header.jpg") : null,
       uploadImage(libraryHeroUrl(appId), "library-hero.jpg"), // silently null on 404
       Promise.all(
@@ -57,6 +81,13 @@ export async function POST(request) {
         })
       ),
     ]);
+
+    // Most games (especially demos) never get a dedicated Library Assets set
+    // uploaded in Steamworks, so libraryHeroUrl() 404s more often than not —
+    // fall back to the store page's own wide backdrop image, which is a much
+    // closer match to a banner than the next fallback (a plain screenshot).
+    const libraryHeroImage =
+      libraryHero || (images.background ? await uploadImage(images.background, "library-hero.jpg") : null);
 
     const patch = {
       ...fields,

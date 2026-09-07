@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getNewsPosts, firstSentence } from "@/lib/news";
-import { urlForImage } from "@/sanity/lib/image";
+import { imageUrl } from "@/sanity/lib/image";
+import { isGifUrl } from "@/lib/isGifUrl";
 import styles from "./LatestNewsCard.module.css";
 
 // Same card box as Newsletter.module.css (same width/bg/border) — sits next
@@ -10,6 +11,7 @@ import styles from "./LatestNewsCard.module.css";
 export default async function LatestNewsCard() {
   const posts = await getNewsPosts();
   const latest = posts[0];
+  const coverSrc = latest?.cover ? imageUrl(latest.cover, { width: 160, height: 160 }) : null;
 
   return (
     <div className={styles.card}>
@@ -34,10 +36,11 @@ export default async function LatestNewsCard() {
               Read more <span className={styles.arrow}>→</span>
             </span>
           </div>
-          {latest.cover ? (
+          {coverSrc ? (
             <Image
               className={styles.cover}
-              src={urlForImage(latest.cover).width(160).height(160).url()}
+              src={coverSrc}
+              unoptimized={isGifUrl(coverSrc)}
               alt=""
               width={160}
               height={160}

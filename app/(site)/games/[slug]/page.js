@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 import { getGame, getGames } from "@/lib/games";
 import { parseSteamAppId, fetchSteamLiveStats } from "@/lib/steam";
+import { isGifUrl } from "@/lib/isGifUrl";
 import SteamWidget from "../../components/SteamWidget";
 import Reveal from "../../components/Reveal";
 import styles from "./page.module.css";
@@ -70,6 +71,7 @@ export default async function GamePage({ params }) {
           <Image
             className={styles.header}
             src={game.heroImage}
+            unoptimized={isGifUrl(game.heroImage)}
             alt={game.title}
             fill
             priority
@@ -182,6 +184,7 @@ export default async function GamePage({ params }) {
                       <div key={src} className={styles.screenshot}>
                         <Image
                           src={src}
+                          unoptimized={isGifUrl(src)}
                           alt={`${game.title} screenshot`}
                           fill
                           sizes="(min-width: 60rem) 33vw, 45vw"

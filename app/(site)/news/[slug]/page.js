@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 import { getNewsPost, firstSentence } from "@/lib/news";
-import { urlForImage } from "@/sanity/lib/image";
+import { imageUrl } from "@/sanity/lib/image";
+import { isGifUrl } from "@/lib/isGifUrl";
 import styles from "./page.module.css";
 
 export async function generateMetadata({ params }) {
@@ -26,17 +27,20 @@ export default async function NewsPostPage({ params }) {
   const post = await getNewsPost(slug);
   if (!post) notFound();
 
+  const coverSrc = post.cover ? imageUrl(post.cover, { width: 1200, height: 675 }) : null;
+
   return (
     <article className={styles.page}>
       <Link href="/news" className={styles.back}>
         ← News
       </Link>
 
-      {post.cover && (
+      {coverSrc && (
         <div className={styles.coverWrap}>
           <Image
             className={styles.cover}
-            src={urlForImage(post.cover).width(1200).height(675).url()}
+            src={coverSrc}
+            unoptimized={isGifUrl(coverSrc)}
             alt=""
             fill
             priority

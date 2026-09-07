@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { isGifUrl } from "@/lib/isGifUrl";
 import styles from "./GameCard.module.css";
 
 // One listed game (see lib/games.js), rendered as a small self-contained
@@ -25,6 +26,7 @@ export default function GameCard({ game, large = false }) {
           <Image
             className={styles.cover}
             src={game.header}
+            unoptimized={isGifUrl(game.header)}
             alt={game.title}
             fill
             sizes={large ? "(min-width: 768px) 28rem, 90vw" : "(min-width: 768px) 20rem, 90vw"}

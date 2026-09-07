@@ -4,6 +4,11 @@
 
 .headerWrap {
   position: relative;
+  /* Explicit width (not auto) so max-height clamping only shrinks height —
+     with width:auto, the browser instead re-solves width from aspect-ratio
+     to keep the exact 1920:620 ratio once height hits the cap, leaving the
+     banner narrower than its container on wide viewports. */
+  width: 100%;
   aspect-ratio: 1920 / 620;
   max-height: 22rem;
   margin-bottom: -1.5rem;
