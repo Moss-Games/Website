@@ -7,7 +7,7 @@ export const metadata = {
 const team = [
   {
     name: "Camille Guerraz",
-    bio: "Fine Arts degree in 2021, Sociology degree in 2023, graduated from MJM Graphic Design school in 2025, specializing in 3D Realization. She handles all the narrative side and the art direction of the project.",
+    bio: "Fine Arts degree in 2021, Sociology degree in 2023, graduated from MJM Graphic Design school in 2025, specializing in 3D Realization. She handles all the narrative side and the art direction of the projects.",
   },
   {
     name: "Geremy Cambus",
