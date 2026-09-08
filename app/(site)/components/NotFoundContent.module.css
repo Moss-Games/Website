@@ -62,10 +62,11 @@
   padding: 0.6rem 1.1rem;
   border-radius: 0.5rem;
   transition: transform 0.15s ease, background-color 0.15s ease;
-  /* Idle bob, same "life" treatment as the other black CTA buttons across
+  /* Idle drift, same "life" treatment as the other black CTA buttons across
      the site (see page.module.css's .seeAllButton) — suppressed on hover
-     below so it doesn't fight the static lift transform. */
-  animation: primaryButtonFloat 2.8s ease-in-out infinite;
+     below so it doesn't fight the static lift transform. Own negative delay
+     + duration so it's out of phase with the other floating black buttons. */
+  animation: primaryButtonFloat 3s ease-in-out -1.4s infinite;
 }
 
 .primary:hover {
@@ -77,10 +78,16 @@
 @keyframes primaryButtonFloat {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-3px, -3px);
   }
   50% {
-    transform: translateY(-4px);
+    transform: translate(0, -5px);
+  }
+  75% {
+    transform: translate(3px, -3px);
   }
 }
 

@@ -44,7 +44,12 @@ function TagList({ label, items }) {
           <span
             key={item}
             className={styles.tag}
-            style={{ "--tilt": `${(index % 2 === 0 ? -1 : 1) * 2}deg` }}
+            style={{
+              "--tilt": `${(index % 2 === 0 ? -1 : 1) * 2}deg`,
+              // Staggers the idle float (page.module.css's .tag) so a row
+              // of chips drifts like scattered stickers, not one synced mass.
+              "--float-delay": `${index * -0.45}s`,
+            }}
           >
             {item}
           </span>

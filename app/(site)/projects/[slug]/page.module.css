@@ -147,11 +147,12 @@
   padding: 0.6rem 1.1rem;
   border-radius: 0.5rem;
   transition: transform 0.15s ease, background-color 0.15s ease;
-  /* Idle bob, same "life" treatment as the other black CTA buttons across
+  /* Idle drift, same "life" treatment as the other black CTA buttons across
      the site (see page.module.css's .seeAllButton) — covers the Steam/itch
      variants too since they only override background-color. :hover below
-     swaps this out for the shake-in keyframes. */
-  animation: storeButtonFloat 2.8s ease-in-out infinite;
+     swaps this out for the shake-in keyframes. Own negative delay + duration
+     so it's out of phase with the .tag chips floating right next to it. */
+  animation: storeButtonFloat 3.1s ease-in-out -0.9s infinite;
 }
 
 .storeButton:hover {
@@ -171,10 +172,16 @@
 @keyframes storeButtonFloat {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(3px, -3px);
   }
   50% {
-    transform: translateY(-4px);
+    transform: translate(0, -5px);
+  }
+  75% {
+    transform: translate(-3px, -3px);
   }
 }
 
@@ -284,10 +291,39 @@
   border-radius: 999px;
   transform: rotate(var(--tilt, 0deg));
   transition: transform 0.2s ease;
+  /* Idle drift, same "life" treatment as the site's other black buttons —
+     keeps each chip's own --tilt rotation throughout. --float-delay (set
+     per chip in TagList) staggers the whole row instead of every chip
+     bobbing in lockstep. */
+  animation: tagFloat 3.6s ease-in-out infinite;
+  animation-delay: var(--float-delay, 0s);
 }
 
 .tag:hover {
+  animation: none;
   transform: rotate(0deg) translateY(-2px) scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tag {
+    animation: none;
+  }
+}
+
+@keyframes tagFloat {
+  0%,
+  100% {
+    transform: rotate(var(--tilt, 0deg)) translate(0, 0);
+  }
+  25% {
+    transform: rotate(var(--tilt, 0deg)) translate(2px, -3px);
+  }
+  50% {
+    transform: rotate(var(--tilt, 0deg)) translate(0, -4px);
+  }
+  75% {
+    transform: rotate(var(--tilt, 0deg)) translate(-2px, -3px);
+  }
 }
 
 .trailer {

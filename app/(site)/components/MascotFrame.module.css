@@ -106,6 +106,22 @@
   width: 100%;
 }
 
+/* Sits between `.content` and the page's own root node purely to give the
+   scroll-lag effect (MascotFrame.js) something to transform — `.content`'s
+   min-width:0/width:100% fix above now lands on this wrapper instead of the
+   page root, so it's re-applied one level deeper for the same reason. */
+.contentDrag {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+}
+
+.contentDrag > * {
+  min-width: 0;
+  width: 100%;
+}
+
 /* A duplicate of .box's own border, painted above the feet. A parent element's own
    border always paints *behind* its positioned children (CSS stacking rules — there's no
    z-index that puts a child under its own parent's border), so without this the border

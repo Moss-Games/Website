@@ -47,6 +47,9 @@ const SETTLE_DURATION = 200;
  */
 export default function MascotFrame({ children }) {
   const contentRef = useRef(null);
+  const dragRef = useRef(null);
+  const visualScrollRef = useRef(0);
+  const dragRafRef = useRef(null);
   const handLeftWrapRef = useRef(null);
   const idleTimerRef = useRef(null);
   const settleTimerRef = useRef(null);
@@ -121,6 +124,35 @@ export default function MascotFrame({ children }) {
     };
   }, []);
 
+  // Very light "physical drag" on scroll: the real scrollbar/scrollTop moves
+  // instantly as usual (native scroll, keyboard nav, momentum scrolling all
+  // stay untouched), but the rendered content itself trails a few pixels
+  // behind and eases into place, like it's being dragged rather than
+  // snapping — offset = how far the displayed position still has to catch
+  // up to the real one, recomputed every frame and applied as a transform
+  // (never touches layout/scroll metrics).
+  useEffect(() => {
+    const content = contentRef.current;
+    const drag = dragRef.current;
+    if (!content || !drag) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    visualScrollRef.current = content.scrollTop;
+
+    const CATCH_UP = 0.25; // higher = snappier/lighter drag, lower = heavier lag
+
+    const tick = () => {
+      const actual = content.scrollTop;
+      visualScrollRef.current += (actual - visualScrollRef.current) * CATCH_UP;
+      const offset = actual - visualScrollRef.current;
+      drag.style.transform = Math.abs(offset) > 0.05 ? `translateY(${offset}px)` : "";
+      dragRafRef.current = requestAnimationFrame(tick);
+    };
+    dragRafRef.current = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(dragRafRef.current);
+  }, []);
+
   const handStyle = freezeWiggle ? { "--hand-wiggle": freezeWiggle } : undefined;
 
   return (
@@ -170,7 +202,9 @@ export default function MascotFrame({ children }) {
       <span className={`${styles.limb} ${styles.footLeft}`} aria-hidden="true" />
       <span className={`${styles.limb} ${styles.footRight}`} aria-hidden="true" />
       <div className={styles.content} ref={contentRef}>
-        {children}
+        <div className={styles.contentDrag} ref={dragRef}>
+          {children}
+        </div>
       </div>
       <span className={styles.frame} aria-hidden="true" />
     </div>
