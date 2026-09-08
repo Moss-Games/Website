@@ -47,9 +47,6 @@ const SETTLE_DURATION = 200;
  */
 export default function MascotFrame({ children }) {
   const contentRef = useRef(null);
-  const dragRef = useRef(null);
-  const visualScrollRef = useRef(0);
-  const dragRafRef = useRef(null);
   const handLeftWrapRef = useRef(null);
   const idleTimerRef = useRef(null);
   const settleTimerRef = useRef(null);
@@ -124,59 +121,6 @@ export default function MascotFrame({ children }) {
     };
   }, []);
 
-  // Light "physical drag" on scroll: the real scrollbar/scrollTop moves
-  // instantly as usual (native scroll, keyboard nav, momentum scrolling all
-  // stay untouched), but the rendered content trails the real position on a
-  // spring-damper (not a flat exponential decay) so it visibly catches up
-  // and gives a small overshoot/settle at the end — a physical "dragged
-  // object" feel rather than just easing in. Constants tuned in isolation
-  // (see PR notes): stiffness/damping give ~5-6% overshoot on a hard jump
-  // and settle in ~400ms; MAX_VELOCITY caps how far a fast fling can throw
-  // the lag so it never looks broken. The rAF loop only runs while the
-  // offset/velocity are non-negligible — it stops itself once settled
-  // instead of ticking forever at 60fps for a static page.
-  useEffect(() => {
-    const content = contentRef.current;
-    const drag = dragRef.current;
-    if (!content || !drag) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    visualScrollRef.current = content.scrollTop;
-    let velocity = 0;
-
-    const STIFFNESS = 0.12;
-    const DAMPING = 0.42;
-    const MAX_VELOCITY = 45; // px/frame
-    const SETTLE_EPSILON = 0.05;
-
-    const tick = () => {
-      const actual = content.scrollTop;
-      const diff = actual - visualScrollRef.current;
-      velocity += diff * STIFFNESS - velocity * DAMPING;
-      velocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, velocity));
-      visualScrollRef.current += velocity;
-
-      const offset = actual - visualScrollRef.current;
-      if (Math.abs(offset) < SETTLE_EPSILON && Math.abs(velocity) < SETTLE_EPSILON) {
-        drag.style.transform = "";
-        dragRafRef.current = null;
-        return;
-      }
-      drag.style.transform = `translateY(${offset}px)`;
-      dragRafRef.current = requestAnimationFrame(tick);
-    };
-
-    const kick = () => {
-      if (dragRafRef.current == null) dragRafRef.current = requestAnimationFrame(tick);
-    };
-
-    content.addEventListener("scroll", kick, { passive: true });
-    return () => {
-      content.removeEventListener("scroll", kick);
-      if (dragRafRef.current != null) cancelAnimationFrame(dragRafRef.current);
-    };
-  }, []);
-
   const handStyle = freezeWiggle ? { "--hand-wiggle": freezeWiggle } : undefined;
 
   return (
@@ -226,9 +170,7 @@ export default function MascotFrame({ children }) {
       <span className={`${styles.limb} ${styles.footLeft}`} aria-hidden="true" />
       <span className={`${styles.limb} ${styles.footRight}`} aria-hidden="true" />
       <div className={styles.content} ref={contentRef}>
-        <div className={styles.contentDrag} ref={dragRef}>
-          {children}
-        </div>
+        {children}
       </div>
       <span className={styles.frame} aria-hidden="true" />
     </div>
