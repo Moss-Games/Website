@@ -1,4 +1,4 @@
-const BASE_URL = "https://mossgames.fr";
+const BASE_URL = "https://www.mossgames.fr";
 
 export default function robots() {
   return {

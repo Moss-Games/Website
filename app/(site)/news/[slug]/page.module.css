@@ -5,6 +5,58 @@
   text-align: left;
 }
 
+/* Only widened when a related card is present (see .related below) — with
+   no related link the page stays exactly the single-column width it always
+   was. */
+@media (min-width: 60rem) {
+  .pageWide {
+    max-width: 64rem;
+  }
+}
+
+/* Single column (article, then the related card at the bottom) below
+   60rem; a row with the related card pinned to the right past that —
+   same responsive pattern as the game page's .layout/.sidebar. */
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 60rem) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2.5rem;
+  }
+}
+
+.main {
+  min-width: 0;
+}
+
+@media (min-width: 60rem) {
+  .main {
+    flex: 1;
+    max-width: 42rem;
+  }
+
+  .related {
+    width: 18rem;
+    flex-shrink: 0;
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+.relatedLabel {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #a1a1aa;
+  margin: 0 0 0.6rem;
+}
+
 .back {
   display: inline-block;
   font-size: 0.85rem;

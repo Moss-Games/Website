@@ -23,7 +23,7 @@ const superCorn = localFont({
   display: "swap",
 });
 
-const SITE_URL = "https://mossgames.fr";
+const SITE_URL = "https://www.mossgames.fr";
 const SITE_DESCRIPTION =
   "MossGames (Moss Games) is a small indie video game studio based in Toulouse, France, crafting story-driven games and immersive environments.";
 

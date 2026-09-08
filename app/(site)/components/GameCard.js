@@ -15,10 +15,14 @@ import styles from "./GameCard.module.css";
 // `large` is used on the /games page, where cards render bigger than the
 // homepage carousel's — same component/markup, just a size modifier class
 // (see GameCard.module.css) so both stay visually the same family of card.
-export default function GameCard({ game, large = false }) {
+//
+// `href`/`ctaLabel` default to the game's own project page — overridable so
+// the same card style can point at something else (e.g. a news post's
+// "related" card on app/(site)/news/[slug]/page.js linking to /news/<slug>).
+export default function GameCard({ game, large = false, href, ctaLabel = "Discover" }) {
   return (
     <Link
-      href={`/projects/${game.slug}`}
+      href={href || `/projects/${game.slug}`}
       className={`${styles.card} ${large ? styles.cardLarge : ""}`}
     >
       {game.header && (
@@ -57,7 +61,7 @@ export default function GameCard({ game, large = false }) {
           </p>
         )}
         <span className={styles.cta}>
-          Discover {game.title} <span className={styles.arrow}>→</span>
+          {ctaLabel} {game.title} <span className={styles.arrow}>→</span>
         </span>
       </div>
     </Link>

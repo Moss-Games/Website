@@ -20,6 +20,14 @@ export const postType = defineType({
     }),
     defineField({ name: "cover", type: "image", options: { hotspot: true } }),
     defineField({ name: "body", type: "array", of: [{ type: "block" }] }),
+    defineField({
+      name: "relatedLink",
+      type: "reference",
+      title: "Related link",
+      to: [{ type: "post" }, { type: "game" }],
+      description:
+        "Optional — link to another news post or a game/project. Shown as a card on this post's page (sidebar on desktop, bottom of the page on mobile).",
+    }),
   ],
   preview: {
     select: { title: "title", date: "publishedAt", media: "cover" },

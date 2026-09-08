@@ -1,7 +1,7 @@
 import { getGames } from "@/lib/games";
 import { getNewsPosts } from "@/lib/news";
 
-const BASE_URL = "https://mossgames.fr";
+const BASE_URL = "https://www.mossgames.fr";
 
 export default async function sitemap() {
   const [games, posts] = await Promise.all([getGames(), getNewsPosts()]);
