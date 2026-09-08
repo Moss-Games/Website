@@ -48,10 +48,14 @@ export const metadata = {
     "indie game developers France",
   ],
   icons: {
+    // favicon.ico first: some crawlers (Google included) and older browsers
+    // only ever check this well-known path, ignoring <link rel="icon">.
     icon: [
-      { url: "/images/logo.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
       { url: "/favicon.png", type: "image/png" },
+      { url: "/images/logo.png", type: "image/png" },
     ],
+    shortcut: "/favicon.ico",
   },
   openGraph: {
     siteName: "MossGames",
