@@ -68,9 +68,9 @@ export default function ButtonDrift({ children, className = "" }) {
 
       const windTarget = Math.min(1, Math.abs(delta) / WIND_NORM);
       if (delta !== 0) {
-        // Scrolling down (delta > 0) trails the streak above the button;
-        // scrolling up trails it below.
-        windDir = delta > 0 ? 1 : -1;
+        // Scrolling down (delta > 0) trails the streak below the button;
+        // scrolling up trails it above.
+        windDir = delta > 0 ? -1 : 1;
         windSpeed += (windTarget - windSpeed) * WIND_ATTACK;
       } else {
         windSpeed *= WIND_DECAY;

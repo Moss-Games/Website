@@ -13,6 +13,17 @@
   z-index: 0;
   display: inline-flex;
   flex-shrink: 0;
+  /* Some consumers (e.g. projects/[slug]'s .sidebar) are flex columns with
+     the default align-items:stretch, which would otherwise stretch this
+     wrapper to the full column width — .streaks' percentage-based streak
+     positions are relative to *this* box, so a stretched wrapper put them
+     off to the side of the (visually narrower) button instead of centered
+     on it. `width: fit-content` opts out of stretch sizing without an
+     align-self override — align-self:flex-start would fix the sidebar case
+     but also force left-alignment inside other consumers (e.g. the
+     homepage's Reveal, which centers this same button via its own
+     align-items:center on the parent), which broke that centering. */
+  width: fit-content;
   max-width: 100%;
 }
 
