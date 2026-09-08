@@ -115,6 +115,11 @@
   flex-direction: column;
   min-width: 0;
   width: 100%;
+  /* The drag effect writes a `transform` most frames while scrolling —
+     hints the browser to promote this to its own compositor layer so those
+     writes don't trigger paint/layout on the (potentially large) page
+     underneath. */
+  will-change: transform;
 }
 
 .contentDrag > * {

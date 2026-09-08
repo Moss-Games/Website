@@ -124,13 +124,17 @@ export default function MascotFrame({ children }) {
     };
   }, []);
 
-  // Very light "physical drag" on scroll: the real scrollbar/scrollTop moves
+  // Light "physical drag" on scroll: the real scrollbar/scrollTop moves
   // instantly as usual (native scroll, keyboard nav, momentum scrolling all
-  // stay untouched), but the rendered content itself trails a few pixels
-  // behind and eases into place, like it's being dragged rather than
-  // snapping — offset = how far the displayed position still has to catch
-  // up to the real one, recomputed every frame and applied as a transform
-  // (never touches layout/scroll metrics).
+  // stay untouched), but the rendered content trails the real position on a
+  // spring-damper (not a flat exponential decay) so it visibly catches up
+  // and gives a small overshoot/settle at the end — a physical "dragged
+  // object" feel rather than just easing in. Constants tuned in isolation
+  // (see PR notes): stiffness/damping give ~5-6% overshoot on a hard jump
+  // and settle in ~400ms; MAX_VELOCITY caps how far a fast fling can throw
+  // the lag so it never looks broken. The rAF loop only runs while the
+  // offset/velocity are non-negligible — it stops itself once settled
+  // instead of ticking forever at 60fps for a static page.
   useEffect(() => {
     const content = contentRef.current;
     const drag = dragRef.current;
@@ -138,19 +142,39 @@ export default function MascotFrame({ children }) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     visualScrollRef.current = content.scrollTop;
+    let velocity = 0;
 
-    const CATCH_UP = 0.25; // higher = snappier/lighter drag, lower = heavier lag
+    const STIFFNESS = 0.12;
+    const DAMPING = 0.42;
+    const MAX_VELOCITY = 45; // px/frame
+    const SETTLE_EPSILON = 0.05;
 
     const tick = () => {
       const actual = content.scrollTop;
-      visualScrollRef.current += (actual - visualScrollRef.current) * CATCH_UP;
+      const diff = actual - visualScrollRef.current;
+      velocity += diff * STIFFNESS - velocity * DAMPING;
+      velocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, velocity));
+      visualScrollRef.current += velocity;
+
       const offset = actual - visualScrollRef.current;
-      drag.style.transform = Math.abs(offset) > 0.05 ? `translateY(${offset}px)` : "";
+      if (Math.abs(offset) < SETTLE_EPSILON && Math.abs(velocity) < SETTLE_EPSILON) {
+        drag.style.transform = "";
+        dragRafRef.current = null;
+        return;
+      }
+      drag.style.transform = `translateY(${offset}px)`;
       dragRafRef.current = requestAnimationFrame(tick);
     };
-    dragRafRef.current = requestAnimationFrame(tick);
 
-    return () => cancelAnimationFrame(dragRafRef.current);
+    const kick = () => {
+      if (dragRafRef.current == null) dragRafRef.current = requestAnimationFrame(tick);
+    };
+
+    content.addEventListener("scroll", kick, { passive: true });
+    return () => {
+      content.removeEventListener("scroll", kick);
+      if (dragRafRef.current != null) cancelAnimationFrame(dragRafRef.current);
+    };
   }, []);
 
   const handStyle = freezeWiggle ? { "--hand-wiggle": freezeWiggle } : undefined;
