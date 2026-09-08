@@ -31,12 +31,22 @@ export default function GameCard({ game, large = false }) {
             fill
             sizes={large ? "(min-width: 768px) 28rem, 90vw" : "(min-width: 768px) 20rem, 90vw"}
           />
-          {game.badge && <span className={styles.badge}>{game.badge}</span>}
+          {game.badges.length > 0 && (
+            <div className={styles.badgeGroup}>
+              {game.badges.map((badge) => (
+                <span key={badge} className={styles.badge}>{badge}</span>
+              ))}
+            </div>
+          )}
         </div>
       )}
       <div className={styles.body}>
-        {!game.header && game.badge && (
-          <span className={styles.badgeInline}>{game.badge}</span>
+        {!game.header && game.badges.length > 0 && (
+          <div className={styles.badgeGroupInline}>
+            {game.badges.map((badge) => (
+              <span key={badge} className={styles.badgeInline}>{badge}</span>
+            ))}
+          </div>
         )}
         <h3 className={`${styles.title} ${large ? styles.titleLarge : ""}`}>
           {game.title}

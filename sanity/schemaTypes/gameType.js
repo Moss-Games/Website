@@ -71,8 +71,9 @@ export const gameType = defineType({
     defineField({
       name: "badge",
       type: "string",
+      title: "Badge(s)",
       description:
-        "Optional badge shown on the homepage card (e.g. \"Coming Soon\", \"Coming Q1 2026\", \"Demo available\"). Leave empty to show nothing.",
+        "Optional badge(s) shown on the homepage card (e.g. \"Coming Soon\", \"Coming Q1 2026\", \"Demo available\"). Separate multiple with a comma (\"Coming Soon, Demo available\") to stack one per line. Leave empty to show nothing.",
     }),
   ],
   preview: {

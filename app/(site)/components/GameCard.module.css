@@ -55,10 +55,20 @@
   width: 28rem;
 }
 
-.badge {
+/* Wraps one or more .badge pills, overlaid on the cover image — stacked one
+   per line when there's more than one (see lib/games.js's comma-separated
+   `badge` field). */
+.badgeGroup {
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.badge {
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   background: #18181b;
@@ -69,8 +79,15 @@
   text-transform: uppercase;
 }
 
-/* Same pill, but in normal flow above the title — used instead of .badge
+/* Same pill, but in normal flow above the title — used instead of .badgeGroup
    (which overlays the cover image) when there's no image to overlay. */
+.badgeGroupInline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
 .badgeInline {
   align-self: flex-start;
   padding: 0.2rem 0.6rem;
