@@ -22,7 +22,15 @@ export default function Reveal({ children, className = "" }) {
           observer.disconnect();
         }
       },
-      { threshold: 0.15 }
+      // threshold: 0 — fire as soon as any part of the target enters view.
+      // A higher threshold requires that fraction of the *target's own*
+      // height to be visible, which breaks down for a target taller than
+      // the viewport (e.g. a multi-row card grid on mobile): even scrolled
+      // to show it edge-to-edge, the visible fraction can stay under a
+      // 0.15 threshold indefinitely, so the content never reveals until
+      // the user scrolls far enough by luck — this is what made /projects
+      // and other grids look blank on load on mobile.
+      { threshold: 0 }
     );
     observer.observe(el);
     return () => observer.disconnect();
