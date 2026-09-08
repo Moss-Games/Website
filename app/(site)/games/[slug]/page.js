@@ -154,6 +154,18 @@ export default async function GamePage({ params }) {
               </Reveal>
             )}
 
+            {!game.trailer && game.trailerYoutubeUrl && (
+              <Reveal>
+                <iframe
+                  className={`${styles.trailer} ${styles.trailerYoutube}`}
+                  src={game.trailerYoutubeUrl}
+                  title={`${game.title} trailer`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </Reveal>
+            )}
+
             {game.description && (
               <Reveal>
                 <div className={styles.description}>

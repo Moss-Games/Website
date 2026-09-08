@@ -262,6 +262,11 @@
   background: #000;
 }
 
+.trailerYoutube {
+  aspect-ratio: 16 / 9;
+  border: none;
+}
+
 .description p {
   font-size: 0.98rem;
   line-height: 1.65;

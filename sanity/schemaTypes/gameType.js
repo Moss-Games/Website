@@ -51,6 +51,12 @@ export const gameType = defineType({
       description: "Wide banner (Steam's own library_hero.jpg is 1920x620) — preferred for the game page's own hero over the header image.",
     }),
     defineField({ name: "trailer", type: "file", options: { accept: "video/mp4" }, description: "Always manual — see storeUrl's description." }),
+    defineField({
+      name: "trailerYoutubeUrl",
+      type: "url",
+      title: "Trailer (YouTube URL)",
+      description: "Fallback when there's no trailer file above — a YouTube link (watch, youtu.be, or embed) is played in its place. Ignored when the trailer file is set.",
+    }),
     defineField({ name: "trailerPoster", type: "image", options: { hotspot: true } }),
     defineField({ name: "screenshots", type: "array", of: [{ type: "image", options: { hotspot: true } }] }),
     defineField({ name: "order", type: "number", description: "Homepage card position, ascending." }),
