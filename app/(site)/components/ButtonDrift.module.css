@@ -62,22 +62,19 @@
   background: #18181b;
   /* Floored scale (0.35..1) so a streak reads as a visible dash the moment
      it appears instead of starting invisibly short — only --wind-opacity
-     (which does go to 0) is responsible for hiding it once settled. */
-  opacity: calc(var(--wind-opacity, 0) * var(--streak-fade, 1));
+     (which does go to 0) is responsible for hiding it once settled. All
+     three bars are otherwise identical (same size/opacity) on purpose. */
+  opacity: var(--wind-opacity, 0);
 }
 
 .streak:nth-child(1) {
   left: 30%;
-  --streak-fade: 0.9;
 }
 .streak:nth-child(2) {
   left: 50%;
-  height: 18px;
-  --streak-fade: 1;
 }
 .streak:nth-child(3) {
   left: 70%;
-  --streak-fade: 0.9;
 }
 
 /* Scrolling down (trail above): bars grow upward, away from the button, so
