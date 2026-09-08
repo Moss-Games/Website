@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import ButtonDrift from "./ButtonDrift";
 import styles from "./NotFoundContent.module.css";
 
 // Shared by app/(site)/not-found.js (thrown notFound() calls, e.g. a broken
@@ -23,9 +24,11 @@ export default function NotFoundContent() {
         This page must have wandered off. Let&apos;s get you back on track.
       </p>
       <div className={styles.actions}>
-        <Link href="/" className={styles.primary}>
-          ← Back to home
-        </Link>
+        <ButtonDrift>
+          <Link href="/" className={styles.primary}>
+            ← Back to home
+          </Link>
+        </ButtonDrift>
         <Link href="/projects" className={styles.secondary}>
           Browse projects
         </Link>

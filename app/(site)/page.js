@@ -8,6 +8,7 @@ import LatestNewsCard from "./components/LatestNewsCard";
 import Newsletter from "./components/Newsletter";
 import Reveal from "./components/Reveal";
 import Footer from "./components/Footer";
+import ButtonDrift from "./components/ButtonDrift";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -34,9 +35,11 @@ export default async function Home() {
             <GameCard key={game.slug} game={game} />
           ))}
         </div>
-        <Link href="/projects" className={styles.seeAllButton}>
-          See All Projects <span className={styles.arrow} aria-hidden="true">→</span>
-        </Link>
+        <ButtonDrift>
+          <Link href="/projects" className={styles.seeAllButton}>
+            See All Projects <span className={styles.arrow} aria-hidden="true">→</span>
+          </Link>
+        </ButtonDrift>
       </Reveal>
 
       <Reveal className="flex w-full flex-wrap items-stretch justify-center gap-6">

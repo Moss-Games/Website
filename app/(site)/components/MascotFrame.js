@@ -169,7 +169,10 @@ export default function MascotFrame({ children }) {
       </span>
       <span className={`${styles.limb} ${styles.footLeft}`} aria-hidden="true" />
       <span className={`${styles.limb} ${styles.footRight}`} aria-hidden="true" />
-      <div className={styles.content} ref={contentRef}>
+      {/* data-scroll-root: lets other client components (e.g. ButtonDrift)
+          find the real scrolling element by attribute instead of guessing
+          at this module's hashed CSS class name. */}
+      <div className={styles.content} ref={contentRef} data-scroll-root>
         {children}
       </div>
       <span className={styles.frame} aria-hidden="true" />

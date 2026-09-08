@@ -1,0 +1,87 @@
+/* Shrink-wraps whatever button it's given — sized/positioned entirely by
+   its child, this only adds a transform target (ButtonDrift.js) and the
+   wind-streak decoration behind it. inline-flex + flex-shrink:0 so wrapping
+   a flex item (e.g. Newsletter's .button inside its .form row) doesn't
+   change that item's own sizing behavior. */
+.drift {
+  position: relative;
+  /* z-index (any value) turns this into a real local stacking context —
+     without it, position:relative alone doesn't create one, and .streaks'
+     z-index:-1 below would escape to the nearest ancestor that does,
+     landing behind page content well past this button instead of just
+     behind it. */
+  z-index: 0;
+  display: inline-flex;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+/* Only ever gets `rotate()` from ButtonDrift.js — the position lag
+   (`translateY`) lives on .drift itself instead, so the wind streaks below
+   (siblings of .tilt, not descendants of it) translate along with the
+   button but never inherit its tilt and stay strictly vertical. */
+.tilt {
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.streaks {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Short vertical bars planted right on the button's trailing edge — the
+   edge it just moved away from, not the one it's heading toward — like
+   wind lines rushing past a moving object. ButtonDrift.js sets
+   data-wind-dir="1" (scrolling down, trail above) or "-1" (scrolling up,
+   trail below) on .drift; --wind-opacity/--wind-scale fade and shrink them
+   as speed drops, so they vanish exactly when the button settles.
+
+   Anchored with top/bottom (percentages of the *wrap's* box, which top/
+   bottom resolve against) rather than a translateY offset from a top:0
+   default — translateY's percentage is relative to the bar's own tiny
+   size, so it can't reach "past the wrap's edge" the way `top: 100%` can. */
+.streak {
+  position: absolute;
+  width: 2.5px;
+  height: 14px;
+  border-radius: 999px;
+  background: #18181b;
+  /* Floored scale (0.35..1) so a streak reads as a visible dash the moment
+     it appears instead of starting invisibly short — only --wind-opacity
+     (which does go to 0) is responsible for hiding it once settled. */
+  opacity: calc(var(--wind-opacity, 0) * var(--streak-fade, 1));
+}
+
+.streak:nth-child(1) {
+  left: 30%;
+  --streak-fade: 0.9;
+}
+.streak:nth-child(2) {
+  left: 50%;
+  height: 18px;
+  --streak-fade: 1;
+}
+.streak:nth-child(3) {
+  left: 70%;
+  --streak-fade: 0.9;
+}
+
+/* Scrolling down (trail above): bars grow upward, away from the button, so
+   the anchored end (bottom) stays put. */
+.drift:not([data-wind-dir="-1"]) .streak {
+  bottom: 100%;
+  margin-bottom: 4px;
+  transform-origin: bottom;
+  transform: scaleY(calc(0.35 + 0.65 * var(--wind-scale, 0)));
+}
+
+/* Scrolling up (trail below): bars grow downward instead. */
+.drift[data-wind-dir="-1"] .streak {
+  top: 100%;
+  margin-top: 4px;
+  transform-origin: top;
+  transform: scaleY(calc(0.35 + 0.65 * var(--wind-scale, 0)));
+}

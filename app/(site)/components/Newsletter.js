@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ButtonDrift from "./ButtonDrift";
 import styles from "./Newsletter.module.css";
 
 export default function Newsletter() {
@@ -43,13 +44,15 @@ export default function Newsletter() {
             aria-label="Email address"
             className={styles.input}
           />
-          <button
-            type="submit"
-            className={styles.button}
-            disabled={status === "loading"}
-          >
-            {status === "loading" ? "Subscribing…" : "Subscribe"}
-          </button>
+          <ButtonDrift>
+            <button
+              type="submit"
+              className={styles.button}
+              disabled={status === "loading"}
+            >
+              {status === "loading" ? "Subscribing…" : "Subscribe"}
+            </button>
+          </ButtonDrift>
         </form>
       )}
       {status === "error" && (
