@@ -21,7 +21,7 @@ export default async function GamesPage() {
       <Link href="/" className={styles.backLink}>
         ← Back
       </Link>
-      <h1 className={styles.title}>All Games</h1>
+      <h1 className={styles.title}>All Projects</h1>
 
       {games.length === 0 ? (
         <p className={styles.empty}>No games yet — check back soon.</p>

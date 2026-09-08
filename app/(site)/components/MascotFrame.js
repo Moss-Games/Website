@@ -142,7 +142,7 @@ export default function MascotFrame({ children }) {
       </Link>
       <div className={styles.topNav}>
         <Link href="/games" className={`${styles.navLink} ${styles.navLinkDesktopOnly}`}>
-          All Games
+          All Projects
         </Link>
         <Link href="/news" className={styles.navLink}>
           News

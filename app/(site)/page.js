@@ -37,7 +37,7 @@ export default async function Home() {
           href="/games"
           className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700"
         >
-          See All Games <span aria-hidden="true">→</span>
+          See All Projects <span aria-hidden="true">→</span>
         </Link>
       </Reveal>
 
