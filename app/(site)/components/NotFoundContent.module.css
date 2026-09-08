@@ -62,11 +62,32 @@
   padding: 0.6rem 1.1rem;
   border-radius: 0.5rem;
   transition: transform 0.15s ease, background-color 0.15s ease;
+  /* Idle bob, same "life" treatment as the other black CTA buttons across
+     the site (see page.module.css's .seeAllButton) — suppressed on hover
+     below so it doesn't fight the static lift transform. */
+  animation: primaryButtonFloat 2.8s ease-in-out infinite;
 }
 
 .primary:hover {
   background: #3f3f46;
   transform: translateY(-2px);
+  animation: none;
+}
+
+@keyframes primaryButtonFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary {
+    animation: none;
+  }
 }
 
 .secondary {

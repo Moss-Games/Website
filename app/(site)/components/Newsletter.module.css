@@ -54,6 +54,10 @@
   border-radius: 0.5rem;
   cursor: pointer;
   transition: transform 0.15s ease, background-color 0.15s ease;
+  /* Idle bob, same "life" treatment as the other black CTA buttons across
+     the site (see page.module.css's .seeAllButton) — :hover below swaps
+     this out for the shake-in keyframes. */
+  animation: newsletterButtonFloat 2.8s ease-in-out infinite;
 }
 
 .button:hover {
@@ -62,6 +66,22 @@
      shrink-back going out. */
   animation: newsletterButtonHoverIn 0.2s ease forwards;
   background: #3f3f46;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    animation: none;
+  }
+}
+
+@keyframes newsletterButtonFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 @keyframes newsletterButtonHoverIn {

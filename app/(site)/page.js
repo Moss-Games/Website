@@ -8,6 +8,7 @@ import LatestNewsCard from "./components/LatestNewsCard";
 import Newsletter from "./components/Newsletter";
 import Reveal from "./components/Reveal";
 import Footer from "./components/Footer";
+import styles from "./page.module.css";
 
 export const metadata = {
   description:
@@ -33,11 +34,8 @@ export default async function Home() {
             <GameCard key={game.slug} game={game} />
           ))}
         </div>
-        <Link
-          href="/projects"
-          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700"
-        >
-          See All Projects <span aria-hidden="true">→</span>
+        <Link href="/projects" className={styles.seeAllButton}>
+          See All Projects <span className={styles.arrow} aria-hidden="true">→</span>
         </Link>
       </Reveal>
 

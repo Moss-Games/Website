@@ -147,6 +147,11 @@
   padding: 0.6rem 1.1rem;
   border-radius: 0.5rem;
   transition: transform 0.15s ease, background-color 0.15s ease;
+  /* Idle bob, same "life" treatment as the other black CTA buttons across
+     the site (see page.module.css's .seeAllButton) — covers the Steam/itch
+     variants too since they only override background-color. :hover below
+     swaps this out for the shake-in keyframes. */
+  animation: storeButtonFloat 2.8s ease-in-out infinite;
 }
 
 .storeButton:hover {
@@ -155,6 +160,22 @@
      shrink-back going out. */
   animation: steamButtonHoverIn 0.2s ease forwards;
   background: #3f3f46;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storeButton {
+    animation: none;
+  }
+}
+
+@keyframes storeButtonFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 /* Steam's own dark-blue chrome (#171a21 → #2a475e) instead of the generic
