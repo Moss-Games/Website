@@ -56,14 +56,15 @@
    size, so it can't reach "past the wrap's edge" the way `top: 100%` can. */
 .streak {
   position: absolute;
-  width: 2.5px;
+  /* A whole-pixel width (not e.g. 2.5px) so all three bars render at the
+     exact same thickness — a fractional width can snap to different
+     rounded pixel widths depending on each bar's left offset, which is
+     what made the left one look thicker than the other two. */
+  width: 2px;
   height: 14px;
   border-radius: 999px;
   background: #18181b;
-  /* Floored scale (0.35..1) so a streak reads as a visible dash the moment
-     it appears instead of starting invisibly short — only --wind-opacity
-     (which does go to 0) is responsible for hiding it once settled. All
-     three bars are otherwise identical (same size/opacity) on purpose. */
+  /* Only --wind-opacity drives opacity — all three bars share it equally. */
   opacity: var(--wind-opacity, 0);
 }
 
@@ -72,6 +73,9 @@
 }
 .streak:nth-child(2) {
   left: 50%;
+  /* Middle bar reads taller/longer than its neighbors on purpose — a small
+     scattered-lengths touch rather than 3 uniform dashes. */
+  height: 18px;
 }
 .streak:nth-child(3) {
   left: 70%;

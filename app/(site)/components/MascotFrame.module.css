@@ -505,7 +505,7 @@
     --mascot-foot-right-height: 2.5rem;
     --mascot-brand-left-x: 28%;
     --mascot-brand-right-x: 72%;
-    --mascot-brand-mobile-x: 25%; /* midpoint between the box's left edge (0%) and the head (50%) */
+    --mascot-brand-mobile-x: 12%; /* shifted toward the box's left edge (0%) rather than the head (50%) — vertical position (top/transform, shared with .brandLeft/.brandRight) is untouched */
     --mascot-brand-font-size: 1.05rem;
   }
 
