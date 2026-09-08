@@ -3,6 +3,13 @@
   flex-direction: column;
   width: 20rem;
   max-width: 100%;
+  /* Without this, flex's automatic minimum size keeps the card from
+     shrinking below its `width` on narrow viewports — max-width:100% alone
+     doesn't override it — which pushed .grid's parent flex container wider
+     than the viewport and, since MascotFrame's scrolling .content wrapper
+     uses overflow:auto rather than hidden, showed up as sideways-scrollable
+     blank space instead of a clipped/wrapped layout. */
+  min-width: 0;
   border-radius: 1rem;
   overflow: hidden;
   border: 1px solid #e4e4e7;

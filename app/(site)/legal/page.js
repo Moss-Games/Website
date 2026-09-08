@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Legal Notice — MossGames",
+  title: "Legal Notice",
 };
 
 export default function LegalPage() {

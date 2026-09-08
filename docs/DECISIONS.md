@@ -1122,3 +1122,17 @@ If another game's trailer needs the same fix: check with `ffprobe` first (don't 
 existing trailer has this bug — only Digitum's was verified), and prefer a straight
 `-c copy` remux from the *current* `hls_h264`/`dash_h264` manifest URL over any re-encode
 step, since re-encoding is what silently dropped the audio here.
+
+## 2026-09-08 — `/games` renamed to `/projects`; games listed 3-per-row
+
+The site will start listing films alongside games, so "games" stopped being an accurate
+name for the section. Moved `app/(site)/games` → `app/(site)/projects` (both the listing and
+`[slug]` detail route), and every internal `/games` link/nav label/sitemap entry now points
+at `/projects`. Added permanent redirects in `next.config.mjs` (`/games` → `/projects`,
+`/games/:slug` → `/projects/:slug`) so links already shared externally (Steam page, socials)
+keep working — the `game` Sanity document type and `lib/games.js` were left named as-is,
+since renaming those is a bigger migration with no user-facing benefit on its own.
+
+Also widened the listing page (`max-width: 72rem` → `96rem`) so 3 of the large (28rem)
+`GameCard`s fit per row instead of 2, before the existing `flex-wrap` drops to 2 then 1 on
+narrower viewports.

@@ -92,6 +92,20 @@
   border-radius: calc(var(--mascot-border-radius) - var(--mascot-border-width));
 }
 
+/* Flex items get an automatic content-based minimum size on BOTH axes, not
+   just the container's main axis — so a page whose content has a wide
+   unshrinkable child (e.g. a fixed-width card) can force this direct child
+   wider than .content's own box, even though .content is column-direction
+   and width is only its *cross* axis. Because .content scrolls (overflow:
+   auto rather than hidden), that showed up as sideways-scrollable blank
+   space on mobile instead of the child just wrapping/shrinking. Overriding
+   min-width to 0 here removes that floor for every page at once, rather
+   than needing every page.module.css to remember it individually. */
+.content > * {
+  min-width: 0;
+  width: 100%;
+}
+
 /* A duplicate of .box's own border, painted above the feet. A parent element's own
    border always paints *behind* its positioned children (CSS stacking rules — there's no
    z-index that puts a child under its own parent's border), so without this the border

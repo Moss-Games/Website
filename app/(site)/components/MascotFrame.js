@@ -141,7 +141,7 @@ export default function MascotFrame({ children }) {
         MOSS GAMES
       </Link>
       <div className={styles.topNav}>
-        <Link href="/games" className={`${styles.navLink} ${styles.navLinkDesktopOnly}`}>
+        <Link href="/projects" className={`${styles.navLink} ${styles.navLinkDesktopOnly}`}>
           All Projects
         </Link>
         <Link href="/news" className={styles.navLink}>

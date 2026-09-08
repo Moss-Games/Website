@@ -1,7 +1,7 @@
 export const metadata = {
-  title: "About Us — MossGames",
+  title: "About Us",
   description:
-    "Meet MossGames — a small team of game developers based in Toulouse, France.",
+    "Meet MossGames (Moss Games), a small team of game developers based in Toulouse, France.",
 };
 
 const team = [

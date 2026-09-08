@@ -5,9 +5,9 @@ import Reveal from "../components/Reveal";
 import styles from "./page.module.css";
 
 export const metadata = {
-  title: "Games — MossGames",
+  title: "All Projects",
   description:
-    "Every game from MossGames, a video game studio based in Toulouse, France.",
+    "Every game from MossGames (Moss Games), an indie video game studio based in Toulouse, France.",
 };
 
 export default async function GamesPage() {

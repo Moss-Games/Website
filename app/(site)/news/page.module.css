@@ -1,5 +1,5 @@
 .page {
-  max-width: 42rem;
+  max-width: 90rem;
   margin: 0 auto;
   padding: 3rem 1.5rem 4rem;
   text-align: left;
@@ -21,16 +21,19 @@
 }
 
 /* Card DA matches app/components/GameCard.module.css on purpose — news posts
-   and games should read as the same family of clickable card on this site. */
+   and games should read as the same family of clickable card on this site.
+   One post per row (rather than a multi-column grid) so each post reads more
+   like a full article teaser — cover on the left, text filling the rest of
+   the (near full-width) page; stacks back to cover-on-top below .breakpoint. */
 .list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
 }
 
 .post {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   border-radius: 1rem;
   overflow: hidden;
   border: 1px solid #e4e4e7;
@@ -38,6 +41,12 @@
   color: inherit;
   text-decoration: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (max-width: 40rem) {
+  .post {
+    flex-direction: column;
+  }
 }
 
 .post:hover {
@@ -69,8 +78,16 @@
 
 .coverWrap {
   position: relative;
+  width: 26rem;
+  flex-shrink: 0;
   aspect-ratio: 616 / 353;
   background: #18181b;
+}
+
+@media (max-width: 40rem) {
+  .coverWrap {
+    width: 100%;
+  }
 }
 
 .cover {
@@ -81,8 +98,9 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 1rem 1.25rem 1.25rem;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem 2rem;
 }
 
 .date {
@@ -95,7 +113,7 @@
 
 .postTitle {
   font-family: var(--font-super-corn), cursive;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 400;
   color: #18181b;
   margin: 0;
@@ -106,8 +124,8 @@
   overflow: hidden;
   margin: 0;
   color: #52525b;
-  font-size: 0.85rem;
-  line-height: 1.4;
+  font-size: 0.92rem;
+  line-height: 1.5;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 }

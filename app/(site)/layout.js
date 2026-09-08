@@ -23,11 +23,30 @@ const superCorn = localFont({
   display: "swap",
 });
 
+const SITE_URL = "https://mossgames.fr";
+const SITE_DESCRIPTION =
+  "MossGames (Moss Games) is a small indie video game studio based in Toulouse, France, crafting story-driven games and immersive environments.";
+
 export const metadata = {
-  metadataBase: new URL("https://mossgames.fr"),
-  title: "MossGames",
-  description:
-    "MossGames is a small video game studio based in Toulouse, France, crafting story-driven games and immersive environments.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "MossGames",
+    template: "%s | MossGames",
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "MossGames",
+    "Moss Games",
+    "moss games",
+    "MossGames studio",
+    "Moss Games studio",
+    "MossGames.fr",
+    "MossGames Toulouse",
+    "Moss Games Toulouse",
+    "Toulouse video game studio",
+    "French indie game studio",
+    "indie game developers France",
+  ],
   icons: {
     icon: [
       { url: "/images/logo.png", type: "image/png" },
@@ -44,6 +63,35 @@ export const metadata = {
   },
 };
 
+// Organization + WebSite structured data: tells Google the "MossGames" /
+// "Moss Games" name variants refer to this studio, and gives it a square
+// logo to show next to search results / in the knowledge panel. Sitelinks
+// (News, All Projects, About) are otherwise fully automatic on Google's
+// side — this just gives it the clearest signal we can about site identity.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "MossGames",
+      alternateName: ["Moss Games", "MossGames Studio", "Moss Games Studio"],
+      url: SITE_URL,
+      logo: `${SITE_URL}/images/logo.png`,
+      description: SITE_DESCRIPTION,
+      sameAs: ["https://www.instagram.com/mossgamesfr/"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      name: "MossGames",
+      alternateName: ["Moss Games"],
+      url: SITE_URL,
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
+  ],
+};
+
 export default function RootLayout({ children }) {
   return (
     <html
@@ -51,6 +99,11 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} ${superCorn.variable} h-full antialiased overflow-x-hidden`}
     >
       <body className="min-h-full w-full flex flex-col">
+        <script
+          type="application/ld+json"
+          // Static, hardcoded object above — no user input reaches this.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <MascotFrame>{children}</MascotFrame>
         <Analytics />
       </body>

@@ -1,7 +1,7 @@
 import styles from "./SteamWidget.module.css";
 
 // Live price/discount + review summary for a Steam game, fetched in
-// app/(site)/games/[slug]/page.js via lib/steam.js's fetchSteamLiveStats.
+// app/(site)/projects/[slug]/page.js via lib/steam.js's fetchSteamLiveStats.
 // Renders nothing (not even a wrapper) when both pieces are unavailable —
 // e.g. an unlisted/delisted app, or Steam being unreachable — so the game
 // page never shows an empty box.

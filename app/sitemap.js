@@ -8,7 +8,7 @@ export default async function sitemap() {
 
   const staticRoutes = [
     { url: `${BASE_URL}/`, changeFrequency: "weekly", priority: 1 },
-    { url: `${BASE_URL}/games`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE_URL}/projects`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/news`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE_URL}/about`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/legal`, changeFrequency: "yearly", priority: 0.2 },
@@ -16,7 +16,7 @@ export default async function sitemap() {
   ];
 
   const gameRoutes = games.map((game) => ({
-    url: `${BASE_URL}/games/${game.slug}`,
+    url: `${BASE_URL}/projects/${game.slug}`,
     changeFrequency: "weekly",
     priority: 0.8,
   }));

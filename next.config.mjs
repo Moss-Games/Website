@@ -13,6 +13,15 @@ const nextConfig = {
   experimental: {
     globalNotFound: true,
   },
+  // /games moved to /projects (site now also covers films, not just games —
+  // see docs/DECISIONS.md); keeps already-shared links (Steam page, socials)
+  // working.
+  async redirects() {
+    return [
+      { source: "/games", destination: "/projects", permanent: true },
+      { source: "/games/:slug", destination: "/projects/:slug", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

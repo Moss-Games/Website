@@ -11,7 +11,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = await getNewsPost(slug);
   if (!post) return {};
-  const title = `${post.title} — MossGames`;
+  const title = `${post.title} | MossGames`;
   const description = firstSentence(post.excerpt) || undefined;
   return {
     title,

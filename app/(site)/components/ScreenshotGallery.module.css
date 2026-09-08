@@ -1,0 +1,153 @@
+/* Thumbnail grid — same look the game page used for its inline (non-clickable)
+   screenshot grid, now wrapped in <button>s that open the lightbox below. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.9rem;
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  padding: 0;
+  border: none;
+  background: #18181b;
+  cursor: zoom-in;
+  appearance: none;
+}
+
+.thumb img {
+  object-fit: cover;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.thumb:hover img,
+.thumb:focus-visible img {
+  /* Same shake+grow-in language as GameCard.module.css's cardHoverIn, just
+     lighter amplitude since these sit in a tight grid. */
+  animation: screenshotHoverIn 0.2s ease forwards;
+  box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.35);
+}
+
+.thumb:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@keyframes screenshotHoverIn {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  30% {
+    transform: scale(1.05) rotate(-1.5deg);
+  }
+  60% {
+    transform: scale(1.01) rotate(1.5deg);
+  }
+  100% {
+    transform: scale(1.03) rotate(0deg);
+  }
+}
+
+/* Lightbox */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.92);
+  touch-action: pan-y;
+}
+
+.imageWrap {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.fullImage {
+  object-fit: contain;
+}
+
+.close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 2.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.5rem;
+  appearance: none;
+}
+
+.close:hover {
+  color: #d4d4d8;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 2.5rem;
+  line-height: 1;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  appearance: none;
+  transition: background-color 0.15s ease;
+}
+
+.nav:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.prev {
+  left: 1rem;
+}
+
+.next {
+  right: 1rem;
+}
+
+.counter {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #d4d4d8;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 40rem) {
+  .nav {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 2rem;
+  }
+
+  .prev {
+    left: 0.4rem;
+  }
+
+  .next {
+    right: 0.4rem;
+  }
+}

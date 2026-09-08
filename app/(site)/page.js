@@ -11,7 +11,7 @@ import Footer from "./components/Footer";
 
 export const metadata = {
   description:
-    "MossGames is a small video game studio based in Toulouse, France, crafting story-driven games and immersive environments.",
+    "MossGames (Moss Games) is a small indie video game studio based in Toulouse, France, crafting story-driven games and immersive environments.",
 };
 
 export default async function Home() {
@@ -34,7 +34,7 @@ export default async function Home() {
           ))}
         </div>
         <Link
-          href="/games"
+          href="/projects"
           className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-700"
         >
           See All Projects <span aria-hidden="true">→</span>

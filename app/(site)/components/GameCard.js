@@ -18,7 +18,7 @@ import styles from "./GameCard.module.css";
 export default function GameCard({ game, large = false }) {
   return (
     <Link
-      href={`/games/${game.slug}`}
+      href={`/projects/${game.slug}`}
       className={`${styles.card} ${large ? styles.cardLarge : ""}`}
     >
       {game.header && (

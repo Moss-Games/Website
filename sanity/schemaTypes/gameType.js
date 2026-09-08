@@ -66,7 +66,7 @@ export const gameType = defineType({
       title: "Show on homepage carousel",
       initialValue: false,
       description:
-        "When checked, this game appears in the homepage carousel. Every game always appears on the /games page regardless of this setting.",
+        "When checked, this game appears in the homepage carousel. Every game always appears on the /projects page regardless of this setting.",
     }),
     defineField({
       name: "badge",

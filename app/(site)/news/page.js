@@ -6,8 +6,9 @@ import { isGifUrl } from "@/lib/isGifUrl";
 import styles from "./page.module.css";
 
 export const metadata = {
-  title: "News — MossGames",
-  description: "The latest updates, devlogs, and announcements from MossGames.",
+  title: "News",
+  description:
+    "The latest updates, devlogs, and announcements from MossGames (Moss Games).",
 };
 
 export default async function NewsPage() {
@@ -35,7 +36,7 @@ export default async function NewsPage() {
                       unoptimized={isGifUrl(coverSrc)}
                       alt=""
                       fill
-                      sizes="(min-width: 20rem) 20rem, 90vw"
+                      sizes="(min-width: 40rem) 26rem, 100vw"
                     />
                   )}
                 </div>
