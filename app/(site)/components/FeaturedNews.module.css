@@ -1,0 +1,169 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 36rem;
+}
+
+/* The image itself is the whole card — title/date are burned onto it via
+   .text below rather than living in a separate text block, and the wide
+   aspect-ratio keeps it short (a explicit crop, not a "whatever height the
+   image happens to be" box) so it reads as a banner rather than a big hero
+   image. Same ratio at every width, deliberately: a *taller* box (e.g. 16/9
+   on mobile) actually reveals MORE of the source image's own vertical
+   extent once it's wider than the box (cover crops the excess width
+   instead), which risks the overlaid text landing on top of whatever a
+   cover's own baked-in logo/title art happens to sit near the bottom —
+   keeping one ratio keeps that reveal consistent regardless of viewport. */
+.card {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  border: 1px solid #e4e4e7;
+  background: #18181b;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  /* See GameCard.module.css's cardHoverIn for why enter/leave are
+     asymmetric: a keyframe shake+grow going in, a plain transition
+     shrink-back going out. */
+  animation: cardHoverIn 0.2s ease forwards;
+  box-shadow: 0 16px 28px -12px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes cardHoverIn {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-4px) scale(1.012) rotate(-0.4deg);
+  }
+  60% {
+    transform: translateY(-1px) scale(1.003) rotate(0.4deg);
+  }
+  100% {
+    transform: translateY(-2px) scale(1.006) rotate(0deg);
+  }
+}
+
+.cover {
+  object-fit: cover;
+}
+
+.text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1rem 1.25rem 1.1rem;
+  text-align: left;
+}
+
+/* No dark scrim over the photo — instead a slight black outline (stacked
+   1px offsets in every direction, rather than a single soft drop-shadow)
+   keeps the white text readable straight over any cover, light or dark. */
+.date {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;
+  margin: 0 0 0.3rem;
+}
+
+.title {
+  font-family: var(--font-super-corn), cursive;
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: #fff;
+  margin: 0;
+  text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;
+}
+
+@media (max-width: 30rem) {
+  .title {
+    font-size: 1.15rem;
+  }
+}
+
+/* "See All News" CTA — same dark-button family and idle-float/hover
+   treatment as page.module.css's .seeAllButton; duplicated (rather than
+   shared) because every button like this on the site keeps its own scoped
+   animation name (see Newsletter.module.css's newsletterButtonFloat) so
+   their idle-float cycles can be phase-shifted independently via
+   ButtonDrift's negative animation-delay. */
+.seeAllButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #18181b;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.65rem;
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  animation: featuredSeeAllFloat 3.2s ease-in-out -2.6s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seeAllButton {
+    animation: none;
+  }
+}
+
+.seeAllButton:hover {
+  animation: featuredSeeAllHoverIn 0.2s ease forwards;
+  background: #3f3f46;
+  box-shadow: 0 14px 26px -8px rgba(0, 0, 0, 0.45);
+}
+
+.seeAllButton:hover .arrow {
+  transform: translateX(0.25rem);
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+@keyframes featuredSeeAllFloat {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(3px, -3px);
+  }
+  50% {
+    transform: translate(0, -5px);
+  }
+  75% {
+    transform: translate(-3px, -3px);
+  }
+}
+
+@keyframes featuredSeeAllHoverIn {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-3px) scale(1.07) rotate(-3deg);
+  }
+  60% {
+    transform: translateY(0) scale(1.01) rotate(3deg);
+  }
+  100% {
+    transform: translateY(-1px) scale(1.04) rotate(0deg);
+  }
+}

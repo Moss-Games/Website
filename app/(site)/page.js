@@ -4,7 +4,8 @@ import { getDiscordInvite } from "@/lib/discord";
 import GameCard from "./components/GameCard";
 import DiscordCard from "./components/DiscordCard";
 import InstagramCard from "./components/InstagramCard";
-import LatestNewsCard from "./components/LatestNewsCard";
+import FeaturedNews from "./components/FeaturedNews";
+import NewsSection from "./components/NewsSection";
 import Newsletter from "./components/Newsletter";
 import Reveal from "./components/Reveal";
 import Footer from "./components/Footer";
@@ -29,6 +30,10 @@ export default async function Home() {
         our ideas to life.
       </p>
 
+      <Reveal className="flex w-full justify-center">
+        <FeaturedNews />
+      </Reveal>
+
       <Reveal className="flex flex-col items-center gap-8">
         <div className="flex flex-wrap items-stretch justify-center gap-6">
           {games.map((game) => (
@@ -42,8 +47,7 @@ export default async function Home() {
         </ButtonDrift>
       </Reveal>
 
-      <Reveal className="flex w-full flex-wrap items-stretch justify-center gap-6">
-        <LatestNewsCard />
+      <Reveal className="flex w-full justify-center">
         <Newsletter />
       </Reveal>
 
@@ -55,6 +59,10 @@ export default async function Home() {
           <DiscordCard discord={discord} />
           <InstagramCard />
         </div>
+      </Reveal>
+
+      <Reveal className="flex w-full justify-center">
+        <NewsSection />
       </Reveal>
 
       <Reveal className="mt-auto w-full">

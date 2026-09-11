@@ -21,6 +21,14 @@ export const postType = defineType({
     defineField({ name: "cover", type: "image", options: { hotspot: true } }),
     defineField({ name: "body", type: "array", of: [{ type: "block" }] }),
     defineField({
+      name: "featured",
+      type: "boolean",
+      title: "Featured on homepage",
+      initialValue: false,
+      description:
+        "Shows this post as the featured story above the games grid on the homepage. If none (or several) are marked, the most recent post wins.",
+    }),
+    defineField({
       name: "relatedLink",
       type: "reference",
       title: "Related link",
