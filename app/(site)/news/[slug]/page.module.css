@@ -156,3 +156,21 @@
   color: #71717a;
   font-style: italic;
 }
+
+.bodyImageWrap {
+  margin: 1.5rem 0;
+}
+
+.bodyImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.bodyImageCaption {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: #a1a1aa;
+  text-align: center;
+}

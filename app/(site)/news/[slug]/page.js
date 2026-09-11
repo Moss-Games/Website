@@ -8,6 +8,44 @@ import { isGifUrl } from "@/lib/isGifUrl";
 import GameCard from "../../components/GameCard";
 import styles from "./page.module.css";
 
+// Sanity encodes an image asset's intrinsic size in its ref, e.g.
+// "image-abc123-1600x900-jpg" — pulled out here so next/image gets a real
+// width/height (and correct aspect ratio) without a network round-trip.
+function imageDimensions(source) {
+  const ref = source?.asset?._ref || "";
+  const match = ref.match(/-(\d+)x(\d+)-/);
+  if (!match) return { width: 1200, height: 675 };
+  return { width: Number(match[1]), height: Number(match[2]) };
+}
+
+// Renders `image` blocks dropped inline into a post's Portable Text body
+// (see the `body` field in sanity/schemaTypes/postType.js) — plain blocks
+// render fine with PortableText's defaults, but non-text block types need
+// an explicit component or they're silently skipped.
+const bodyComponents = {
+  types: {
+    image: ({ value }) => {
+      const src = imageUrl(value, { width: 1200 });
+      if (!src) return null;
+      const { width, height } = imageDimensions(value);
+      return (
+        <figure className={styles.bodyImageWrap}>
+          <Image
+            className={styles.bodyImage}
+            src={src}
+            unoptimized={isGifUrl(src)}
+            alt={value.alt || ""}
+            width={width}
+            height={height}
+            sizes="(min-width: 42rem) 42rem, 100vw"
+          />
+          {value.caption && <figcaption className={styles.bodyImageCaption}>{value.caption}</figcaption>}
+        </figure>
+      );
+    },
+  },
+};
+
 // Normalizes the resolved `relatedLink` (either a "post" or a "game"
 // document, see sanity/schemaTypes/postType.js) into the shape GameCard
 // expects, so the same card style used on home/all projects can render it —
@@ -85,7 +123,7 @@ export default async function NewsPostPage({ params }) {
           <h1 className={styles.postTitle}>{post.title}</h1>
           {post.body && (
             <div className={styles.postBody}>
-              <PortableText value={post.body} />
+              <PortableText value={post.body} components={bodyComponents} />
             </div>
           )}
         </div>

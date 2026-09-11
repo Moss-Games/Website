@@ -19,7 +19,27 @@ export const postType = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({ name: "cover", type: "image", options: { hotspot: true } }),
-    defineField({ name: "body", type: "array", of: [{ type: "block" }] }),
+    defineField({
+      name: "body",
+      type: "array",
+      of: [
+        { type: "block" },
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name: "alt",
+              type: "string",
+              title: "Alt text",
+              description: "Important for SEO and accessibility.",
+            }),
+            defineField({ name: "caption", type: "string", title: "Caption (optional)" }),
+          ],
+        },
+      ],
+      description: "Drag & drop images anywhere in the text via the + button on a new line.",
+    }),
     defineField({
       name: "featured",
       type: "boolean",
