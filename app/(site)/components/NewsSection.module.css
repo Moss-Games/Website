@@ -29,12 +29,14 @@
   margin: 0;
 }
 
-/* Plain list of the 3 most recent posts (see NewsSection.js) — no scroll/
-   carousel mechanics, just a wrapping row of small clickable rows. */
+/* Plain list of the 3 most recent posts (see NewsSection.js) — full-width
+   rows stacked vertically (same idea as news/page.module.css's .list, just
+   more compact) rather than small fixed-width cards, so the list actually
+   fills the box's full width instead of a few cards floating centered with
+   empty space on either side. */
 .list {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
   gap: 0.75rem;
   width: 100%;
 }
@@ -42,10 +44,9 @@
 .item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex: 1 1 14rem;
-  max-width: 16rem;
-  padding: 0.6rem;
+  gap: 1.1rem;
+  width: 100%;
+  padding: 0.85rem 1.1rem;
   border-radius: 0.65rem;
   border: 1px solid #e4e4e7;
   background: #fff;
@@ -79,42 +80,77 @@
 
 .itemCover {
   flex-shrink: 0;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 6rem;
+  height: 6rem;
   border-radius: 0.5rem;
   object-fit: cover;
   display: block;
   background: #18181b;
 }
 
+@media (max-width: 30rem) {
+  .itemCover {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+}
+
 .itemBody {
+  flex: 1;
   min-width: 0;
   text-align: left;
 }
 
 .itemDate {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #a1a1aa;
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.3rem;
 }
 
 .itemTitle {
+  font-family: var(--font-super-corn), cursive;
+  font-weight: 400;
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0 0 0.3rem;
+  color: #18181b;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Preview of the post body — same idea as news/page.module.css's .excerpt
+   (pt::text(body) truncated to its first sentence via lib/news.js's
+   firstSentence), just a shorter clamp since this row is more compact. */
+.itemExcerpt {
   display: -webkit-box;
   overflow: hidden;
   margin: 0;
-  color: #18181b;
-  font-size: 0.85rem;
-  font-weight: 600;
-  line-height: 1.3;
+  color: #52525b;
+  font-size: 0.82rem;
+  line-height: 1.45;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.itemCta {
+  display: inline-block;
+  margin-top: 0.4rem;
+  color: #18181b;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .arrow {
   display: inline-block;
   transition: transform 0.2s ease;
+}
+
+.item:hover .arrow {
+  transform: translateX(0.25rem);
 }
 
 /* "See All News" CTA — same dark-button family and idle-float/hover

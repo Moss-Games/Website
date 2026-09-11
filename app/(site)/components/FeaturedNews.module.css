@@ -58,6 +58,21 @@
   object-fit: cover;
 }
 
+/* Standalone date line, left-aligned above the card — see FeaturedNews.js's
+   comment for why this exists alongside .date instead of just repositioning
+   it. Hidden by default; the max-width: 30rem rule below swaps it in for
+   .date (the overlaid copy) on mobile. */
+.dateMobile {
+  display: none;
+  width: 100%;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #71717a;
+  margin: 0;
+}
+
 .text {
   position: absolute;
   left: 0;
@@ -91,6 +106,14 @@
 @media (max-width: 30rem) {
   .title {
     font-size: 1.15rem;
+  }
+
+  .dateMobile {
+    display: block;
+  }
+
+  .date {
+    display: none;
   }
 }
 

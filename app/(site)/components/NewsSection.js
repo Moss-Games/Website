@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getNewsPosts, splitFeaturedNews } from "@/lib/news";
+import { getNewsPosts, firstSentence, splitFeaturedNews } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import ButtonDrift from "./ButtonDrift";
@@ -24,7 +24,7 @@ export default async function NewsSection() {
         recent.length > 0 && (
           <div className={styles.list}>
             {recent.map((post) => {
-              const coverSrc = post.cover ? imageUrl(post.cover, { width: 160, height: 160 }) : null;
+              const coverSrc = post.cover ? imageUrl(post.cover, { width: 200, height: 200 }) : null;
               return (
                 <Link key={post.slug} href={`/news/${post.slug}`} className={styles.item}>
                   {coverSrc ? (
@@ -33,8 +33,8 @@ export default async function NewsSection() {
                       src={coverSrc}
                       unoptimized={isGifUrl(coverSrc)}
                       alt=""
-                      width={80}
-                      height={80}
+                      width={96}
+                      height={96}
                     />
                   ) : (
                     <div className={styles.itemCover} />
@@ -43,12 +43,19 @@ export default async function NewsSection() {
                     {post.publishedAt && (
                       <p className={styles.itemDate}>
                         {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                          month: "short",
+                          year: "numeric",
+                          month: "long",
                           day: "numeric",
                         })}
                       </p>
                     )}
                     <p className={styles.itemTitle}>{post.title}</p>
+                    {post.excerpt && (
+                      <p className={styles.itemExcerpt}>{firstSentence(post.excerpt, 140)}</p>
+                    )}
+                    <span className={styles.itemCta}>
+                      Read more <span className={styles.arrow}>→</span>
+                    </span>
                   </div>
                 </Link>
               );
