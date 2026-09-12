@@ -174,3 +174,65 @@
   color: #a1a1aa;
   text-align: center;
 }
+
+/* Mosaic block (sanity/schemaTypes/postType.js's "mosaic" object, 1-4
+   images) — grid shape adapts per count so there's never an empty cell:
+   1 = single banner, 2 = side-by-side squares, 3 = one tall + two stacked,
+   4 = a plain 2x2. */
+.mosaicWrap {
+  margin: 1.5rem 0;
+}
+
+.mosaicGrid {
+  display: grid;
+  gap: 0.4rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.mosaicCell {
+  position: relative;
+  background: #18181b;
+}
+
+.mosaicCell img {
+  object-fit: cover;
+}
+
+.mosaicCount1 {
+  grid-template-columns: 1fr;
+}
+
+.mosaicCount1 .mosaicCell {
+  aspect-ratio: 16 / 9;
+}
+
+.mosaicCount2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.mosaicCount2 .mosaicCell {
+  aspect-ratio: 1;
+}
+
+.mosaicCount3 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.mosaicCount3 .mosaicCell {
+  aspect-ratio: 1;
+}
+
+.mosaicCount3 .mosaicCell:first-child {
+  grid-row: 1 / span 2;
+  aspect-ratio: auto;
+}
+
+.mosaicCount4 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.mosaicCount4 .mosaicCell {
+  aspect-ratio: 1;
+}

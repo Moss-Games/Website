@@ -37,8 +37,63 @@ export const postType = defineType({
             defineField({ name: "caption", type: "string", title: "Caption (optional)" }),
           ],
         },
+        {
+          type: "object",
+          name: "carousel",
+          title: "Carousel",
+          fields: [
+            defineField({
+              name: "images",
+              type: "array",
+              of: [
+                {
+                  type: "image",
+                  options: { hotspot: true },
+                  fields: [defineField({ name: "alt", type: "string", title: "Alt text" })],
+                },
+              ],
+              validation: (rule) => rule.min(2).error("A carousel needs at least 2 images — use a standalone image block for just one."),
+            }),
+            defineField({ name: "caption", type: "string", title: "Caption (optional)", description: "Shown once below the whole carousel." }),
+          ],
+          preview: {
+            select: { images: "images" },
+            prepare: ({ images }) => ({
+              title: `Carousel (${images?.length || 0} images)`,
+              media: images?.[0],
+            }),
+          },
+        },
+        {
+          type: "object",
+          name: "mosaic",
+          title: "Mosaic (up to 4 images)",
+          fields: [
+            defineField({
+              name: "images",
+              type: "array",
+              of: [
+                {
+                  type: "image",
+                  options: { hotspot: true },
+                  fields: [defineField({ name: "alt", type: "string", title: "Alt text" })],
+                },
+              ],
+              validation: (rule) => rule.min(1).max(4).error("A mosaic takes 1 to 4 images — the grid adapts to however many you add."),
+            }),
+            defineField({ name: "caption", type: "string", title: "Caption (optional)", description: "Shown once below the whole mosaic." }),
+          ],
+          preview: {
+            select: { images: "images" },
+            prepare: ({ images }) => ({
+              title: `Mosaic (${images?.length || 0} images)`,
+              media: images?.[0],
+            }),
+          },
+        },
       ],
-      description: "Drag & drop images anywhere in the text via the + button on a new line.",
+      description:
+        "Drag & drop blocks anywhere via the + button on a new line: text (with inline images), a standalone image, a carousel, or a mosaic (1-4 images).",
     }),
     defineField({
       name: "featured",

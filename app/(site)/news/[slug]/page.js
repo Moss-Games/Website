@@ -6,6 +6,7 @@ import { getNewsPost, firstSentence } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import GameCard from "../../components/GameCard";
+import PostCarousel from "../../components/PostCarousel";
 import styles from "./page.module.css";
 
 // Sanity encodes an image asset's intrinsic size in its ref, e.g.
@@ -18,10 +19,24 @@ function imageDimensions(source) {
   return { width: Number(match[1]), height: Number(match[2]) };
 }
 
-// Renders `image` blocks dropped inline into a post's Portable Text body
-// (see the `body` field in sanity/schemaTypes/postType.js) — plain blocks
-// render fine with PortableText's defaults, but non-text block types need
-// an explicit component or they're silently skipped.
+// Shared by the carousel/mosaic components below — resolves a raw array of
+// Sanity images (each optionally carrying its own `alt`) to the plain
+// {src, width, height, alt} shape they render from.
+function resolveImages(images, width) {
+  return (images || [])
+    .map((image) => {
+      const src = imageUrl(image, { width });
+      if (!src) return null;
+      return { ...imageDimensions(image), src, alt: image.alt || "" };
+    })
+    .filter(Boolean);
+}
+
+// Renders `image`/`carousel`/`mosaic` blocks dropped inline into a post's
+// Portable Text body (see the `body` field in sanity/schemaTypes/postType.js)
+// — plain text blocks render fine with PortableText's defaults, but these
+// non-text block types need an explicit component or they're silently
+// skipped.
 const bodyComponents = {
   types: {
     image: ({ value }) => {
@@ -39,6 +54,33 @@ const bodyComponents = {
             height={height}
             sizes="(min-width: 42rem) 42rem, 100vw"
           />
+          {value.caption && <figcaption className={styles.bodyImageCaption}>{value.caption}</figcaption>}
+        </figure>
+      );
+    },
+    carousel: ({ value }) => {
+      const images = resolveImages(value.images, 1200);
+      if (images.length === 0) return null;
+      return <PostCarousel images={images} caption={value.caption} />;
+    },
+    mosaic: ({ value }) => {
+      const images = resolveImages(value.images, 800);
+      if (images.length === 0) return null;
+      return (
+        <figure className={styles.mosaicWrap}>
+          <div className={`${styles.mosaicGrid} ${styles[`mosaicCount${images.length}`]}`}>
+            {images.map((image, index) => (
+              <div key={image.src} className={styles.mosaicCell}>
+                <Image
+                  src={image.src}
+                  unoptimized={isGifUrl(image.src)}
+                  alt={image.alt || `Mosaic image ${index + 1}`}
+                  fill
+                  sizes="(min-width: 42rem) 21rem, 50vw"
+                />
+              </div>
+            ))}
+          </div>
           {value.caption && <figcaption className={styles.bodyImageCaption}>{value.caption}</figcaption>}
         </figure>
       );
