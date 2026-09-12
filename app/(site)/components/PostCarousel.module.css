@@ -4,15 +4,28 @@
 
 .viewport {
   position: relative;
+  aspect-ratio: 16 / 9;
   border-radius: 0.5rem;
   overflow: hidden;
   background: #18181b;
 }
 
+/* Slides sit side by side and the whole track is translated horizontally
+   on index change — a real slide, not a cut. */
+.track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease;
+}
+
+.slide {
+  position: relative;
+  flex-shrink: 0;
+  height: 100%;
+}
+
 .image {
-  display: block;
-  width: 100%;
-  height: auto;
+  object-fit: cover;
 }
 
 .nav {
