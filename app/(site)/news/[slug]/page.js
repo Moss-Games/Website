@@ -129,52 +129,58 @@ export default async function NewsPostPage({ params }) {
   const post = await getNewsPost(slug);
   if (!post) notFound();
 
-  const coverSrc = post.cover ? imageUrl(post.cover, { width: 1200, height: 675 }) : null;
+  // No height param (unlike the old fixed-crop fetch) — the hero's own
+  // aspect-ratio + object-fit:cover below does the cropping, same as the
+  // game page's headerImage (app/(site)/projects/[slug]/page.js).
+  const coverSrc = post.cover ? imageUrl(post.cover, { width: 1600 }) : null;
   const related = relatedCardProps(post.relatedLink);
 
   return (
-    <article className={`${styles.page} ${related ? styles.pageWide : ""}`}>
-      <Link href="/news" className={styles.back}>
-        ← News
-      </Link>
-
-      <div className={styles.layout}>
-        <div className={styles.main}>
-          {coverSrc && (
-            <div className={styles.coverWrap}>
-              <Image
-                className={styles.cover}
-                src={coverSrc}
-                unoptimized={isGifUrl(coverSrc)}
-                alt=""
-                fill
-                priority
-                sizes="(min-width: 42rem) 42rem, 100vw"
-              />
-            </div>
-          )}
-          {post.publishedAt && (
-            <p className={styles.date}>
-              {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-          )}
-          <h1 className={styles.postTitle}>{post.title}</h1>
-          {post.body && (
-            <div className={styles.postBody}>
-              <PortableText value={post.body} components={bodyComponents} />
-            </div>
-          )}
+    <article className={styles.page}>
+      {coverSrc && (
+        <div className={styles.coverWrap}>
+          <Image
+            className={styles.cover}
+            src={coverSrc}
+            unoptimized={isGifUrl(coverSrc)}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+          />
         </div>
+      )}
 
+      <div className={styles.body}>
+        <Link href="/news" className={styles.back}>
+          ← News
+        </Link>
+
+        {post.publishedAt && (
+          <p className={styles.date}>
+            {new Date(post.publishedAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+        )}
+        <h1 className={styles.postTitle}>{post.title}</h1>
+        {post.body && (
+          <div className={styles.postBody}>
+            <PortableText value={post.body} components={bodyComponents} />
+          </div>
+        )}
+
+        {/* Always below the article, never a side-by-side sidebar like the
+            game page's — a news post has nothing else to fill that column
+            with, so stacking reads better than a lone card floating beside
+            the text. */}
         {related && (
-          <aside className={styles.related}>
+          <div className={styles.related}>
             <p className={styles.relatedLabel}>{related.isGame ? "Related project" : "Related post"}</p>
             <GameCard game={related.game} href={related.href} ctaLabel={related.isGame ? "Discover" : "Read"} />
-          </aside>
+          </div>
         )}
       </div>
     </article>

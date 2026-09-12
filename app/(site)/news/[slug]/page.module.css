@@ -1,52 +1,43 @@
 .page {
+  width: 100%;
+}
+
+.body {
   max-width: 42rem;
   margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
+  padding: 1.5rem 1.5rem 4rem;
   text-align: left;
 }
 
-/* Only widened when a related card is present (see .related below) — with
-   no related link the page stays exactly the single-column width it always
-   was. */
-@media (min-width: 60rem) {
-  .pageWide {
-    max-width: 64rem;
-  }
+/* Full-bleed hero, same shape as the game page's .headerWrap
+   (app/(site)/projects/[slug]/page.module.css) — a wide banner that the
+   content pane's white background rides up over on a rounded lip, rather
+   than the old inline 42rem-wide rounded box. */
+.coverWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1920 / 620;
+  max-height: 22rem;
+  margin-bottom: -1.5rem;
 }
 
-/* Single column (article, then the related card at the bottom) below
-   60rem; a row with the related card pinned to the right past that —
-   same responsive pattern as the game page's .layout/.sidebar. */
-.layout {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+.cover {
+  object-fit: cover;
 }
 
-@media (min-width: 60rem) {
-  .layout {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 2.5rem;
-  }
+.coverWrap::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5rem;
+  background: #fff;
+  border-radius: 1.5rem 1.5rem 0 0;
 }
 
-.main {
-  min-width: 0;
-}
-
-@media (min-width: 60rem) {
-  .main {
-    flex: 1;
-    max-width: 42rem;
-  }
-
-  .related {
-    width: 18rem;
-    flex-shrink: 0;
-    position: sticky;
-    top: 1.5rem;
-  }
+.related {
+  margin-top: 3rem;
 }
 
 .relatedLabel {
