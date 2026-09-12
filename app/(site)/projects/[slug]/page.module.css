@@ -345,6 +345,24 @@
   margin: 0 0 1.1rem;
 }
 
+.descriptionImageWrap {
+  margin: 1.5rem 0;
+}
+
+.descriptionImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.descriptionImageCaption {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: #a1a1aa;
+  text-align: center;
+}
+
 .sectionTitle {
   font-family: var(--font-super-corn), cursive;
   font-size: 1.6rem;

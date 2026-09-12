@@ -22,7 +22,28 @@ export const gameType = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({ name: "tagline", type: "string" }),
-    defineField({ name: "description", type: "array", of: [{ type: "block" }] }),
+    defineField({
+      name: "description",
+      type: "array",
+      of: [
+        { type: "block" },
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name: "alt",
+              type: "string",
+              title: "Alt text",
+              description: "Important for SEO and accessibility.",
+            }),
+            defineField({ name: "caption", type: "string", title: "Caption (optional)" }),
+          ],
+        },
+      ],
+      description:
+        "Drag & drop images anywhere in the text via the + button on a new line (same as news post bodies). \"Fetch from Steam\" also auto-fills this from Steam's own description, images included.",
+    }),
     defineField({
       name: "storeUrl",
       type: "url",

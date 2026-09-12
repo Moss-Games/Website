@@ -4,12 +4,55 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 import { getGame, getGames } from "@/lib/games";
 import { parseSteamAppId, fetchSteamLiveStats } from "@/lib/steam";
+import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import SteamWidget from "../../components/SteamWidget";
 import Reveal from "../../components/Reveal";
 import ScreenshotGallery from "../../components/ScreenshotGallery";
 import ButtonDrift from "../../components/ButtonDrift";
 import styles from "./page.module.css";
+
+// Sanity encodes an image asset's intrinsic size in its ref, e.g.
+// "image-abc123-1600x900-jpg" — pulled out here so next/image gets a real
+// width/height (and correct aspect ratio) without a network round-trip.
+// Same helper as app/(site)/news/[slug]/page.js's — kept local rather than
+// shared since the two pages' image styling differs.
+function imageDimensions(source) {
+  const ref = source?.asset?._ref || "";
+  const match = ref.match(/-(\d+)x(\d+)-/);
+  if (!match) return { width: 1200, height: 675 };
+  return { width: Number(match[1]), height: Number(match[2]) };
+}
+
+// Renders `image` blocks dropped inline into a game's description Portable
+// Text (see the `description` field in sanity/schemaTypes/gameType.js) —
+// plain blocks render fine with PortableText's defaults, but non-text block
+// types need an explicit component or they're silently skipped. Also what
+// "Fetch from Steam" fills the description with, images included (see
+// lib/steam.js's steamDescriptionToBlocks).
+const descriptionComponents = {
+  types: {
+    image: ({ value }) => {
+      const src = imageUrl(value, { width: 1200 });
+      if (!src) return null;
+      const { width, height } = imageDimensions(value);
+      return (
+        <figure className={styles.descriptionImageWrap}>
+          <Image
+            className={styles.descriptionImage}
+            src={src}
+            unoptimized={isGifUrl(src)}
+            alt={value.alt || ""}
+            width={width}
+            height={height}
+            sizes="(min-width: 60rem) 40rem, 100vw"
+          />
+          {value.caption && <figcaption className={styles.descriptionImageCaption}>{value.caption}</figcaption>}
+        </figure>
+      );
+    },
+  },
+};
 
 export async function generateStaticParams() {
   const games = await getGames();
@@ -187,7 +230,7 @@ export default async function GamePage({ params }) {
             {game.description && (
               <Reveal>
                 <div className={styles.description}>
-                  <PortableText value={game.description} />
+                  <PortableText value={game.description} components={descriptionComponents} />
                 </div>
               </Reveal>
             )}

@@ -50,6 +50,25 @@ async function uploadImage(url, filename) {
   return { _type: "image", asset: { _type: "reference", _ref: asset._id } };
 }
 
+// `fields.description` (from steamDescriptionToBlocks) carries image blocks
+// shaped as `{ _type: "image", _key, steamImageUrl }` — a placeholder, since
+// that parser has no write-token access to actually upload anything. This
+// resolves each one to a real Sanity asset, keeping the block's own `_key`
+// so it stays in place among the surrounding text blocks. A block whose
+// image fails to download (rare, see downloadImage's retry) is dropped
+// rather than left pointing at a URL Sanity can't render.
+async function resolveDescriptionImages(description) {
+  if (!description) return null;
+  const uploaded = await Promise.all(
+    description.map((block, index) =>
+      block._type === "image" ? uploadImage(block.steamImageUrl, `description-${index}.jpg`) : null
+    )
+  );
+  return description
+    .map((block, index) => (block._type === "image" ? (uploaded[index] ? { ...uploaded[index], _key: block._key } : null) : block))
+    .filter(Boolean);
+}
+
 export async function POST(request) {
   const { documentId, steamUrl } = await request.json().catch(() => ({}));
 
@@ -69,9 +88,13 @@ export async function POST(request) {
     }
 
     const data = await fetchSteamAppDetails(appId);
-    const { fields, images } = mapSteamDataToGameFields(data);
+    const { fields: allFields, images } = mapSteamDataToGameFields(data);
+    // `allFields.description`'s image blocks are still just steamImageUrl
+    // placeholders at this point (see steamDescriptionToBlocks) — pulled out
+    // here so the raw, unresolved version never leaks into `patch` below.
+    const { description: rawDescription, ...fields } = allFields;
 
-    const [headerImage, libraryHero, screenshots] = await Promise.all([
+    const [headerImage, libraryHero, screenshots, description] = await Promise.all([
       images.header ? uploadImage(images.header, "header.jpg") : null,
       uploadImage(libraryHeroUrl(appId), "library-hero.jpg"), // silently null on 404
       Promise.all(
@@ -80,6 +103,7 @@ export async function POST(request) {
           return image ? { ...image, _key: `screenshot-${index}` } : null;
         })
       ),
+      resolveDescriptionImages(rawDescription),
     ]);
 
     // Most games (especially demos) never get a dedicated Library Assets set
@@ -92,6 +116,7 @@ export async function POST(request) {
     const patch = {
       ...fields,
       storeUrl: steamUrl,
+      ...(description && description.length > 0 ? { description } : {}),
       ...(headerImage ? { headerImage } : {}),
       ...(libraryHeroImage ? { libraryHeroImage } : {}),
       ...(screenshots.some(Boolean) ? { screenshots: screenshots.filter(Boolean) } : {}),

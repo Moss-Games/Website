@@ -11,12 +11,20 @@ more than one game and the per-file editing got tedious — see `docs/DECISIONS.
 
 For a game that's on Steam, paste its store URL into the **Store URL** field (a
 `store.steampowered.com/app/<id>/...` link) and click **Fetch from Steam** — title,
-tagline, price, release date, genres, platforms, languages, and images (header/library
-hero/screenshots) all auto-fill from Steam's public `appdetails` API, as an editable draft
-you can still tweak before publishing. For a game that isn't on Steam (itch.io, or an
-unannounced project), just fill every field by hand — it's the same document type either
-way, there's no separate "is this a Steam game" field to remember to set: the button shows
-up automatically whenever **Store URL** looks like a Steam link.
+tagline, description (rich text, images included), price, release date, genres,
+platforms, languages, and images (header/library hero/screenshots) all auto-fill from
+Steam's public `appdetails` API, as an editable draft you can still tweak before
+publishing. For a game that isn't on Steam (itch.io, or an unannounced project), just fill
+every field by hand — it's the same document type either way, there's no separate "is this
+a Steam game" field to remember to set: the button shows up automatically whenever **Store
+URL** looks like a Steam link.
+
+**Description** is Portable Text, same as news post bodies (`docs/NEWS.md`) — editors can
+drop images anywhere in it via the `+` button on a new line in Studio, with alt text and an
+optional caption. "Fetch from Steam" fills it from Steam's own "About This Game" HTML
+(`about_the_game`, falling back to `detailed_description`), converting Steam's own markup
+(paragraphs, headings, lists, bold/italic, links, and inline images) into the same block
+shape — see `lib/steam.js`'s `steamDescriptionToBlocks`.
 
 **The trailer video always stays a manual step**, even for a Steam game: Steam's API only
 exposes streaming manifests (DASH/HLS), never a direct `.mp4` — confirmed by testing it live
@@ -74,15 +82,23 @@ leave it empty for no badge. Replaces the old hardcoded `GameTeaserCard.js` plac
   only on `game` documents whose `storeUrl` contains `steampowered.com`. Registered in
   `sanity.config.js`'s `document.actions`.
 - `app/api/sanity/import-steam/route.js` — does the actual work: parses the Steam app id,
-  calls `store.steampowered.com/api/appdetails`, downloads the resulting image URLs,
-  uploads them as Sanity assets via a **write**-scoped client (`sanity/lib/writeClient.js`,
-  `SANITY_API_WRITE_TOKEN` — server-only, never sent to the Studio's browser bundle), and
-  patches the target document. Accepted tradeoff: this route has no auth of its own beyond
-  checking the target document is actually a `game` — it only proxies public Steam data and
-  `/studio` itself is unlisted/login-gated, so the blast radius of someone hitting it
-  directly is low. See `docs/DECISIONS.md`.
+  calls `store.steampowered.com/api/appdetails`, downloads the resulting image URLs
+  (including every image embedded in the description body), uploads them as Sanity assets
+  via a **write**-scoped client (`sanity/lib/writeClient.js`, `SANITY_API_WRITE_TOKEN` —
+  server-only, never sent to the Studio's browser bundle), and patches the target document.
+  `resolveDescriptionImages` swaps the description's placeholder `steamImageUrl` blocks
+  (from `steamDescriptionToBlocks`) for real uploaded assets before the patch is written,
+  dropping any block whose image failed to download. Accepted tradeoff: this route has no
+  auth of its own beyond checking the target document is actually a `game` — it only
+  proxies public Steam data and `/studio` itself is unlisted/login-gated, so the blast
+  radius of someone hitting it directly is low. See `docs/DECISIONS.md`.
 - `lib/steam.js` — the Steam response → field mapping (`parseSteamAppId`,
-  `fetchSteamAppDetails`, `mapSteamDataToGameFields`), used by the API route above. Also
+  `fetchSteamAppDetails`, `mapSteamDataToGameFields`), used by the API route above.
+  `steamDescriptionToBlocks(html)` walks Steam's own "About This Game" HTML (a small known
+  subset of tags — paragraphs, headings, lists, bold/italic, links, inline images) into
+  Portable Text blocks matching the `description` field's shape; image blocks come out as
+  `{ _type: "image", steamImageUrl }` placeholders since this function has no write-token
+  access to actually upload anything — the route above resolves those. Also
   `fetchSteamLiveStats(appId)` — separate from the import-time functions above, called on
   every game page render (not just the one-off import), so unlike `fetchSteamAppDetails` it
   never throws: any failure just yields `null` price/review fields.
