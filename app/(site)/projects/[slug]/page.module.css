@@ -345,6 +345,43 @@
   margin: 0 0 1.1rem;
 }
 
+/* Only `p` had a color rule here before — every other block style (headings,
+   lists, links, blockquote) silently inherited the site's default
+   --foreground (near-white, meant for the dark body outside the white
+   content pane — see app/(site)/globals.css) and rendered practically
+   invisible against this pane's white background. Same set of overrides as
+   the news post body's .postBody (app/(site)/news/[slug]/page.module.css). */
+.description h1,
+.description h2,
+.description h3,
+.description h4 {
+  font-family: var(--font-super-corn), cursive;
+  color: #18181b;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.description ul,
+.description ol {
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: #3f3f46;
+  margin: 0 0 1.1rem;
+  padding-left: 1.4rem;
+}
+
+.description a {
+  color: #18181b;
+  text-decoration: underline;
+}
+
+.description blockquote {
+  margin: 0 0 1.1rem;
+  padding-left: 1rem;
+  border-left: 3px solid #e4e4e7;
+  color: #71717a;
+  font-style: italic;
+}
+
 .descriptionImageWrap {
   margin: 1.5rem 0;
 }
