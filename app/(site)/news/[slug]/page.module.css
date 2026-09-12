@@ -9,6 +9,15 @@
   text-align: left;
 }
 
+/* Only widened when a related card is present (see .related below) — with
+   no related link the body stays exactly the single-column width it
+   always was. */
+@media (min-width: 60rem) {
+  .bodyWide {
+    max-width: 64rem;
+  }
+}
+
 /* Full-bleed hero, same shape as the game page's .headerWrap
    (app/(site)/projects/[slug]/page.module.css) — a wide banner that the
    content pane's white background rides up over on a rounded lip, rather
@@ -36,8 +45,37 @@
   border-radius: 1.5rem 1.5rem 0 0;
 }
 
-.related {
-  margin-top: 3rem;
+/* Single column (article, then the related card below) below 60rem; a row
+   with the related card pinned to the right (sticky) past that — same
+   responsive pattern as the game page's .layout/.sidebar. */
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 60rem) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2.5rem;
+  }
+
+  .main {
+    flex: 1;
+    max-width: 42rem;
+  }
+
+  .related {
+    width: 18rem;
+    flex-shrink: 0;
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+.main {
+  min-width: 0;
 }
 
 .relatedLabel {
@@ -80,18 +118,6 @@
   100% {
     transform: translateY(-1px) scale(1.05) rotate(0deg);
   }
-}
-
-.coverWrap {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  margin-bottom: 1.25rem;
-}
-
-.cover {
-  object-fit: cover;
 }
 
 .date {
@@ -164,66 +190,4 @@
   font-size: 0.82rem;
   color: #a1a1aa;
   text-align: center;
-}
-
-/* Mosaic block (sanity/schemaTypes/postType.js's "mosaic" object, 1-4
-   images) — grid shape adapts per count so there's never an empty cell:
-   1 = single banner, 2 = side-by-side squares, 3 = one tall + two stacked,
-   4 = a plain 2x2. */
-.mosaicWrap {
-  margin: 1.5rem 0;
-}
-
-.mosaicGrid {
-  display: grid;
-  gap: 0.4rem;
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.mosaicCell {
-  position: relative;
-  background: #18181b;
-}
-
-.mosaicCell img {
-  object-fit: cover;
-}
-
-.mosaicCount1 {
-  grid-template-columns: 1fr;
-}
-
-.mosaicCount1 .mosaicCell {
-  aspect-ratio: 16 / 9;
-}
-
-.mosaicCount2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.mosaicCount2 .mosaicCell {
-  aspect-ratio: 1;
-}
-
-.mosaicCount3 {
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-}
-
-.mosaicCount3 .mosaicCell {
-  aspect-ratio: 1;
-}
-
-.mosaicCount3 .mosaicCell:first-child {
-  grid-row: 1 / span 2;
-  aspect-ratio: auto;
-}
-
-.mosaicCount4 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.mosaicCount4 .mosaicCell {
-  aspect-ratio: 1;
 }

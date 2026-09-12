@@ -7,6 +7,7 @@ import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import GameCard from "../../components/GameCard";
 import PostCarousel from "../../components/PostCarousel";
+import PostMosaic from "../../components/PostMosaic";
 import styles from "./page.module.css";
 
 // Sanity encodes an image asset's intrinsic size in its ref, e.g.
@@ -66,24 +67,7 @@ const bodyComponents = {
     mosaic: ({ value }) => {
       const images = resolveImages(value.images, 800);
       if (images.length === 0) return null;
-      return (
-        <figure className={styles.mosaicWrap}>
-          <div className={`${styles.mosaicGrid} ${styles[`mosaicCount${images.length}`]}`}>
-            {images.map((image, index) => (
-              <div key={image.src} className={styles.mosaicCell}>
-                <Image
-                  src={image.src}
-                  unoptimized={isGifUrl(image.src)}
-                  alt={image.alt || `Mosaic image ${index + 1}`}
-                  fill
-                  sizes="(min-width: 42rem) 21rem, 50vw"
-                />
-              </div>
-            ))}
-          </div>
-          {value.caption && <figcaption className={styles.bodyImageCaption}>{value.caption}</figcaption>}
-        </figure>
-      );
+      return <PostMosaic images={images} caption={value.caption} />;
     },
   },
 };
@@ -151,37 +135,40 @@ export default async function NewsPostPage({ params }) {
         </div>
       )}
 
-      <div className={styles.body}>
+      <div className={`${styles.body} ${related ? styles.bodyWide : ""}`}>
         <Link href="/news" className={styles.back}>
           ← News
         </Link>
 
-        {post.publishedAt && (
-          <p className={styles.date}>
-            {new Date(post.publishedAt).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-        )}
-        <h1 className={styles.postTitle}>{post.title}</h1>
-        {post.body && (
-          <div className={styles.postBody}>
-            <PortableText value={post.body} components={bodyComponents} />
+        {/* Single column below 60rem; a row with the related card pinned
+            to the right (sticky) past that — same responsive pattern as
+            the game page's .layout/.sidebar. */}
+        <div className={styles.layout}>
+          <div className={styles.main}>
+            {post.publishedAt && (
+              <p className={styles.date}>
+                {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+            )}
+            <h1 className={styles.postTitle}>{post.title}</h1>
+            {post.body && (
+              <div className={styles.postBody}>
+                <PortableText value={post.body} components={bodyComponents} />
+              </div>
+            )}
           </div>
-        )}
 
-        {/* Always below the article, never a side-by-side sidebar like the
-            game page's — a news post has nothing else to fill that column
-            with, so stacking reads better than a lone card floating beside
-            the text. */}
-        {related && (
-          <div className={styles.related}>
-            <p className={styles.relatedLabel}>{related.isGame ? "Related project" : "Related post"}</p>
-            <GameCard game={related.game} href={related.href} ctaLabel={related.isGame ? "Discover" : "Read"} />
-          </div>
-        )}
+          {related && (
+            <aside className={styles.related}>
+              <p className={styles.relatedLabel}>{related.isGame ? "Related project" : "Related post"}</p>
+              <GameCard game={related.game} href={related.href} ctaLabel={related.isGame ? "Discover" : "Read"} />
+            </aside>
+          )}
+        </div>
       </div>
     </article>
   );

@@ -1,0 +1,85 @@
+.wrap {
+  margin: 1.5rem 0;
+}
+
+/* Grid shape adapts per count so there's never an empty cell: 1 = single
+   banner, 2 = side-by-side, 3 = one tall + two stacked, 4 = a plain 2x2.
+   Cells use a 4:3 ratio (not a tighter square) so object-fit:cover crops
+   noticeably less off typical wide screenshots. */
+.grid {
+  display: grid;
+  gap: 0.4rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.cell {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: #18181b;
+  cursor: zoom-in;
+  appearance: none;
+}
+
+.cell img {
+  object-fit: cover;
+  transition: transform 0.15s ease;
+}
+
+.cell:hover img,
+.cell:focus-visible img {
+  transform: scale(1.03);
+}
+
+.cell:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -2px;
+}
+
+.count1 {
+  grid-template-columns: 1fr;
+}
+
+.count1 .cell {
+  aspect-ratio: 16 / 9;
+}
+
+.count2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.count2 .cell {
+  aspect-ratio: 4 / 3;
+}
+
+.count3 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.count3 .cell {
+  aspect-ratio: 4 / 3;
+}
+
+.count3 .cell:first-child {
+  grid-row: 1 / span 2;
+  aspect-ratio: auto;
+}
+
+.count4 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.count4 .cell {
+  aspect-ratio: 4 / 3;
+}
+
+.caption {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: #a1a1aa;
+  text-align: center;
+}
