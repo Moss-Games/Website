@@ -90,6 +90,15 @@
   overflow: auto;
   background: var(--mascot-content-bg);
   border-radius: calc(var(--mascot-border-radius) - var(--mascot-border-width));
+  /* Scales every page's content (text, spacing, images — everything is
+     rem/%-based) up ~15% without touching the frame/head/hands/feet: those
+     all live outside .content (siblings in .box, see the file header), so
+     none of them are descendants of this zoomed subtree. .content's own
+     box stays exactly the size .box's border defines (inset:0); it just
+     renders more "logical pixels" of content past that boundary, which the
+     existing `overflow: auto` above already handles as extra scroll —
+     same effect as browser-level page zoom, scoped to this one element. */
+  zoom: 1.15;
 }
 
 /* Flex items get an automatic content-based minimum size on BOTH axes, not

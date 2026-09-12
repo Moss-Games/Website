@@ -4,7 +4,7 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-6 text-center font-sans">
+    <div className="flex flex-1 flex-col items-center justify-center px-5 text-center font-sans">
       <h1 className="font-display text-4xl tracking-tight text-zinc-900">
         Privacy Policy
       </h1>

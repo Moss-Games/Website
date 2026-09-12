@@ -22,7 +22,7 @@ export default async function Home() {
   const discord = await getDiscordInvite();
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-16 px-6 py-16 text-center font-sans">
+    <div className="flex flex-1 flex-col items-center gap-16 px-5 py-12 text-center font-sans">
       <p className="max-w-xl text-lg leading-relaxed text-zinc-600">
         We are a small team of game developers based in Toulouse, France.
         Passionate about creating environments and stories, we met during our
