@@ -41,6 +41,14 @@
   text-align: left;
 }
 
+/* Original (pre-zoom) padding, kept on phones only — see MascotFrame's
+   .content zoom, switched off below 640px. */
+@media (max-width: 40rem) {
+  .body {
+    padding: 1.5rem 1.5rem 4rem;
+  }
+}
+
 @media (min-width: 60rem) {
   .body {
     max-width: 68rem;

@@ -5,6 +5,14 @@
   text-align: left;
 }
 
+/* Original (pre-zoom) padding, kept on phones only — see MascotFrame's
+   .content zoom, switched off below 640px. */
+@media (max-width: 40rem) {
+  .page {
+    padding: 3rem 1.5rem 4rem;
+  }
+}
+
 .title {
   font-family: var(--font-super-corn), cursive;
   font-size: 2.5rem;

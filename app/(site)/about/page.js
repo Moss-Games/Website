@@ -21,7 +21,7 @@ const team = [
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center gap-12 px-5 py-12 text-center font-sans">
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center gap-12 px-6 py-16 text-center font-sans sm:px-5 sm:py-12">
       <div className="flex flex-col items-center gap-3">
         <h1 className="font-display text-4xl tracking-tight text-zinc-900">
           About Us

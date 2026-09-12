@@ -97,7 +97,9 @@
      box stays exactly the size .box's border defines (inset:0); it just
      renders more "logical pixels" of content past that boundary, which the
      existing `overflow: auto` above already handles as extra scroll —
-     same effect as browser-level page zoom, scoped to this one element. */
+     same effect as browser-level page zoom, scoped to this one element.
+     Switched back to 1 (no zoom) below 640px — see the @media block
+     further down. */
   zoom: 1.15;
 }
 
@@ -496,8 +498,16 @@
 }
 
 /* Smaller viewports: scale the whole frame down so limbs stay proportional
-   and the margin doesn't eat too much of the screen. */
+   and the margin doesn't eat too much of the screen. Also where the
+   content zoom (.content, above) gets switched back off — on a phone's
+   already-small viewport, zooming in another ~15% left less usable width
+   than before instead of more, so phones keep the original 1:1 sizing;
+   only larger screens get the zoomed-in look. */
 @media (max-width: 640px) {
+  .content {
+    zoom: 1;
+  }
+
   .box {
     --mascot-border-width: 0.35rem;
     --mascot-border-radius: 1rem;
