@@ -6,12 +6,6 @@ import { isGifUrl } from "@/lib/isGifUrl";
 import styles from "./PostCarousel.module.css";
 
 const AUTOPLAY_MS = 5000;
-// The active slide only takes up this much of the viewport's width —
-// leaving (100 - SLIDE_WIDTH) / 2 on each side for the previous/next
-// slide's edge to peek through (dimmed via .slide's opacity), so it's
-// obvious at a glance there's more than one image.
-const SLIDE_WIDTH = 84;
-const PEEK = (100 - SLIDE_WIDTH) / 2;
 
 // A post body's inline "carousel" block (sanity/schemaTypes/postType.js) —
 // unlike ScreenshotGallery's click-to-fullscreen lightbox, this renders
@@ -26,15 +20,6 @@ const PEEK = (100 - SLIDE_WIDTH) / 2;
 // of an instant cut. Every slide fills the same fixed-aspect-ratio
 // viewport via object-fit:cover, so the height never jumps between slides
 // of differing source aspect ratios mid-transition.
-//
-// The peek math stays in plain CSS percentages (no ResizeObserver/pixel
-// measuring): .track is a flex container with a definite width (100% of
-// the viewport), so a child's percentage flex-basis — and the track's own
-// percentage translateX — both resolve against that same definite pixel
-// width. Slide `i` sits at `i * SLIDE_WIDTH%` inside the track; shifting
-// the track by `PEEK - i * SLIDE_WIDTH` percent puts that slide's left
-// edge at PEEK% from the viewport's left edge, which is exactly where it
-// needs to be to leave a symmetric peek strip on both sides.
 export default function PostCarousel({ images, caption }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -80,14 +65,13 @@ export default function PostCarousel({ images, caption }) {
       <div className={styles.viewport} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <div
           className={styles.track}
-          style={{ transform: `translateX(${PEEK - index * SLIDE_WIDTH}%)` }}
+          style={{
+            width: `${images.length * 100}%`,
+            transform: `translateX(-${index * (100 / images.length)}%)`,
+          }}
         >
           {images.map((image, i) => (
-            <div
-              key={image.src}
-              className={`${styles.slide} ${i === index ? styles.slideActive : ""}`}
-              style={{ width: `${SLIDE_WIDTH}%` }}
-            >
+            <div key={image.src} className={styles.slide} style={{ width: `${100 / images.length}%` }}>
               <Image
                 className={styles.image}
                 src={image.src}
@@ -95,7 +79,7 @@ export default function PostCarousel({ images, caption }) {
                 alt={image.alt || ""}
                 fill
                 priority={i === 0}
-                sizes="(min-width: 42rem) 36rem, 84vw"
+                sizes="(min-width: 42rem) 42rem, 100vw"
               />
             </div>
           ))}
