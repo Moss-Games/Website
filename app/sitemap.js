@@ -17,6 +17,7 @@ export default async function sitemap() {
 
   const gameRoutes = games.map((game) => ({
     url: `${BASE_URL}/projects/${game.slug}`,
+    lastModified: game.updatedAt ? new Date(game.updatedAt) : undefined,
     changeFrequency: "weekly",
     priority: 0.8,
   }));

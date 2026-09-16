@@ -10,6 +10,8 @@ import PostCarousel from "../../components/PostCarousel";
 import PostMosaic from "../../components/PostMosaic";
 import styles from "./page.module.css";
 
+const SITE_URL = "https://www.mossgames.fr";
+
 // Sanity encodes an image asset's intrinsic size in its ref, e.g.
 // "image-abc123-1600x900-jpg" — pulled out here so next/image gets a real
 // width/height (and correct aspect ratio) without a network round-trip.
@@ -119,8 +121,30 @@ export default async function NewsPostPage({ params }) {
   const coverSrc = post.cover ? imageUrl(post.cover, { width: 1600 }) : null;
   const related = relatedCardProps(post.relatedLink);
 
+  // BlogPosting rather than NewsArticle: this is a devlog/announcement feed,
+  // not journalistic reporting, and NewsArticle's rich-result eligibility
+  // assumes Google News enrollment this site doesn't have.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: firstSentence(post.excerpt) || undefined,
+    image: coverSrc || undefined,
+    datePublished: post.publishedAt || undefined,
+    dateModified: post.publishedAt || undefined,
+    mainEntityOfPage: `${SITE_URL}/news/${slug}`,
+    author: { "@id": `${SITE_URL}/#organization` },
+    publisher: { "@id": `${SITE_URL}/#organization` },
+  };
+
   return (
-    <article className={styles.page}>
+    <article className={`${styles.page} ${related ? styles.pageWide : ""}`}>
+      <script
+        type="application/ld+json"
+        // post is CMS content, but every field here is plain text/URLs
+        // serialized as JSON — no HTML from the body is interpolated.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {coverSrc && (
         <div className={styles.coverWrap}>
           <Image

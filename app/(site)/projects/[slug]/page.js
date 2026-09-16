@@ -12,6 +12,8 @@ import ScreenshotGallery from "../../components/ScreenshotGallery";
 import ButtonDrift from "../../components/ButtonDrift";
 import styles from "./page.module.css";
 
+const SITE_URL = "https://www.mossgames.fr";
+
 // Sanity encodes an image asset's intrinsic size in its ref, e.g.
 // "image-abc123-1600x900-jpg" — pulled out here so next/image gets a real
 // width/height (and correct aspect ratio) without a network round-trip.
@@ -115,8 +117,28 @@ export default async function GamePage({ params }) {
   const steamStats = steamAppId ? await fetchSteamLiveStats(steamAppId) : null;
   const isItchUrl = Boolean(game.storeUrl && game.storeUrl.includes("itch.io"));
 
+  // No aggregateRating/review data exists, so this won't trigger a Google
+  // rich card — price is free text (e.g. "Free to Play"), too unreliable to
+  // parse into a structured Offer, so left out rather than risk bad data.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    name: game.title,
+    description: game.tagline || undefined,
+    image: game.heroImage || undefined,
+    url: `${SITE_URL}/projects/${slug}`,
+    genre: game.genres.length > 0 ? game.genres : undefined,
+    publisher: { "@id": `${SITE_URL}/#organization` },
+  };
+
   return (
     <article className={styles.page}>
+      <script
+        type="application/ld+json"
+        // game is CMS content, but every field here is plain text/URLs
+        // serialized as JSON — no HTML is interpolated.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {game.heroImage && (
         <div className={styles.headerWrap}>
           <Image
