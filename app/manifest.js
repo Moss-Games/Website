@@ -1,9 +1,9 @@
 export default function manifest() {
   return {
-    name: "MossGames",
-    short_name: "MossGames",
+    name: "Moss Games",
+    short_name: "Moss Games",
     description:
-      "MossGames is a small video game studio based in Toulouse, France.",
+      "Moss Games is a small video game studio based in Toulouse, France.",
     start_url: "/",
     display: "standalone",
     background_color: "#0d0d0d",

@@ -60,10 +60,10 @@ export default async function Image({ params }) {
           }}
         >
           <div style={{ display: "flex", fontSize: 22, color: "#a1a1aa", textTransform: "uppercase", letterSpacing: 2 }}>
-            MossGames News
+            Moss Games News
           </div>
           <div style={{ display: "flex", fontFamily: "Super Corn", fontSize: 64, color: "#fafaf7", marginTop: 10 }}>
-            {post?.title || "MossGames"}
+            {post?.title || "Moss Games"}
           </div>
         </div>
       </div>

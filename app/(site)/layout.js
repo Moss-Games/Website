@@ -25,24 +25,22 @@ const superCorn = localFont({
 
 const SITE_URL = "https://www.mossgames.fr";
 const SITE_DESCRIPTION =
-  "MossGames (Moss Games) is a small indie video game studio based in Toulouse, France, crafting story-driven games and immersive environments.";
+  "Moss Games is a small indie video game studio based in Toulouse, France, crafting story-driven games and immersive environments.";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "MossGames",
-    template: "%s | MossGames",
+    default: "Moss Games",
+    template: "%s | Moss Games",
   },
   description: SITE_DESCRIPTION,
   keywords: [
-    "MossGames",
     "Moss Games",
     "moss games",
-    "MossGames studio",
     "Moss Games studio",
-    "MossGames.fr",
-    "MossGames Toulouse",
     "Moss Games Toulouse",
+    "MossGames",
+    "MossGames.fr",
     "Toulouse video game studio",
     "French indie game studio",
     "indie game developers France",
@@ -58,7 +56,7 @@ export const metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    siteName: "MossGames",
+    siteName: "Moss Games",
     type: "website",
     locale: "en_US",
   },
@@ -67,8 +65,8 @@ export const metadata = {
   },
 };
 
-// Organization + WebSite structured data: tells Google the "MossGames" /
-// "Moss Games" name variants refer to this studio, and gives it a square
+// Organization + WebSite structured data: tells Google the "Moss Games" /
+// "MossGames" name variants refer to this studio, and gives it a square
 // logo to show next to search results / in the knowledge panel. Sitelinks
 // (News, All Projects, About) are otherwise fully automatic on Google's
 // side — this just gives it the clearest signal we can about site identity.
@@ -78,8 +76,8 @@ const jsonLd = {
     {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
-      name: "MossGames",
-      alternateName: ["Moss Games", "MossGames Studio", "Moss Games Studio"],
+      name: "Moss Games",
+      alternateName: ["MossGames", "MossGames Studio", "Moss Games Studio"],
       url: SITE_URL,
       logo: `${SITE_URL}/images/logo.png`,
       description: SITE_DESCRIPTION,
@@ -88,8 +86,8 @@ const jsonLd = {
     {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
-      name: "MossGames",
-      alternateName: ["Moss Games"],
+      name: "Moss Games",
+      alternateName: ["MossGames"],
       url: SITE_URL,
       publisher: { "@id": `${SITE_URL}/#organization` },
     },

@@ -24,7 +24,7 @@ export async function GET(request) {
   const email = await removeNewsletterSignupByToken(token);
 
   const message = email
-    ? `You've been unsubscribed from the MossGames newsletter. Sorry to see you go!`
+    ? `You've been unsubscribed from the Moss Games newsletter. Sorry to see you go!`
     : `This unsubscribe link is invalid or has already been used.`;
 
   return new Response(htmlPage(message), {

@@ -99,13 +99,13 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = await getNewsPost(slug);
   if (!post) return {};
-  const title = `${post.title} | MossGames`;
+  const title = `${post.title} | Moss Games`;
   const description = firstSentence(post.excerpt) || undefined;
   return {
     title,
     description,
     // The route's own opengraph-image.js supplies the image.
-    openGraph: { title, description, siteName: "MossGames", type: "article" },
+    openGraph: { title, description, siteName: "Moss Games", type: "article" },
     twitter: { card: "summary_large_image", title, description },
   };
 }

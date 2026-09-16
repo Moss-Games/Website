@@ -11,7 +11,7 @@ const SCROLL_IDLE_DELAY = 150;
 const SETTLE_DURATION = 200;
 
 /**
- * Wraps the site content in the MossGames mascot's arms.
+ * Wraps the site content in the Moss Games mascot's arms.
  *
  * Concept: the mascot stands *behind* the content box, hugging it. The box
  * hides most of its body — only the head (top), hands (sides) and feet
@@ -128,8 +128,8 @@ export default function MascotFrame({ children }) {
       className={`${styles.box} ${scrolling ? styles.scrolling : ""}`}
       style={{ "--mascot-scroll-dir": scrollDir }}
     >
-      <Link href="/" className={styles.logo} aria-label="MossGames home">
-        <Image src="/images/logo.png" alt="MossGames" width={288} height={288} priority />
+      <Link href="/" className={styles.logo} aria-label="Moss Games home">
+        <Image src="/images/logo.png" alt="Moss Games" width={288} height={288} priority />
       </Link>
       <Link href="/" className={styles.brandLeft}>
         MOSS
@@ -137,7 +137,7 @@ export default function MascotFrame({ children }) {
       <Link href="/" className={styles.brandRight}>
         GAMES
       </Link>
-      <Link href="/" className={styles.brandMobile} aria-label="MossGames home">
+      <Link href="/" className={styles.brandMobile} aria-label="Moss Games home">
         MOSS GAMES
       </Link>
       <div className={styles.topNav}>
@@ -151,7 +151,7 @@ export default function MascotFrame({ children }) {
           About Us
         </Link>
       </div>
-      <Link href="/" className={`${styles.limb} ${styles.head}`} aria-label="MossGames home" />
+      <Link href="/" className={`${styles.limb} ${styles.head}`} aria-label="Moss Games home" />
       <span
         ref={handLeftWrapRef}
         className={styles.handWrap + " " + styles.handLeftWrap}

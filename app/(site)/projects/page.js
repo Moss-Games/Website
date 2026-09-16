@@ -7,7 +7,7 @@ import styles from "./page.module.css";
 export const metadata = {
   title: "All Projects",
   description:
-    "Every game from MossGames (Moss Games), an indie video game studio based in Toulouse, France.",
+    "Every game from Moss Games, an indie video game studio based in Toulouse, France.",
 };
 
 export default async function GamesPage() {

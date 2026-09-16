@@ -14,7 +14,7 @@ import styles from "./page.module.css";
 
 export const metadata = {
   description:
-    "MossGames (Moss Games) is a small indie video game studio based in Toulouse, France, crafting story-driven games and immersive environments.",
+    "Moss Games is a small indie video game studio based in Toulouse, France, crafting story-driven games and immersive environments.",
 };
 
 export default async function Home() {

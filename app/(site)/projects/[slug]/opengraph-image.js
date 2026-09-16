@@ -67,7 +67,7 @@ export default async function Image({ params }) {
           }}
         >
           <div style={{ display: "flex", fontFamily: "Super Corn", fontSize: 80, color: "#fafaf7" }}>
-            {game?.title || "MossGames"}
+            {game?.title || "Moss Games"}
           </div>
           {game?.tagline && (
             <div style={{ display: "flex", fontSize: 32, color: "#e4e4e7", marginTop: 14 }}>

@@ -30,7 +30,7 @@ const superCorn = localFont({
 });
 
 export const metadata = {
-  title: "Page Not Found | MossGames",
+  title: "Page Not Found | Moss Games",
   description: "The page you're looking for doesn't exist.",
 };
 

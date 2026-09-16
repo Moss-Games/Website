@@ -32,7 +32,7 @@ export default async function Image() {
       >
         <img src={logoSrc} alt="" width={220} height={220} />
         <div style={{ display: "flex", fontFamily: "Super Corn", fontSize: 96, color: "#fafaf7" }}>
-          MossGames
+          Moss Games
         </div>
         <div style={{ display: "flex", fontSize: 32, color: "#a1a1aa" }}>
           Video game studio — Toulouse, France

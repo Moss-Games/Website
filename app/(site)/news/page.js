@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 export const metadata = {
   title: "News",
   description:
-    "The latest updates, devlogs, and announcements from MossGames (Moss Games).",
+    "The latest updates, devlogs, and announcements from Moss Games.",
 };
 
 export default async function NewsPage() {

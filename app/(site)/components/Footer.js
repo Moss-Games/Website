@@ -6,7 +6,7 @@ const YEAR = new Date().getFullYear();
 export default function Footer() {
   return (
     <footer className={styles.footer}>
-      <p className={styles.copyright}>© {YEAR} MossGames. All rights reserved.</p>
+      <p className={styles.copyright}>© {YEAR} Moss Games. All rights reserved.</p>
 
       <nav className={styles.legal} aria-label="Legal">
         <Link href="/legal">Legal Notice</Link>
