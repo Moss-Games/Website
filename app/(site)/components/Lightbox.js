@@ -11,7 +11,17 @@ import styles from "./Lightbox.module.css";
 // markup and open/index state, but want identical overlay/keyboard/swipe
 // behavior once an image is opened. `images` is a plain array of src
 // strings; `altPrefix` becomes "<altPrefix> N" for each slide's alt text.
-export default function Lightbox({ images, openIndex, onClose, onPrev, onNext, altPrefix }) {
+export default function Lightbox({
+  images,
+  openIndex,
+  onClose,
+  onPrev,
+  onNext,
+  altPrefix,
+  closeLabel = "Close",
+  prevLabel = "Previous image",
+  nextLabel = "Next image",
+}) {
   const touchStartX = useRef(null);
 
   useEffect(() => {
@@ -61,12 +71,12 @@ export default function Lightbox({ images, openIndex, onClose, onPrev, onNext, a
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <button type="button" className={styles.close} onClick={onClose} aria-label="Close">
+      <button type="button" className={styles.close} onClick={onClose} aria-label={closeLabel}>
         ×
       </button>
 
       {images.length > 1 && (
-        <button type="button" className={`${styles.nav} ${styles.prev}`} onClick={onPrev} aria-label="Previous image">
+        <button type="button" className={`${styles.nav} ${styles.prev}`} onClick={onPrev} aria-label={prevLabel}>
           ‹
         </button>
       )}
@@ -85,7 +95,7 @@ export default function Lightbox({ images, openIndex, onClose, onPrev, onNext, a
       </div>
 
       {images.length > 1 && (
-        <button type="button" className={`${styles.nav} ${styles.next}`} onClick={onNext} aria-label="Next image">
+        <button type="button" className={`${styles.nav} ${styles.next}`} onClick={onNext} aria-label={nextLabel}>
           ›
         </button>
       )}

@@ -1,34 +1,29 @@
+import { getLocale, getTranslator } from "@/lib/i18n/server";
+
 export const metadata = {
   title: "About Us",
   description:
     "Meet Moss Games, a small team of game developers based in Toulouse, France.",
 };
 
+// Names stay as-is in every locale (proper nouns); only bioKey is translated
+// — see lib/i18n/translations.js's aboutPage.bios.
 const team = [
-  {
-    name: "Camille Guerraz",
-    bio: "Fine Arts degree in 2021, Sociology degree in 2023, graduated from MJM Graphic Design school in 2025, specializing in 3D Realization. She handles all the narrative side and the art direction of the projects.",
-  },
-  {
-    name: "Geremy Cambus",
-    bio: "Scientific Baccalaureate in 2018, Bachelor's level in Computer Science/Mathematics in 2022, graduated from MJM Graphic Design school in 2025, specializing in 3D Realization. Currently an instructor at private schools, teaching Rigging and Tech Art courses, as well as C++/Blueprints programming. He handles all the technical and programming aspects of the projects.",
-  },
-  {
-    name: "Tom Merville",
-    bio: "Graduated from MJM Graphic Design school in 2025, specializing in 3D Realization, and holding a STD2A Baccalaureate (Technological Sciences of Design and Applied Arts). He oversees the musical, artistic, and visual branches of the projects.",
-  },
+  { name: "Camille Guerraz", bioKey: "aboutPage.bios.camille" },
+  { name: "Geremy Cambus", bioKey: "aboutPage.bios.geremy" },
+  { name: "Tom Merville", bioKey: "aboutPage.bios.tom" },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const t = getTranslator(await getLocale());
+
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center gap-12 px-6 py-16 text-center font-sans sm:px-5 sm:py-12">
       <div className="flex flex-col items-center gap-3">
         <h1 className="font-display text-4xl tracking-tight text-zinc-900">
-          About Us
+          {t("aboutPage.title")}
         </h1>
-        <p className="max-w-md text-lg text-zinc-600">
-          We are a small team of game developers based in Toulouse, France.
-        </p>
+        <p className="max-w-md text-lg text-zinc-600">{t("aboutPage.intro")}</p>
       </div>
 
       <div className="grid w-full grid-cols-1 gap-10 text-left sm:grid-cols-3 sm:gap-8">
@@ -38,7 +33,7 @@ export default function AboutPage() {
               {member.name}
             </h2>
             <p className="text-sm leading-relaxed text-zinc-600">
-              {member.bio}
+              {t(member.bioKey)}
             </p>
           </div>
         ))}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getNewsPosts, splitFeaturedNews } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import ButtonDrift from "./ButtonDrift";
 import styles from "./FeaturedNews.module.css";
 
@@ -17,13 +18,15 @@ import styles from "./FeaturedNews.module.css";
 // renders the single featured pick, or nothing at all when there's no news
 // yet (NewsSection's own box covers that empty state further down).
 export default async function FeaturedNews() {
+  const locale = await getLocale();
+  const t = getTranslator(locale);
   const posts = await getNewsPosts();
   const { featured } = splitFeaturedNews(posts);
   if (!featured) return null;
 
   const coverSrc = featured.cover ? imageUrl(featured.cover, { width: 720, height: 320 }) : null;
   const dateLabel = featured.publishedAt
-    ? new Date(featured.publishedAt).toLocaleDateString("en-US", {
+    ? new Date(featured.publishedAt).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -61,7 +64,7 @@ export default async function FeaturedNews() {
 
       <ButtonDrift>
         <Link href="/news" className={styles.seeAllButton}>
-          See All News <span className={styles.arrow} aria-hidden="true">→</span>
+          {t("common.seeAllNews")} <span className={styles.arrow} aria-hidden="true">→</span>
         </Link>
       </ButtonDrift>
     </div>

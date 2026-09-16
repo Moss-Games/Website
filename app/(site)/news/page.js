@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getNewsPosts, firstSentence } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -12,14 +13,17 @@ export const metadata = {
 };
 
 export default async function NewsPage() {
+  const locale = await getLocale();
+  const t = getTranslator(locale);
+  const dateLocale = locale === "fr" ? "fr-FR" : "en-US";
   const posts = await getNewsPosts();
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>News</h1>
+      <h1 className={styles.title}>{t("newsPage.title")}</h1>
 
       {posts.length === 0 ? (
-        <p className={styles.empty}>No news yet — check back soon.</p>
+        <p className={styles.empty}>{t("newsPage.empty")}</p>
       ) : (
         <div className={styles.list}>
           {posts.map((post) => {
@@ -43,7 +47,7 @@ export default async function NewsPage() {
                 <div className={styles.body}>
                   {post.publishedAt && (
                     <p className={styles.date}>
-                      {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                      {new Date(post.publishedAt).toLocaleDateString(dateLocale, {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
@@ -53,7 +57,7 @@ export default async function NewsPage() {
                   <h2 className={styles.postTitle}>{post.title}</h2>
                   {post.excerpt && <p className={styles.excerpt}>{firstSentence(post.excerpt)}</p>}
                   <span className={styles.readMore}>
-                    Read more <span className={styles.arrow}>→</span>
+                    {t("common.readMore")} <span className={styles.arrow}>→</span>
                   </span>
                 </div>
               </Link>

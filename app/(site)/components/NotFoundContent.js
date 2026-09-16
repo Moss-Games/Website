@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import ButtonDrift from "./ButtonDrift";
 import styles from "./NotFoundContent.module.css";
 
@@ -7,7 +8,11 @@ import styles from "./NotFoundContent.module.css";
 // /projects/<slug> or /news/<slug> link — renders inside the site's own layout)
 // and app/global-not-found.js (genuinely unmatched URLs, e.g. a typo — that
 // file bypasses the (site) layout entirely, see its own comment for why).
-export default function NotFoundContent() {
+// Reads the locale cookie directly (rather than via LocaleProvider) since
+// both callers are Server Components and this one doesn't need client state.
+export default async function NotFoundContent() {
+  const t = getTranslator(await getLocale());
+
   return (
     <div className={styles.page}>
       <Image
@@ -19,21 +24,19 @@ export default function NotFoundContent() {
         priority
       />
       <p className={styles.eyebrow}>404</p>
-      <h1 className={styles.title}>Lost in the moss</h1>
-      <p className={styles.text}>
-        This page must have wandered off. Let&apos;s get you back on track.
-      </p>
+      <h1 className={styles.title}>{t("notFound.title")}</h1>
+      <p className={styles.text}>{t("notFound.text")}</p>
       <div className={styles.actions}>
         <ButtonDrift>
           <Link href="/" className={styles.primary}>
-            ← Back to home
+            {t("notFound.backToHome")}
           </Link>
         </ButtonDrift>
         <Link href="/projects" className={styles.secondary}>
-          Browse projects
+          {t("notFound.browseProjects")}
         </Link>
         <Link href="/news" className={styles.secondary}>
-          Read the news
+          {t("notFound.readTheNews")}
         </Link>
       </div>
     </div>

@@ -12,7 +12,15 @@ import styles from "./PostMosaic.module.css";
 // Lightbox (app/(site)/components/Lightbox.js) ScreenshotGallery uses.
 // `images` is pre-resolved to plain {src, alt} by
 // app/(site)/news/[slug]/page.js.
-export default function PostMosaic({ images, caption }) {
+export default function PostMosaic({
+  images,
+  caption,
+  enlargeLabel = "Enlarge image",
+  mosaicImageLabel = "Mosaic image",
+  prevLabel = "Previous image",
+  nextLabel = "Next image",
+  closeLabel = "Close",
+}) {
   const [openIndex, setOpenIndex] = useState(null);
 
   const close = useCallback(() => setOpenIndex(null), []);
@@ -32,12 +40,12 @@ export default function PostMosaic({ images, caption }) {
             type="button"
             className={styles.cell}
             onClick={() => setOpenIndex(index)}
-            aria-label={`Enlarge image ${index + 1}`}
+            aria-label={`${enlargeLabel} ${index + 1}`}
           >
             <Image
               src={image.src}
               unoptimized={isGifUrl(image.src)}
-              alt={image.alt || `Mosaic image ${index + 1}`}
+              alt={image.alt || `${mosaicImageLabel} ${index + 1}`}
               fill
               sizes="(min-width: 42rem) 21rem, 50vw"
             />
@@ -53,7 +61,10 @@ export default function PostMosaic({ images, caption }) {
         onClose={close}
         onPrev={showPrev}
         onNext={showNext}
-        altPrefix="Mosaic image"
+        altPrefix={mosaicImageLabel}
+        closeLabel={closeLabel}
+        prevLabel={prevLabel}
+        nextLabel={nextLabel}
       />
     </figure>
   );

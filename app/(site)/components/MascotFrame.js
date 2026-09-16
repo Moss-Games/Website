@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useLocale } from "./LocaleProvider";
+import LocaleToggle from "./LocaleToggle";
 import styles from "./MascotFrame.module.css";
 
 // How long (ms) after the last scroll event before the hands settle back down.
@@ -46,6 +48,7 @@ const SETTLE_DURATION = 200;
  * properties — change those before touching this markup.
  */
 export default function MascotFrame({ children }) {
+  const { t } = useLocale();
   const contentRef = useRef(null);
   const handLeftWrapRef = useRef(null);
   const idleTimerRef = useRef(null);
@@ -128,7 +131,7 @@ export default function MascotFrame({ children }) {
       className={`${styles.box} ${scrolling ? styles.scrolling : ""}`}
       style={{ "--mascot-scroll-dir": scrollDir }}
     >
-      <Link href="/" className={styles.logo} aria-label="Moss Games home">
+      <Link href="/" className={styles.logo} aria-label={t("nav.home")}>
         <Image src="/images/logo.png" alt="Moss Games" width={288} height={288} priority />
       </Link>
       <Link href="/" className={styles.brandLeft}>
@@ -137,21 +140,21 @@ export default function MascotFrame({ children }) {
       <Link href="/" className={styles.brandRight}>
         GAMES
       </Link>
-      <Link href="/" className={styles.brandMobile} aria-label="Moss Games home">
+      <Link href="/" className={styles.brandMobile} aria-label={t("nav.home")}>
         MOSS GAMES
       </Link>
       <div className={styles.topNav}>
         <Link href="/projects" className={`${styles.navLink} ${styles.navLinkDesktopOnly}`}>
-          All Projects
+          {t("nav.allProjects")}
         </Link>
         <Link href="/news" className={styles.navLink}>
-          News
+          {t("nav.news")}
         </Link>
         <Link href="/about" className={styles.navLink}>
-          About Us
+          {t("nav.aboutUs")}
         </Link>
       </div>
-      <Link href="/" className={`${styles.limb} ${styles.head}`} aria-label="Moss Games home" />
+      <Link href="/" className={`${styles.limb} ${styles.head}`} aria-label={t("nav.home")} />
       <span
         ref={handLeftWrapRef}
         className={styles.handWrap + " " + styles.handLeftWrap}
@@ -175,6 +178,14 @@ export default function MascotFrame({ children }) {
       <div className={styles.content} ref={contentRef} data-scroll-root>
         {children}
       </div>
+      {/* Sibling of .content, not a child of it: positioned (via
+          LocaleToggle.module.css) relative to this .box, so it floats over
+          the white area's top-right corner without scrolling away with the
+          page — same "fixed regardless of .content's scroll" trick as
+          .logo, but scoped to the box instead of the viewport. Deliberately
+          kept out of .topNav (the black margin band) per the design brief:
+          this toggle belongs on the white page, not with the mascot. */}
+      <LocaleToggle />
       <span className={styles.frame} aria-hidden="true" />
     </div>
   );

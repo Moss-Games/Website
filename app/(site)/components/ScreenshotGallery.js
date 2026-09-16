@@ -9,7 +9,14 @@ import styles from "./ScreenshotGallery.module.css";
 // Thumbnail grid (same markup/sizing the game page used inline before) plus
 // a full-screen Lightbox (app/(site)/components/Lightbox.js) opened by
 // clicking one. Needs to be a client component for the open/close state.
-export default function ScreenshotGallery({ screenshots, title }) {
+export default function ScreenshotGallery({
+  screenshots,
+  title,
+  screenshotLabel = "screenshot",
+  closeLabel = "Close",
+  prevLabel = "Previous image",
+  nextLabel = "Next image",
+}) {
   const [openIndex, setOpenIndex] = useState(null);
 
   const close = useCallback(() => setOpenIndex(null), []);
@@ -33,7 +40,7 @@ export default function ScreenshotGallery({ screenshots, title }) {
             <Image
               src={src}
               unoptimized={isGifUrl(src)}
-              alt={`${title} screenshot ${index + 1}`}
+              alt={`${title} ${screenshotLabel} ${index + 1}`}
               fill
               sizes="(min-width: 60rem) 33vw, 45vw"
             />
@@ -47,7 +54,10 @@ export default function ScreenshotGallery({ screenshots, title }) {
         onClose={close}
         onPrev={showPrev}
         onNext={showNext}
-        altPrefix={`${title} screenshot`}
+        altPrefix={`${title} ${screenshotLabel}`}
+        closeLabel={closeLabel}
+        prevLabel={prevLabel}
+        nextLabel={nextLabel}
       />
     </>
   );

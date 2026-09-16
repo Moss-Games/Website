@@ -5,6 +5,7 @@ import { PortableText } from "@portabletext/react";
 import { getNewsPost, firstSentence } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import GameCard from "../../components/GameCard";
 import PostCarousel from "../../components/PostCarousel";
 import PostMosaic from "../../components/PostMosaic";
@@ -39,40 +40,61 @@ function resolveImages(images, width) {
 // Portable Text body (see the `body` field in sanity/schemaTypes/postType.js)
 // — plain text blocks render fine with PortableText's defaults, but these
 // non-text block types need an explicit component or they're silently
-// skipped.
-const bodyComponents = {
-  types: {
-    image: ({ value }) => {
-      const src = imageUrl(value, { width: 1200 });
-      if (!src) return null;
-      const { width, height } = imageDimensions(value);
-      return (
-        <figure className={styles.bodyImageWrap}>
-          <Image
-            className={styles.bodyImage}
-            src={src}
-            unoptimized={isGifUrl(src)}
-            alt={value.alt || ""}
-            width={width}
-            height={height}
-            sizes="(min-width: 42rem) 42rem, 100vw"
+// skipped. Built per-request (inside NewsPostPage, not module scope) so the
+// carousel/mosaic's own aria-labels can be translated via `t`.
+function createBodyComponents(t) {
+  return {
+    types: {
+      image: ({ value }) => {
+        const src = imageUrl(value, { width: 1200 });
+        if (!src) return null;
+        const { width, height } = imageDimensions(value);
+        return (
+          <figure className={styles.bodyImageWrap}>
+            <Image
+              className={styles.bodyImage}
+              src={src}
+              unoptimized={isGifUrl(src)}
+              alt={value.alt || ""}
+              width={width}
+              height={height}
+              sizes="(min-width: 42rem) 42rem, 100vw"
+            />
+            {value.caption && <figcaption className={styles.bodyImageCaption}>{value.caption}</figcaption>}
+          </figure>
+        );
+      },
+      carousel: ({ value }) => {
+        const images = resolveImages(value.images, 1200);
+        if (images.length === 0) return null;
+        return (
+          <PostCarousel
+            images={images}
+            caption={value.caption}
+            prevLabel={t("common.previousImage")}
+            nextLabel={t("common.nextImage")}
+            goToImageLabel={t("common.goToImage")}
           />
-          {value.caption && <figcaption className={styles.bodyImageCaption}>{value.caption}</figcaption>}
-        </figure>
-      );
+        );
+      },
+      mosaic: ({ value }) => {
+        const images = resolveImages(value.images, 800);
+        if (images.length === 0) return null;
+        return (
+          <PostMosaic
+            images={images}
+            caption={value.caption}
+            enlargeLabel={t("common.enlargeImage")}
+            mosaicImageLabel={t("common.mosaicImage")}
+            prevLabel={t("common.previousImage")}
+            nextLabel={t("common.nextImage")}
+            closeLabel={t("common.close")}
+          />
+        );
+      },
     },
-    carousel: ({ value }) => {
-      const images = resolveImages(value.images, 1200);
-      if (images.length === 0) return null;
-      return <PostCarousel images={images} caption={value.caption} />;
-    },
-    mosaic: ({ value }) => {
-      const images = resolveImages(value.images, 800);
-      if (images.length === 0) return null;
-      return <PostMosaic images={images} caption={value.caption} />;
-    },
-  },
-};
+  };
+}
 
 // Normalizes the resolved `relatedLink` (either a "post" or a "game"
 // document, see sanity/schemaTypes/postType.js) into the shape GameCard
@@ -112,6 +134,8 @@ export async function generateMetadata({ params }) {
 
 export default async function NewsPostPage({ params }) {
   const { slug } = await params;
+  const locale = await getLocale();
+  const t = getTranslator(locale);
   const post = await getNewsPost(slug);
   if (!post) notFound();
 
@@ -120,6 +144,7 @@ export default async function NewsPostPage({ params }) {
   // game page's headerImage (app/(site)/projects/[slug]/page.js).
   const coverSrc = post.cover ? imageUrl(post.cover, { width: 1600 }) : null;
   const related = relatedCardProps(post.relatedLink);
+  const bodyComponents = createBodyComponents(t);
 
   // BlogPosting rather than NewsArticle: this is a devlog/announcement feed,
   // not journalistic reporting, and NewsArticle's rich-result eligibility
@@ -161,7 +186,7 @@ export default async function NewsPostPage({ params }) {
 
       <div className={`${styles.body} ${related ? styles.bodyWide : ""}`}>
         <Link href="/news" className={styles.back}>
-          ← News
+          {t("newsPostPage.back")}
         </Link>
 
         {/* Single column below 60rem; a row with the related card pinned
@@ -171,7 +196,7 @@ export default async function NewsPostPage({ params }) {
           <div className={styles.main}>
             {post.publishedAt && (
               <p className={styles.date}>
-                {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                {new Date(post.publishedAt).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -188,8 +213,14 @@ export default async function NewsPostPage({ params }) {
 
           {related && (
             <aside className={styles.related}>
-              <p className={styles.relatedLabel}>{related.isGame ? "Related project" : "Related post"}</p>
-              <GameCard game={related.game} href={related.href} ctaLabel={related.isGame ? "Discover" : "Read"} />
+              <p className={styles.relatedLabel}>
+                {related.isGame ? t("newsPostPage.relatedProject") : t("newsPostPage.relatedPost")}
+              </p>
+              <GameCard
+                game={related.game}
+                href={related.href}
+                ctaLabel={related.isGame ? t("common.discover") : t("common.read")}
+              />
             </aside>
           )}
         </div>

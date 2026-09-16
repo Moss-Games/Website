@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getNewsPosts, firstSentence, splitFeaturedNews } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import ButtonDrift from "./ButtonDrift";
 import styles from "./NewsSection.module.css";
 
@@ -11,15 +12,18 @@ import styles from "./NewsSection.module.css";
 // separately, above the games grid, via FeaturedNews) and an "All News"
 // CTA underneath. Server Component: fetches directly, same as /news.
 export default async function NewsSection() {
+  const locale = await getLocale();
+  const t = getTranslator(locale);
   const posts = await getNewsPosts();
   const { recent } = splitFeaturedNews(posts);
+  const dateLocale = locale === "fr" ? "fr-FR" : "en-US";
 
   return (
     <section className={styles.box}>
-      <h2 className={styles.heading}>News</h2>
+      <h2 className={styles.heading}>{t("newsSection.heading")}</h2>
 
       {posts.length === 0 ? (
-        <p className={styles.empty}>No news yet — check back soon.</p>
+        <p className={styles.empty}>{t("newsSection.empty")}</p>
       ) : (
         recent.length > 0 && (
           <div className={styles.list}>
@@ -42,7 +46,7 @@ export default async function NewsSection() {
                   <div className={styles.itemBody}>
                     {post.publishedAt && (
                       <p className={styles.itemDate}>
-                        {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                        {new Date(post.publishedAt).toLocaleDateString(dateLocale, {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
@@ -54,7 +58,7 @@ export default async function NewsSection() {
                       <p className={styles.itemExcerpt}>{firstSentence(post.excerpt, 140)}</p>
                     )}
                     <span className={styles.itemCta}>
-                      Read more <span className={styles.arrow}>→</span>
+                      {t("common.readMore")} <span className={styles.arrow}>→</span>
                     </span>
                   </div>
                 </Link>
@@ -66,7 +70,7 @@ export default async function NewsSection() {
 
       <ButtonDrift>
         <Link href="/news" className={styles.seeAllButton}>
-          All News <span className={styles.arrow} aria-hidden="true">→</span>
+          {t("common.allNews")} <span className={styles.arrow} aria-hidden="true">→</span>
         </Link>
       </ButtonDrift>
     </section>

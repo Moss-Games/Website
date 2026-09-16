@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "./LocaleProvider";
 import ButtonDrift from "./ButtonDrift";
 import styles from "./Newsletter.module.css";
 
 export default function Newsletter() {
+  const { t } = useLocale();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle"); // idle | loading | done | error
 
@@ -26,13 +28,11 @@ export default function Newsletter() {
 
   return (
     <section className={styles.card}>
-      <h2 className={styles.title}>Join the newsletter</h2>
-      <p className={styles.subtitle}>
-        Get updates on new games and devlogs. No spam, unsubscribe anytime.
-      </p>
+      <h2 className={styles.title}>{t("newsletter.title")}</h2>
+      <p className={styles.subtitle}>{t("newsletter.subtitle")}</p>
 
       {status === "done" ? (
-        <p className={styles.thanks}>Thanks for signing up!</p>
+        <p className={styles.thanks}>{t("newsletter.thanks")}</p>
       ) : (
         <form className={styles.form} onSubmit={handleSubmit}>
           <input
@@ -41,7 +41,7 @@ export default function Newsletter() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
-            aria-label="Email address"
+            aria-label={t("newsletter.emailAriaLabel")}
             className={styles.input}
           />
           <ButtonDrift>
@@ -50,16 +50,12 @@ export default function Newsletter() {
               className={styles.button}
               disabled={status === "loading"}
             >
-              {status === "loading" ? "Subscribing…" : "Subscribe"}
+              {status === "loading" ? t("newsletter.subscribing") : t("newsletter.subscribe")}
             </button>
           </ButtonDrift>
         </form>
       )}
-      {status === "error" && (
-        <p className={styles.error}>
-          Something went wrong — please try again.
-        </p>
-      )}
+      {status === "error" && <p className={styles.error}>{t("newsletter.error")}</p>}
     </section>
   );
 }

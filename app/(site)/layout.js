@@ -1,7 +1,9 @@
 import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import { getLocale } from "@/lib/i18n/server";
 import MascotFrame from "./components/MascotFrame";
+import { LocaleProvider } from "./components/LocaleProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -94,10 +96,15 @@ const jsonLd = {
   ],
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // Drives both the <html lang> attribute and LocaleProvider's initial
+  // state — see lib/i18n/server.js. Sanity content and metadata stay
+  // English regardless (see lib/i18n/translations.js's header comment).
+  const locale = await getLocale();
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} ${superCorn.variable} h-full antialiased overflow-x-hidden`}
     >
       <body className="min-h-full w-full flex flex-col">
@@ -106,7 +113,9 @@ export default function RootLayout({ children }) {
           // Static, hardcoded object above — no user input reaches this.
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <MascotFrame>{children}</MascotFrame>
+        <LocaleProvider initialLocale={locale}>
+          <MascotFrame>{children}</MascotFrame>
+        </LocaleProvider>
         <Analytics />
       </body>
     </html>

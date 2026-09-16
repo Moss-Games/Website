@@ -20,7 +20,13 @@ const AUTOPLAY_MS = 5000;
 // of an instant cut. Every slide fills the same fixed-aspect-ratio
 // viewport via object-fit:cover, so the height never jumps between slides
 // of differing source aspect ratios mid-transition.
-export default function PostCarousel({ images, caption }) {
+export default function PostCarousel({
+  images,
+  caption,
+  prevLabel = "Previous image",
+  nextLabel = "Next image",
+  goToImageLabel = "Go to image",
+}) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStartX = useRef(null);
@@ -87,10 +93,10 @@ export default function PostCarousel({ images, caption }) {
 
         {images.length > 1 && (
           <>
-            <button type="button" className={`${styles.nav} ${styles.prev}`} onClick={showPrev} aria-label="Previous image">
+            <button type="button" className={`${styles.nav} ${styles.prev}`} onClick={showPrev} aria-label={prevLabel}>
               ‹
             </button>
-            <button type="button" className={`${styles.nav} ${styles.next}`} onClick={showNext} aria-label="Next image">
+            <button type="button" className={`${styles.nav} ${styles.next}`} onClick={showNext} aria-label={nextLabel}>
               ›
             </button>
           </>
@@ -105,7 +111,7 @@ export default function PostCarousel({ images, caption }) {
               type="button"
               className={`${styles.dot} ${i === index ? styles.dotActive : ""}`}
               onClick={() => setIndex(i)}
-              aria-label={`Go to image ${i + 1}`}
+              aria-label={`${goToImageLabel} ${i + 1}`}
             />
           ))}
         </div>

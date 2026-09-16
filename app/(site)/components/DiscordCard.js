@@ -1,8 +1,10 @@
 import Image from "next/image";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import styles from "./DiscordCard.module.css";
 
-export default function DiscordCard({ discord }) {
+export default async function DiscordCard({ discord }) {
   if (!discord) return null;
+  const t = getTranslator(await getLocale());
 
   return (
     <a
@@ -29,7 +31,7 @@ export default function DiscordCard({ discord }) {
         <p className={styles.platform}>Discord</p>
         <p className={styles.name}>{discord.name}</p>
         {discord.memberCount != null && (
-          <p className={styles.members}>{discord.memberCount} members</p>
+          <p className={styles.members}>{t("common.members", { count: discord.memberCount })}</p>
         )}
       </span>
     </a>

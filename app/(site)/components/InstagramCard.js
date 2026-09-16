@@ -1,6 +1,9 @@
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import styles from "./InstagramCard.module.css";
 
-export default function InstagramCard() {
+export default async function InstagramCard() {
+  const t = getTranslator(await getLocale());
+
   return (
     <a
       className={styles.card}
@@ -18,7 +21,7 @@ export default function InstagramCard() {
       <span className={styles.text}>
         <p className={styles.platform}>Instagram</p>
         <p className={styles.name}>@mossgamesfr</p>
-        <p className={styles.handle}>Follow us</p>
+        <p className={styles.handle}>{t("common.followUs")}</p>
       </span>
     </a>
   );

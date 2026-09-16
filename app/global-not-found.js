@@ -9,7 +9,9 @@
 // them.
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import { getLocale } from "@/lib/i18n/server";
 import MascotFrame from "./(site)/components/MascotFrame";
+import { LocaleProvider } from "./(site)/components/LocaleProvider";
 import NotFoundContent from "./(site)/components/NotFoundContent";
 import "./(site)/globals.css";
 
@@ -34,16 +36,20 @@ export const metadata = {
   description: "The page you're looking for doesn't exist.",
 };
 
-export default function GlobalNotFound() {
+export default async function GlobalNotFound() {
+  const locale = await getLocale();
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} ${superCorn.variable} h-full antialiased overflow-x-hidden`}
     >
       <body className="min-h-full w-full flex flex-col">
-        <MascotFrame>
-          <NotFoundContent />
-        </MascotFrame>
+        <LocaleProvider initialLocale={locale}>
+          <MascotFrame>
+            <NotFoundContent />
+          </MascotFrame>
+        </LocaleProvider>
       </body>
     </html>
   );

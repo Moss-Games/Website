@@ -6,6 +6,7 @@ import { getGame, getGames } from "@/lib/games";
 import { parseSteamAppId, fetchSteamLiveStats } from "@/lib/steam";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import SteamWidget from "../../components/SteamWidget";
 import Reveal from "../../components/Reveal";
 import ScreenshotGallery from "../../components/ScreenshotGallery";
@@ -107,6 +108,7 @@ function TagList({ label, items }) {
 
 export default async function GamePage({ params }) {
   const { slug } = await params;
+  const t = getTranslator(await getLocale());
   const game = await getGame(slug);
   if (!game) notFound();
 
@@ -155,7 +157,7 @@ export default async function GamePage({ params }) {
 
       <div className={styles.body}>
         <Link href="/" className={styles.backLink}>
-          ← Back
+          {t("common.back")}
         </Link>
 
         <h1 className={styles.title}>{game.title}</h1>
@@ -191,24 +193,31 @@ export default async function GamePage({ params }) {
                       />
                     </svg>
                   )}
-                  {steamAppId ? "View on Steam" : game.storeLabel}
+                  {steamAppId ? t("projectPage.viewOnSteam") : isItchUrl ? t("projectPage.viewOnItch") : game.storeLabel}
                 </a>
               </ButtonDrift>
             )}
 
-            {steamStats && <SteamWidget stats={steamStats} />}
+            {steamStats && (
+              <SteamWidget
+                stats={steamStats}
+                ofLabel={t("common.of")}
+                reviewsLabel={t("common.reviews")}
+                freeToPlayLabel={t("common.freeToPlay")}
+              />
+            )}
 
             {(game.releaseDate || (game.price && !steamAppId)) && (
               <dl className={styles.metaGrid}>
                 {game.releaseDate && (
                   <div>
-                    <dt>Release date</dt>
+                    <dt>{t("projectPage.releaseDate")}</dt>
                     <dd>{game.releaseDate}</dd>
                   </div>
                 )}
                 {game.price && !steamAppId && (
                   <div>
-                    <dt>Price</dt>
+                    <dt>{t("projectPage.price")}</dt>
                     <dd>{game.price}</dd>
                   </div>
                 )}
@@ -219,9 +228,9 @@ export default async function GamePage({ params }) {
               {/* Steam's own store page already shows platform support —
                   redundant here, and this site can't keep it in sync with
                   Steam anyway. */}
-              {!steamAppId && <TagList label="Platforms" items={game.platforms} />}
-              <TagList label="Genres" items={game.genres} />
-              <TagList label="Languages" items={game.languages} />
+              {!steamAppId && <TagList label={t("projectPage.platforms")} items={game.platforms} />}
+              <TagList label={t("projectPage.genres")} items={game.genres} />
+              <TagList label={t("projectPage.languages")} items={game.languages} />
             </div>
           </div>
 
@@ -260,7 +269,7 @@ export default async function GamePage({ params }) {
             {game.features.length > 0 && (
               <Reveal>
                 <section>
-                  <h2 className={styles.sectionTitle}>Features</h2>
+                  <h2 className={styles.sectionTitle}>{t("projectPage.features")}</h2>
                   <ul className={styles.featureList}>
                     {game.features.map((feature) => (
                       <li key={feature}>{feature}</li>
@@ -273,8 +282,15 @@ export default async function GamePage({ params }) {
             {game.screenshots.length > 0 && (
               <Reveal>
                 <section>
-                  <h2 className={styles.sectionTitle}>Screenshots</h2>
-                  <ScreenshotGallery screenshots={game.screenshots} title={game.title} />
+                  <h2 className={styles.sectionTitle}>{t("projectPage.screenshots")}</h2>
+                  <ScreenshotGallery
+                    screenshots={game.screenshots}
+                    title={game.title}
+                    screenshotLabel={t("common.screenshot")}
+                    closeLabel={t("common.close")}
+                    prevLabel={t("common.previousImage")}
+                    nextLabel={t("common.nextImage")}
+                  />
                 </section>
               </Reveal>
             )}
@@ -282,7 +298,7 @@ export default async function GamePage({ params }) {
             {game.systemRequirements && (
               <Reveal>
                 <section>
-                  <h2 className={styles.sectionTitle}>System requirements</h2>
+                  <h2 className={styles.sectionTitle}>{t("projectPage.systemRequirements")}</h2>
                   <pre className={styles.systemRequirements}>
                     {game.systemRequirements}
                   </pre>
