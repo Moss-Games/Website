@@ -16,6 +16,10 @@ export default async function Footer() {
           ·
         </span>
         <Link href="/privacy">{t("footer.privacyPolicy")}</Link>
+        <span className={styles.dot} aria-hidden="true">
+          ·
+        </span>
+        <Link href="/press">{t("footer.pressKit")}</Link>
       </nav>
     </footer>
   );

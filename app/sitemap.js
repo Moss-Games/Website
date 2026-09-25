@@ -24,6 +24,7 @@ export default async function sitemap() {
     ["/projects", { changeFrequency: "weekly", priority: 0.9 }],
     ["/news", { changeFrequency: "weekly", priority: 0.7 }],
     ["/about", { changeFrequency: "monthly", priority: 0.5 }],
+    ["/press", { changeFrequency: "monthly", priority: 0.4 }],
     ["/legal", { changeFrequency: "yearly", priority: 0.2 }],
     ["/privacy", { changeFrequency: "yearly", priority: 0.2 }],
   ];

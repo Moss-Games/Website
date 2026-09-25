@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
 import { pageMetadata } from "@/lib/i18n/metadata";
 import { CONTACT_EMAIL } from "@/lib/contact";
@@ -34,6 +35,15 @@ export default async function AboutPage() {
           >
             {CONTACT_EMAIL}
           </a>
+        </p>
+        <p className="text-base text-zinc-600">
+          {t("aboutPage.press")}{" "}
+          <Link
+            href="/press"
+            className="font-medium text-zinc-900 underline underline-offset-4 hover:text-zinc-600"
+          >
+            {t("pressPage.title").toLowerCase()}
+          </Link>
         </p>
       </div>
 
