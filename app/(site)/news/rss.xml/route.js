@@ -42,10 +42,18 @@ export async function GET(request) {
       <guid isPermaLink="true">${escapeXml(link)}</guid>
       ${post.publishedAt ? `<pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate>` : ""}
       <description>${escapeXml(truncate(excerpt))}</description>
+      ${post._updatedAt ? `<atom:updated>${new Date(post._updatedAt).toISOString()}</atom:updated>` : ""}
       ${cover ? `<media:content url="${escapeXml(cover)}" medium="image" />` : ""}
     </item>`;
     })
     .join("\n");
+
+  // Latest edit of any post: tells feed readers the feed changed even when
+  // an existing post was edited rather than a new one added.
+  const lastEdit = posts.reduce((latest, post) => {
+    const time = Date.parse(post._updatedAt || post.publishedAt || "");
+    return Number.isNaN(time) ? latest : Math.max(latest, time);
+  }, 0);
 
   const selfUrl = `${SITE_URL}${localizedPath("/news/rss.xml", locale)}`;
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -55,6 +63,7 @@ export async function GET(request) {
     <link>${escapeXml(`${SITE_URL}${localizedPath("/news", locale)}`)}</link>
     <description>${escapeXml(t("meta.newsDescription"))}</description>
     <language>${locale === "fr" ? "fr-FR" : "en-US"}</language>
+    ${lastEdit ? `<lastBuildDate>${new Date(lastEdit).toUTCString()}</lastBuildDate>` : ""}
     <atom:link href="${escapeXml(selfUrl)}" rel="self" type="application/rss+xml" />
     <image>
       <url>${SITE_URL}/images/logo.png</url>
@@ -69,7 +78,7 @@ ${items}
   return new Response(xml, {
     headers: {
       "Content-Type": "application/rss+xml; charset=utf-8",
-      "Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600",
+      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
     },
   });
 }

@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { removeNewsletterSignupByEmail } from "@/lib/newsletter";
+import { forwardReceivedEmail } from "@/lib/emails/forward";
 
 export async function POST(request) {
   const payload = await request.text();
@@ -23,6 +24,9 @@ export async function POST(request) {
     await resend.contacts.remove({ email: event.data.email });
   } else if (event.type === "contact.deleted") {
     await removeNewsletterSignupByEmail(event.data.email);
+  } else if (event.type === "email.received") {
+    // Throwing makes this a 500, so Resend retries the webhook later.
+    await forwardReceivedEmail(resend, event.data.email_id);
   }
 
   return new Response(null, { status: 200 });
