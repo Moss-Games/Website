@@ -18,7 +18,7 @@ only meant to answer "where are we?".
 | `/news`, `/news/[slug]` | News list and posts (rich text, image carousel/mosaic blocks, optional related post/game card, JSON-LD) |
 | `/news/rss.xml` | RSS feed, per language |
 | `/about` | Team bios, contact email, link to the press kit |
-| `/press` | Press kit: fact sheet, studio blurb, team roles, logo, and per game key art/screenshots/trailer as full-resolution downloads (straight from Sanity, `?dl=`) |
+| `/press` | Press kit: fact sheet, studio blurb, team roles, logo, and per game key art/screenshots/trailer as full-resolution downloads (straight from Sanity, `?dl=`), plus a "download everything" zip built in the browser (`PressKitDownload.js`, `lib/zip.js`) from the same-origin `/press-assets/` rewrite to Sanity's CDN (`next.config.mjs`) |
 | `/legal`, `/privacy` | Legal notice (LCEN) and GDPR privacy policy |
 | `/studio` | Sanity Studio (content editing) |
 
@@ -32,8 +32,8 @@ the page, see `docs/DESIGN.md`).
   its Steam store URL (everything except the trailer). See `docs/GAMES.md` and
   `docs/NEWS.md`.
 - Published games as of today: Digitum, Gwaver, Bloup!, Tea Time, Don't Gather
-  Moss!, ¡Aceituna!, Oscillia : The Shattered Planet Demo, and one titled
-  **"New Project"** (probably a placeholder to fill in or unpublish).
+  Moss!, ¡Aceituna!, Oscillia : The Shattered Planet Demo, and an
+  "unannounced project" teaser (title "New Project", badge "Coming SOON").
 - 4 published news posts.
 
 ### Languages (EN/FR)
@@ -44,6 +44,12 @@ the page, see `docs/DESIGN.md`).
   `lib/i18n/metadata.js`, and the sitemap lists both versions.
 - UI strings: `lib/i18n/translations.js`. French versions of Sanity content
   (game/post text): `lib/i18n/content.js`, hand-maintained.
+- Short fixed vocabularies from Sanity/Steam (genres, languages, Steam's
+  review summary) and free-text release dates ("19 Aug, 2025") are
+  translated in `lib/i18n/content-utils.js`; a new genre or language needs
+  adding to its map there, otherwise it shows in English.
+- Still English only: image alt texts typed in Sanity, and the newsletter
+  welcome email (a Resend template).
 
 ### Backend and services
 
@@ -74,8 +80,6 @@ the page, see `docs/DESIGN.md`).
 
 - The logo in the press kit is the 288x288 `public/images/logo.png`; a
   high-resolution (or SVG) version would be better for press.
-- The press kit has no single "download everything" zip; each file is its own
-  download.
 - The newsletter is not sent automatically when a news post is published.
 - No per-project devlog: news posts can link to a game (`relatedLink`), but a
   game page doesn't list the posts about it.

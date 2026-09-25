@@ -40,6 +40,19 @@ const nextConfig = {
   async headers() {
     return [{ source: "/((?!studio).*)", headers: securityHeaders }];
   },
+  // Same-origin path to this project's Sanity CDN assets, for the press kit
+  // zip (PressKitDownload.js fetches every file from here): Sanity's CDN
+  // only allows cross-origin reads from https://www.mossgames.fr, so
+  // fetching it directly would fail on localhost and preview deployments.
+  // An external rewrite is proxied by Vercel itself (no function, so no
+  // 4.5 MB response limit for the trailers).
+  async rewrites() {
+    const base = `https://cdn.sanity.io/%s/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}`;
+    return [
+      { source: "/press-assets/images/:path*", destination: `${base.replace("%s", "images")}/:path*` },
+      { source: "/press-assets/files/:path*", destination: `${base.replace("%s", "files")}/:path*` },
+    ];
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "cdn.sanity.io", pathname: "/images/**" },

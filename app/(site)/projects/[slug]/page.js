@@ -212,6 +212,7 @@ export default async function GamePage({ params }) {
                 ofLabel={t("common.of")}
                 reviewsLabel={t("common.reviews")}
                 freeToPlayLabel={t("common.freeToPlay")}
+                locale={locale}
               />
             )}
 
@@ -220,7 +221,7 @@ export default async function GamePage({ params }) {
                 {game.releaseDate && (
                   <div>
                     <dt>{t("projectPage.releaseDate")}</dt>
-                    <dd>{game.releaseDate}</dd>
+                    <dd>{tg.releaseDate}</dd>
                   </div>
                 )}
                 {game.price && !steamAppId && (
@@ -237,8 +238,8 @@ export default async function GamePage({ params }) {
                   (redundant here, and this site can't keep it in sync with
                   Steam anyway). */}
               {!steamAppId && <TagList label={t("projectPage.platforms")} items={game.platforms} />}
-              <TagList label={t("projectPage.genres")} items={game.genres} />
-              <TagList label={t("projectPage.languages")} items={game.languages} />
+              <TagList label={t("projectPage.genres")} items={tg.genres} />
+              <TagList label={t("projectPage.languages")} items={tg.languages} />
             </div>
           </div>
 

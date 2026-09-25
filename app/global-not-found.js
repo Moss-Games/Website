@@ -9,7 +9,7 @@
 // them.
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import { getLocale } from "@/lib/i18n/server";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import MascotFrame from "./(site)/components/MascotFrame";
 import { LocaleProvider } from "./(site)/components/LocaleProvider";
 import NotFoundContent from "./(site)/components/NotFoundContent";
@@ -31,10 +31,13 @@ const superCorn = localFont({
   display: "swap",
 });
 
-export const metadata = {
-  title: "Page Not Found | Moss Games",
-  description: "The page you're looking for doesn't exist.",
-};
+export async function generateMetadata() {
+  const t = getTranslator(await getLocale());
+  return {
+    title: `${t("meta.notFoundTitle")} | Moss Games`,
+    description: t("meta.notFoundDescription"),
+  };
+}
 
 export default async function GlobalNotFound() {
   const locale = await getLocale();

@@ -1,3 +1,4 @@
+import { translateSteamReviews } from "@/lib/i18n/content-utils";
 import styles from "./SteamWidget.module.css";
 
 // Live price/discount + review summary for a Steam game, fetched in
@@ -11,7 +12,7 @@ function reviewTone(percentPositive) {
   return styles.reviewsNegative;
 }
 
-export default function SteamWidget({ stats, ofLabel = "of", reviewsLabel = "reviews", freeToPlayLabel = "Free to Play" }) {
+export default function SteamWidget({ stats, ofLabel = "of", reviewsLabel = "reviews", freeToPlayLabel = "Free to Play", locale = "en" }) {
   const { price, reviews } = stats || {};
   if (!price && !reviews) return null;
 
@@ -20,10 +21,10 @@ export default function SteamWidget({ stats, ofLabel = "of", reviewsLabel = "rev
       {reviews && (
         <div className={`${styles.reviews} ${reviewTone(reviews.percentPositive)}`}>
           {/* reviews.description ("Very Positive", ...) is Steam's own live
-              text (not translated, same reasoning as CMS content). */}
-          <span className={styles.reviewsDesc}>{reviews.description}</span>
+              text, mapped to Steam's French wording in French. */}
+          <span className={styles.reviewsDesc}>{translateSteamReviews(reviews.description, locale)}</span>
           <span className={styles.reviewsCount}>
-            {reviews.percentPositive}% {ofLabel} {reviews.totalReviews.toLocaleString()} {reviewsLabel}
+            {reviews.percentPositive}% {ofLabel} {reviews.totalReviews.toLocaleString(locale === "fr" ? "fr-FR" : "en-US")} {reviewsLabel}
           </span>
         </div>
       )}

@@ -6,8 +6,10 @@ import { pageMetadata } from "@/lib/i18n/metadata";
 import { translateGame } from "@/lib/i18n/content-utils";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { DISCORD_INVITE_URL } from "@/lib/discord";
+import { dataset, projectId } from "@/sanity/env";
 import { isGifUrl } from "@/lib/isGifUrl";
 import { MailLink } from "../components/LegalDocument";
+import PressKitDownload from "../components/PressKitDownload";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -145,6 +147,28 @@ function GameKit({ game, t }) {
   );
 }
 
+// Everything downloadable on the page, as the zip's file list: the name in
+// the zip reuses each Sanity download's own `dl` file name, one folder per
+// game. URLs go through the same-origin /press-assets/ rewrite
+// (next.config.mjs), since the browser fetches them itself.
+function sameOriginUrl(url) {
+  const { pathname, search } = new URL(url);
+  const prefix = pathname.match(new RegExp(`^/(images|files)/${projectId}/${dataset}/`));
+  return prefix ? `/press-assets/${prefix[1]}/${pathname.slice(prefix[0].length)}${search}` : url;
+}
+
+function zipFiles(games) {
+  const files = [{ url: "/images/logo.png", name: "moss-games-press-kit/moss-games-logo.png" }];
+  for (const game of games) {
+    const urls = [game.press.libraryHero, game.press.header, ...game.press.screenshots, game.press.trailer];
+    for (const url of urls.filter(Boolean)) {
+      const name = new URL(url).searchParams.get("dl");
+      files.push({ url: sameOriginUrl(url), name: `moss-games-press-kit/${game.slug}/${name}` });
+    }
+  }
+  return files;
+}
+
 export default async function PressPage() {
   const locale = await getLocale();
   const t = getTranslator(locale);
@@ -155,6 +179,9 @@ export default async function PressPage() {
       <header className="flex flex-col items-center gap-3 text-center">
         <h1 className="font-display text-4xl tracking-tight text-zinc-900">{t("pressPage.title")}</h1>
         <p className="max-w-xl text-lg text-zinc-600">{t("pressPage.intro")}</p>
+        <div className="mt-4">
+          <PressKitDownload files={zipFiles(games)} />
+        </div>
       </header>
 
       <div className="grid grid-cols-1 gap-12 md:grid-cols-[16rem_1fr]">
@@ -209,7 +236,7 @@ export default async function PressPage() {
                 download="moss-games-logo.png"
                 className="rounded-lg border border-zinc-200 p-4"
               >
-                <Image src="/images/logo.png" alt="Moss Games logo" width={288} height={288} className="h-24 w-auto" />
+                <Image src="/images/logo.png" alt={t("pressPage.logoAlt")} width={288} height={288} className="h-24 w-auto" />
               </a>
               <a href="/images/logo.png" download="moss-games-logo.png" className={`text-sm ${linkClass}`}>
                 {t("pressPage.downloadLogo")}

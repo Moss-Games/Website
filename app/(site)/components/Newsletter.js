@@ -40,7 +40,7 @@ export default function Newsletter() {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            placeholder="you@example.com"
+            placeholder={t("newsletter.placeholder")}
             aria-label={t("newsletter.emailAriaLabel")}
             className={styles.input}
           />

@@ -1,9 +1,12 @@
 import { removeNewsletterSignupByToken } from "@/lib/newsletter";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 
-function htmlPage(message) {
+// In the visitor's site language (their moss_locale cookie, if they've
+// visited the site in this browser), English otherwise.
+function htmlPage(message, locale) {
   return `
 <!doctype html>
-<html lang="en">
+<html lang="${locale}">
   <body style="margin:0; padding:64px 16px; background:#fafafa; font-family:Arial, Helvetica, sans-serif; text-align:center; color:#18181b;">
     <p style="font-size:16px;">${message}</p>
   </body>
@@ -13,22 +16,22 @@ function htmlPage(message) {
 
 export async function GET(request) {
   const token = new URL(request.url).searchParams.get("token");
+  const locale = await getLocale();
+  const t = getTranslator(locale);
 
   if (!token) {
-    return new Response(htmlPage("Invalid unsubscribe link."), {
+    return new Response(htmlPage(t("newsletter.unsubscribeInvalid"), locale), {
       status: 400,
-      headers: { "Content-Type": "text/html" },
+      headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   }
 
   const email = await removeNewsletterSignupByToken(token);
 
-  const message = email
-    ? `You've been unsubscribed from the Moss Games newsletter. Sorry to see you go!`
-    : `This unsubscribe link is invalid or has already been used.`;
+  const message = email ? t("newsletter.unsubscribed") : t("newsletter.unsubscribeInvalid");
 
-  return new Response(htmlPage(message), {
+  return new Response(htmlPage(message, locale), {
     status: 200,
-    headers: { "Content-Type": "text/html" },
+    headers: { "Content-Type": "text/html; charset=utf-8" },
   });
 }
