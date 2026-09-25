@@ -8,9 +8,15 @@ export async function POST(request) {
 
   let event;
   try {
+    // The SDK wants its own { id, timestamp, signature } shape, not the
+    // request's Headers object (passing that made every check fail).
     event = resend.webhooks.verify({
       payload,
-      headers: request.headers,
+      headers: {
+        id: request.headers.get("svix-id"),
+        timestamp: request.headers.get("svix-timestamp"),
+        signature: request.headers.get("svix-signature"),
+      },
       webhookSecret: process.env.RESEND_WEBHOOK_SECRET,
     });
   } catch {
