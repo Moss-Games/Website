@@ -14,8 +14,8 @@
   width: 8rem;
   height: auto;
   margin-bottom: 0.5rem;
-  /* The head art has its own black outline stroke baked in (see
-     docs/DESIGN.md), so it reads fine directly on the white content pane. */
+  /* The full logo (black disc, white mascot), not just the head crop. It's
+     only 288x288, so it's a bit soft at this size on high-DPI screens. */
 }
 
 .eyebrow {

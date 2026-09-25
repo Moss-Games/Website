@@ -17,10 +17,10 @@ export default async function NotFoundContent() {
     <div className={styles.page}>
       <Image
         className={styles.mascot}
-        src="/images/mascot-head.png"
+        src="/images/logo.png"
         alt=""
-        width={200}
-        height={235}
+        width={288}
+        height={288}
         priority
       />
       <p className={styles.eyebrow}>404</p>
