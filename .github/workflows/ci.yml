@@ -1,0 +1,32 @@
+# Lint + production build on every push and pull request, so a broken build
+# is caught here instead of on the Vercel deployment.
+# No secrets needed: the Sanity dataset is publicly readable (drafts are
+# filtered out in the queries, see lib/games.js), and nothing else is
+# reached at build time.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SANITY_PROJECT_ID: fk9d1x48
+      NEXT_PUBLIC_SANITY_DATASET: production
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
