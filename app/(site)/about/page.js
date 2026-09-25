@@ -1,12 +1,12 @@
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { pageMetadata } from "@/lib/i18n/metadata";
+import { CONTACT_EMAIL } from "@/lib/contact";
 
-export const metadata = {
-  title: "About Us",
-  description:
-    "Meet Moss Games, a small team of game developers based in Toulouse, France.",
-};
-
-const CONTACT_EMAIL = "contact@mossgames.fr";
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const t = getTranslator(locale);
+  return pageMetadata({ path: "/about", locale, title: t("meta.aboutTitle"), description: t("meta.aboutDescription") });
+}
 
 // Names stay as-is in every locale (proper nouns); only bioKey is translated
 // (see lib/i18n/translations.js's aboutPage.bios).

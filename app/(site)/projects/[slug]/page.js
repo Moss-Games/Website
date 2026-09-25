@@ -8,6 +8,7 @@ import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
 import { translateGame, getGameTranslation } from "@/lib/i18n/content-utils";
+import { pageMetadata } from "@/lib/i18n/metadata";
 import SteamWidget from "../../components/SteamWidget";
 import Reveal from "../../components/Reveal";
 import ScreenshotGallery from "../../components/ScreenshotGallery";
@@ -66,17 +67,16 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const game = await getGame(slug);
-  if (!game) return {};
-  const title = `${game.title} | Moss Games`;
-  const description = game.tagline || undefined;
-  return {
-    title,
-    description,
-    // The route's own opengraph-image.js supplies the image.
-    openGraph: { title, description, siteName: "Moss Games", type: "website" },
-    twitter: { card: "summary_large_image", title, description },
-  };
+  const [raw, locale] = await Promise.all([getGame(slug), getLocale()]);
+  if (!raw) return {};
+  const game = translateGame(raw, locale);
+  // The route's own opengraph-image.js supplies the image.
+  return pageMetadata({
+    path: `/projects/${slug}`,
+    locale,
+    title: game.title,
+    description: game.tagline || undefined,
+  });
 }
 
 // Tag clouds (platforms/languages/genres) get a slight alternating tilt

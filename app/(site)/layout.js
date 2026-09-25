@@ -1,7 +1,8 @@
 import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import { getLocale } from "@/lib/i18n/server";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { OG_LOCALES, SITE_URL, localeAlternates } from "@/lib/i18n/metadata";
 import MascotFrame from "./components/MascotFrame";
 import { LocaleProvider } from "./components/LocaleProvider";
 import "./globals.css";
@@ -25,17 +26,31 @@ const superCorn = localFont({
   display: "swap",
 });
 
-const SITE_URL = "https://www.mossgames.fr";
 const SITE_DESCRIPTION =
   "Moss Games is a small indie video game studio based in Toulouse, France, crafting story-driven games and immersive environments.";
 
-export const metadata = {
+// Site-wide defaults; each page's own generateMetadata (via
+// lib/i18n/metadata.js's pageMetadata) overrides title/description/
+// alternates in the visitor's language.
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const t = getTranslator(locale);
+  return {
+    ...baseMetadata,
+    description: t("meta.siteDescription"),
+    // Only the RSS link here: a canonical/hreflang set in the layout would
+    // leak onto any page that forgot its own (pages set the full set).
+    alternates: { types: localeAlternates("/", locale).types },
+    openGraph: { ...baseMetadata.openGraph, locale: OG_LOCALES[locale] },
+  };
+}
+
+const baseMetadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: "Moss Games",
     template: "%s | Moss Games",
   },
-  description: SITE_DESCRIPTION,
   keywords: [
     "Moss Games",
     "moss games",
@@ -46,6 +61,8 @@ export const metadata = {
     "Toulouse video game studio",
     "French indie game studio",
     "indie game developers France",
+    "studio de jeux vidéo Toulouse",
+    "jeux vidéo indépendants",
   ],
   icons: {
     // favicon.ico first: some crawlers (Google included) and older browsers
@@ -98,8 +115,7 @@ const jsonLd = {
 
 export default async function RootLayout({ children }) {
   // Drives both the <html lang> attribute and LocaleProvider's initial
-  // state (see lib/i18n/server.js). Sanity content and metadata stay
-  // English regardless (see lib/i18n/translations.js's header comment).
+  // state (see lib/i18n/server.js).
   const locale = await getLocale();
 
   return (

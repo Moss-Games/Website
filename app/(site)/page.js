@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getGames } from "@/lib/games";
 import { getDiscordInvite } from "@/lib/discord";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { pageMetadata } from "@/lib/i18n/metadata";
 import { translateGame } from "@/lib/i18n/content-utils";
 import GameCard from "./components/GameCard";
 import DiscordCard from "./components/DiscordCard";
@@ -14,10 +15,11 @@ import Footer from "./components/Footer";
 import ButtonDrift from "./components/ButtonDrift";
 import styles from "./page.module.css";
 
-export const metadata = {
-  description:
-    "Moss Games is a small indie video game studio based in Toulouse, France, crafting story-driven games and immersive environments.",
-};
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const t = getTranslator(locale);
+  return pageMetadata({ path: "/", locale, title: undefined, description: t("meta.siteDescription") });
+}
 
 export default async function Home() {
   const locale = await getLocale();

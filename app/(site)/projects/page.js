@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { getGames } from "@/lib/games";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { pageMetadata } from "@/lib/i18n/metadata";
 import { translateGame } from "@/lib/i18n/content-utils";
 import GameCard from "../components/GameCard";
 import Reveal from "../components/Reveal";
 import styles from "./page.module.css";
 
-export const metadata = {
-  title: "All Projects",
-  description:
-    "Every game from Moss Games, an indie video game studio based in Toulouse, France.",
-};
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const t = getTranslator(locale);
+  return pageMetadata({ path: "/projects", locale, title: t("meta.projectsTitle"), description: t("meta.projectsDescription") });
+}
 
 export default async function GamesPage() {
   const locale = await getLocale();

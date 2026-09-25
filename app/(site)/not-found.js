@@ -1,8 +1,10 @@
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import NotFoundContent from "./components/NotFoundContent";
 
-export const metadata = {
-  title: "Page Not Found",
-};
+export async function generateMetadata() {
+  const t = getTranslator(await getLocale());
+  return { title: t("meta.notFoundTitle"), robots: { index: false } };
+}
 
 // Renders inside the (site) layout (MascotFrame included) whenever a
 // route segment throws notFound(), e.g. a broken /projects/<slug> or

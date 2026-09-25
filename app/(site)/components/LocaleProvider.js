@@ -22,9 +22,17 @@ export function LocaleProvider({ initialLocale, children }) {
       if (!isLocale(next) || next === locale) return;
       document.cookie = `${LOCALE_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
       setLocaleState(next);
-      // Re-runs Server Components (pages, Footer, NewsSection, ...) with the
-      // new cookie so their own getLocale()-driven text updates too.
-      router.refresh();
+      // A `?lang=` in the URL (proxy.js) would force the old language back
+      // on the next request, so drop it; otherwise just re-run Server
+      // Components (pages, Footer, NewsSection, ...) with the new cookie so
+      // their own getLocale()-driven text updates too.
+      const url = new URL(window.location.href);
+      if (url.searchParams.has("lang")) {
+        url.searchParams.delete("lang");
+        router.replace(url.pathname + url.search + url.hash, { scroll: false });
+      } else {
+        router.refresh();
+      }
     },
     [locale, router]
   );

@@ -1,4 +1,4 @@
-const BASE_URL = "https://www.mossgames.fr";
+import { SITE_URL as BASE_URL } from "@/lib/i18n/metadata";
 
 export default function robots() {
   return {

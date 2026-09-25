@@ -7,6 +7,7 @@ import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
 import { translateGame, translatePostSummary, getPostTranslation } from "@/lib/i18n/content-utils";
+import { pageMetadata } from "@/lib/i18n/metadata";
 import GameCard from "../../components/GameCard";
 import PostCarousel from "../../components/PostCarousel";
 import PostMosaic from "../../components/PostMosaic";
@@ -125,17 +126,17 @@ function relatedCardProps(related, locale) {
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const post = await getNewsPost(slug);
+  const [post, locale] = await Promise.all([getNewsPost(slug), getLocale()]);
   if (!post) return {};
-  const title = `${post.title} | Moss Games`;
-  const description = firstSentence(post.excerpt) || undefined;
-  return {
+  const { title, excerpt } = translatePostSummary({ ...post, slug }, locale);
+  // The route's own opengraph-image.js supplies the image.
+  return pageMetadata({
+    path: `/news/${slug}`,
+    locale,
     title,
-    description,
-    // The route's own opengraph-image.js supplies the image.
-    openGraph: { title, description, siteName: "Moss Games", type: "article" },
-    twitter: { card: "summary_large_image", title, description },
-  };
+    description: firstSentence(excerpt) || undefined,
+    type: "article",
+  });
 }
 
 export default async function NewsPostPage({ params }) {

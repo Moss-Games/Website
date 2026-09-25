@@ -4,14 +4,15 @@ import { getNewsPosts, firstSentence } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { pageMetadata } from "@/lib/i18n/metadata";
 import { translatePostSummary } from "@/lib/i18n/content-utils";
 import styles from "./page.module.css";
 
-export const metadata = {
-  title: "News",
-  description:
-    "The latest updates, devlogs, and announcements from Moss Games.",
-};
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const t = getTranslator(locale);
+  return pageMetadata({ path: "/news", locale, title: t("meta.newsTitle"), description: t("meta.newsDescription") });
+}
 
 export default async function NewsPage() {
   const locale = await getLocale();
