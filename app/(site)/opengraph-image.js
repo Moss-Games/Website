@@ -4,8 +4,8 @@ import { join } from "node:path";
 
 // The default social-share card for every route that doesn't provide its
 // own opengraph-image.js (games/[slug] and news/[slug] override this with
-// content-specific art). Reads local assets once at module scope — see
-// Next.js's opengraph-image docs, "Using Node.js runtime with local assets".
+// content-specific art). Reads local assets once at module scope (see
+// Next.js's opengraph-image docs, "Using Node.js runtime with local assets").
 const logoData = await readFile(join(process.cwd(), "public/images/logo.png"));
 const logoSrc = `data:image/png;base64,${logoData.toString("base64")}`;
 const superCornData = await readFile(
@@ -35,7 +35,7 @@ export default async function Image() {
           Moss Games
         </div>
         <div style={{ display: "flex", fontSize: 32, color: "#a1a1aa" }}>
-          Video game studio — Toulouse, France
+          Video game studio, Toulouse, France
         </div>
       </div>
     ),

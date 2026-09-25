@@ -15,8 +15,8 @@ export async function POST(request) {
     const result = await addNewsletterSignup(email.trim().toLowerCase());
 
     if (result.status === "created") {
-      // Don't fail the signup if Resend can't be reached — the subscriber
-      // is already stored either way.
+      // Don't fail the signup if Resend can't be reached (the subscriber
+      // is already stored either way).
       try {
         await triggerWelcomeEmail(email.trim().toLowerCase());
       } catch (error) {

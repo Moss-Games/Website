@@ -4,14 +4,15 @@ import { getNewsPosts, splitFeaturedNews } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { translatePostSummary } from "@/lib/i18n/content-utils";
 import ButtonDrift from "./ButtonDrift";
 import styles from "./FeaturedNews.module.css";
 
-// The homepage's top-of-page highlight — the one editorially-picked story
-// (lib/news.js's splitFeaturedNews, set in Sanity via the post's "Featured
+// The homepage's top-of-page highlight (the one editorially-picked story,
+// lib/news.js's splitFeaturedNews, set in Sanity via the post's "Featured
 // on homepage" checkbox), shown above the games grid as a single cropped
-// image with the title/date burned directly onto it (a black text outline —
-// see FeaturedNews.module.css's .date/.title — keeps them readable without
+// image with the title/date burned directly onto it (a black text outline,
+// see FeaturedNews.module.css's .date/.title, keeps them readable without
 // darkening the photo itself) rather than a separate text block, so there's
 // nothing to look at here but the picture itself. The rest of the recent posts still
 // show later on the page as NewsSection's plain list; this only ever
@@ -24,6 +25,7 @@ export default async function FeaturedNews() {
   const { featured } = splitFeaturedNews(posts);
   if (!featured) return null;
 
+  const { title } = translatePostSummary(featured, locale);
   const coverSrc = featured.cover ? imageUrl(featured.cover, { width: 720, height: 320 }) : null;
   const dateLabel = featured.publishedAt
     ? new Date(featured.publishedAt).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", {
@@ -41,7 +43,7 @@ export default async function FeaturedNews() {
           as its own left-aligned line, since overlaying it directly on a
           cropped cover risks landing on top of whatever a cover's own
           baked-in logo/title art happens to sit near the bottom (see the
-          .card comment above) — same "duplicate + toggle visibility per
+          .card comment above), same "duplicate + toggle visibility per
           breakpoint" pattern as MascotFrame's .brandMobile. */}
       {dateLabel && <p className={styles.dateMobile}>{dateLabel}</p>}
       <Link href={`/news/${featured.slug}`} className={styles.card}>
@@ -50,7 +52,7 @@ export default async function FeaturedNews() {
             className={styles.cover}
             src={coverSrc}
             unoptimized={isGifUrl(coverSrc)}
-            alt=""
+            alt={featured.cover.alt || ""}
             fill
             sizes="(min-width: 40rem) 36rem, 100vw"
             priority
@@ -58,7 +60,7 @@ export default async function FeaturedNews() {
         ) : null}
         <div className={styles.text}>
           {dateLabel && <p className={styles.date}>{dateLabel}</p>}
-          <h2 className={styles.title}>{featured.title}</h2>
+          <h2 className={styles.title}>{title}</h2>
         </div>
       </Link>
 

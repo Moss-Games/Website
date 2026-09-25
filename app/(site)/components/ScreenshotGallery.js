@@ -11,6 +11,7 @@ import styles from "./ScreenshotGallery.module.css";
 // clicking one. Needs to be a client component for the open/close state.
 export default function ScreenshotGallery({
   screenshots,
+  alts = [],
   title,
   screenshotLabel = "screenshot",
   closeLabel = "Close",
@@ -40,7 +41,7 @@ export default function ScreenshotGallery({
             <Image
               src={src}
               unoptimized={isGifUrl(src)}
-              alt={`${title} ${screenshotLabel} ${index + 1}`}
+              alt={alts[index] || `${title} ${screenshotLabel} ${index + 1}`}
               fill
               sizes="(min-width: 60rem) 33vw, 45vw"
             />
@@ -50,6 +51,7 @@ export default function ScreenshotGallery({
 
       <Lightbox
         images={screenshots}
+        alts={alts}
         openIndex={openIndex}
         onClose={close}
         onPrev={showPrev}

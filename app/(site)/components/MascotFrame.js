@@ -16,7 +16,7 @@ const SETTLE_DURATION = 200;
  * Wraps the site content in the Moss Games mascot's arms.
  *
  * Concept: the mascot stands *behind* the content box, hugging it. The box
- * hides most of its body — only the head (top), hands (sides) and feet
+ * hides most of its body: only the head (top), hands (sides) and feet
  * (bottom) are drawn, poking out past the box's edges. The head and hands
  * are cropped from the real logo artwork and overlap *on top of* the page
  * content (not just the outside of the border), so they visibly grip and
@@ -26,10 +26,10 @@ const SETTLE_DURATION = 200;
  * "MOSS" / "GAMES" flank the head in the margin, set in the Super Corn display
  * font (app/fonts/SuperCorn.ttf, wired up in app/layout.js).
  *
- * While the page content is scrolling — wheel, touch drag, or momentum/
- * inertial scroll after a finger lifts — the hands wiggle back and forth
+ * While the page content is scrolling (wheel, touch drag, or momentum/
+ * inertial scroll after a finger lifts), the hands wiggle back and forth
  * (rotating around the wrist, where they meet the border) as if the mascot
- * were the one dragging the page — see .scrolling in the CSS module.
+ * were the one dragging the page (see .scrolling in the CSS module).
  * Scrolling down leans both hands upward (as if pulling the page down past
  * them); scrolling up leans them downward. --mascot-scroll-dir carries that
  * sign into the CSS; the two hands' rotation formulas are mirrored (one adds
@@ -37,15 +37,15 @@ const SETTLE_DURATION = 200;
  * direction rather than opposite ways.
  *
  * Stopping a running CSS animation snaps its property to its resting value
- * instantly — transitions don't pick up where an animation left off. So on
+ * instantly (transitions don't pick up where an animation left off). So on
  * the last scroll event, instead of just dropping .scrolling, we read the
  * hands' current mid-wiggle angle, freeze it as an inline override, stop the
- * animation, then (a frame later) transition that frozen angle down to 0 —
- * handing off from animation to transition smoothly instead of snapping.
+ * animation, then (a frame later) transition that frozen angle down to 0
+ * (handing off from animation to transition smoothly instead of snapping).
  *
  * Full writeup + the original sketch: docs/DESIGN.md
  * All shape/position tuning lives in MascotFrame.module.css as CSS custom
- * properties — change those before touching this markup.
+ * properties (change those before touching this markup).
  */
 export default function MascotFrame({ children }) {
   const { t } = useLocale();
@@ -106,9 +106,9 @@ export default function MascotFrame({ children }) {
     // Driven off the actual `scroll` event rather than `wheel`/`touchmove`:
     // those only fire while an input device is actively moving, so on mobile
     // the hands would freeze the moment a finger lifts even though the page
-    // keeps gliding from momentum/inertial scrolling — `scroll` keeps firing
+    // keeps gliding from momentum/inertial scrolling (`scroll` keeps firing
     // for as long as scrollTop is actually changing, covering wheel, touch
-    // drag, and momentum scroll alike with one code path.
+    // drag, and momentum scroll alike with one code path).
     const handleScroll = () => {
       const top = content.scrollTop;
       const deltaY = top - scrollTopRef.current;
@@ -181,8 +181,8 @@ export default function MascotFrame({ children }) {
       {/* Sibling of .content, not a child of it: positioned (via
           LocaleToggle.module.css) relative to this .box, so it floats over
           the white area's top-right corner without scrolling away with the
-          page — same "fixed regardless of .content's scroll" trick as
-          .logo, but scoped to the box instead of the viewport. Deliberately
+          page (same "fixed regardless of .content's scroll" trick as
+          .logo, but scoped to the box instead of the viewport). Deliberately
           kept out of .topNav (the black margin band) per the design brief:
           this toggle belongs on the white page, not with the mascot. */}
       <LocaleToggle />

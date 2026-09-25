@@ -107,8 +107,8 @@
 .back:hover {
   /* See app/components/GameCard.module.css's cardHoverIn for why enter/leave
      are asymmetric: a keyframe shake+grow going in, a plain transition
-     shrink-back going out. Lighter amplitude than a card — this is inline
-     text, not a block. */
+     shrink-back going out. Lighter amplitude than a card (this is inline
+     text, not a block). */
   animation: textLinkHoverIn 0.2s ease forwards;
   color: #18181b;
 }

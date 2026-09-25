@@ -7,7 +7,7 @@ import styles from "./PostCarousel.module.css";
 
 const AUTOPLAY_MS = 5000;
 
-// A post body's inline "carousel" block (sanity/schemaTypes/postType.js) —
+// A post body's inline "carousel" block (sanity/schemaTypes/postType.js):
 // unlike ScreenshotGallery's click-to-fullscreen lightbox, this renders
 // directly in the article flow: one image visible at a time, arrows + dots
 // + swipe to move between them, auto-advancing every 5s. `images` is
@@ -16,8 +16,8 @@ const AUTOPLAY_MS = 5000;
 //
 // Slides sit side by side in a flex track that's translated horizontally
 // (see .track/.slide below) rather than swapping a single <Image> on
-// index change — that's what makes the transition a smooth slide instead
-// of an instant cut. Every slide fills the same fixed-aspect-ratio
+// index change (that's what makes the transition a smooth slide instead
+// of an instant cut). Every slide fills the same fixed-aspect-ratio
 // viewport via object-fit:cover, so the height never jumps between slides
 // of differing source aspect ratios mid-transition.
 export default function PostCarousel({
@@ -38,9 +38,9 @@ export default function PostCarousel({
     setIndex((current) => (current + 1) % images.length);
   }, [images.length]);
 
-  // Paused on hover/focus (mouse) and while a touch drag is in progress —
-  // otherwise the autoplay could yank the carousel forward while someone's
-  // mid-swipe or reading a caption.
+  // Paused on hover/focus (mouse) and while a touch drag is in progress
+  // (otherwise the autoplay could yank the carousel forward while someone's
+  // mid-swipe or reading a caption).
   useEffect(() => {
     if (images.length <= 1 || paused) return;
     const id = setInterval(showNext, AUTOPLAY_MS);
@@ -56,7 +56,7 @@ export default function PostCarousel({
     if (touchStartX.current === null) return;
     const delta = event.changedTouches[0].clientX - touchStartX.current;
     touchStartX.current = null;
-    // Ignore small drags/taps — only treat a real swipe as navigation.
+    // Ignore small drags/taps (only treat a real swipe as navigation).
     if (Math.abs(delta) < 40) return;
     if (delta > 0) showPrev();
     else showNext();

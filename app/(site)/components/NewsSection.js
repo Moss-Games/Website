@@ -4,11 +4,12 @@ import { getNewsPosts, firstSentence, splitFeaturedNews } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { translatePostSummary } from "@/lib/i18n/content-utils";
 import ButtonDrift from "./ButtonDrift";
 import styles from "./NewsSection.module.css";
 
 // The homepage's News box: a plain list of the 3 most recent posts
-// (excluding whichever one is currently featured — that one shows
+// (excluding whichever one is currently featured; that one shows
 // separately, above the games grid, via FeaturedNews) and an "All News"
 // CTA underneath. Server Component: fetches directly, same as /news.
 export default async function NewsSection() {
@@ -29,6 +30,7 @@ export default async function NewsSection() {
           <div className={styles.list}>
             {recent.map((post) => {
               const coverSrc = post.cover ? imageUrl(post.cover, { width: 200, height: 200 }) : null;
+              const { title, excerpt } = translatePostSummary(post, locale);
               return (
                 <Link key={post.slug} href={`/news/${post.slug}`} className={styles.item}>
                   {coverSrc ? (
@@ -36,7 +38,7 @@ export default async function NewsSection() {
                       className={styles.itemCover}
                       src={coverSrc}
                       unoptimized={isGifUrl(coverSrc)}
-                      alt=""
+                      alt={post.cover.alt || ""}
                       width={96}
                       height={96}
                     />
@@ -53,9 +55,9 @@ export default async function NewsSection() {
                         })}
                       </p>
                     )}
-                    <p className={styles.itemTitle}>{post.title}</p>
-                    {post.excerpt && (
-                      <p className={styles.itemExcerpt}>{firstSentence(post.excerpt, 140)}</p>
+                    <p className={styles.itemTitle}>{title}</p>
+                    {excerpt && (
+                      <p className={styles.itemExcerpt}>{firstSentence(excerpt, 140)}</p>
                     )}
                     <span className={styles.itemCta}>
                       {t("common.readMore")} <span className={styles.arrow}>→</span>

@@ -1,11 +1,11 @@
-/* Shrink-wraps whatever button it's given — sized/positioned entirely by
-   its child, this only adds a transform target (ButtonDrift.js) and the
+/* Shrink-wraps whatever button it's given (sized/positioned entirely by
+   its child); this only adds a transform target (ButtonDrift.js) and the
    wind-streak decoration behind it. inline-flex + flex-shrink:0 so wrapping
    a flex item (e.g. Newsletter's .button inside its .form row) doesn't
    change that item's own sizing behavior. */
 .drift {
   position: relative;
-  /* z-index (any value) turns this into a real local stacking context —
+  /* z-index (any value) turns this into a real local stacking context;
      without it, position:relative alone doesn't create one, and .streaks'
      z-index:-1 below would escape to the nearest ancestor that does,
      landing behind page content well past this button instead of just
@@ -15,11 +15,11 @@
   flex-shrink: 0;
   /* Some consumers (e.g. projects/[slug]'s .sidebar) are flex columns with
      the default align-items:stretch, which would otherwise stretch this
-     wrapper to the full column width — .streaks' percentage-based streak
+     wrapper to the full column width. .streaks' percentage-based streak
      positions are relative to *this* box, so a stretched wrapper put them
      off to the side of the (visually narrower) button instead of centered
      on it. `width: fit-content` opts out of stretch sizing without an
-     align-self override — align-self:flex-start would fix the sidebar case
+     align-self override: align-self:flex-start would fix the sidebar case
      but also force left-alignment inside other consumers (e.g. the
      homepage's Reveal, which centers this same button via its own
      align-items:center on the parent), which broke that centering. */
@@ -27,8 +27,8 @@
   max-width: 100%;
 }
 
-/* Only ever gets `rotate()` from ButtonDrift.js — the position lag
-   (`translateY`) lives on .drift itself instead, so the wind streaks below
+/* Only ever gets `rotate()` from ButtonDrift.js (the position lag,
+   `translateY`, lives on .drift itself instead), so the wind streaks below
    (siblings of .tilt, not descendants of it) translate along with the
    button but never inherit its tilt and stay strictly vertical. */
 .tilt {
@@ -43,8 +43,8 @@
   pointer-events: none;
 }
 
-/* Short vertical bars planted right on the button's trailing edge — the
-   edge it just moved away from, not the one it's heading toward — like
+/* Short vertical bars planted right on the button's trailing edge (the
+   edge it just moved away from, not the one it's heading toward), like
    wind lines rushing past a moving object. ButtonDrift.js sets
    data-wind-dir="1" (scrolling down, trail above) or "-1" (scrolling up,
    trail below) on .drift; --wind-opacity/--wind-scale fade and shrink them
@@ -52,19 +52,19 @@
 
    Anchored with top/bottom (percentages of the *wrap's* box, which top/
    bottom resolve against) rather than a translateY offset from a top:0
-   default — translateY's percentage is relative to the bar's own tiny
-   size, so it can't reach "past the wrap's edge" the way `top: 100%` can. */
+   default (translateY's percentage is relative to the bar's own tiny
+   size, so it can't reach "past the wrap's edge" the way `top: 100%` can). */
 .streak {
   position: absolute;
   /* A whole-pixel width (not e.g. 2.5px) so all three bars render at the
-     exact same thickness — a fractional width can snap to different
-     rounded pixel widths depending on each bar's left offset, which is
+     exact same thickness (a fractional width can snap to different
+     rounded pixel widths depending on each bar's left offset), which is
      what made the left one look thicker than the other two. */
   width: 2px;
   height: 14px;
   border-radius: 999px;
   background: #18181b;
-  /* Only --wind-opacity drives opacity — all three bars share it equally. */
+  /* Only --wind-opacity drives opacity (all three bars share it equally). */
   opacity: var(--wind-opacity, 0);
 }
 
@@ -73,8 +73,8 @@
 }
 .streak:nth-child(2) {
   left: 50%;
-  /* Middle bar reads taller/longer than its neighbors on purpose — a small
-     scattered-lengths touch rather than 3 uniform dashes. */
+  /* Middle bar reads taller/longer than its neighbors on purpose (a small
+     scattered-lengths touch rather than 3 uniform dashes). */
   height: 18px;
 }
 .streak:nth-child(3) {

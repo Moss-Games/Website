@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 // Display font for the "MOSS"/"GAMES" wordmark flanking the mascot's head.
-// Super Corn by Ali Hamidi (fontspace.com/super-corn-font-f102376) — freeware,
+// Super Corn by Ali Hamidi (fontspace.com/super-corn-font-f102376), freeware,
 // free for personal and commercial use. Self-hosted in app/fonts/.
 const superCorn = localFont({
   src: "./fonts/SuperCorn.ttf",
@@ -71,7 +71,7 @@ export const metadata = {
 // "MossGames" name variants refer to this studio, and gives it a square
 // logo to show next to search results / in the knowledge panel. Sitelinks
 // (News, All Projects, About) are otherwise fully automatic on Google's
-// side — this just gives it the clearest signal we can about site identity.
+// side; this just gives it the clearest signal we can about site identity.
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -98,7 +98,7 @@ const jsonLd = {
 
 export default async function RootLayout({ children }) {
   // Drives both the <html lang> attribute and LocaleProvider's initial
-  // state — see lib/i18n/server.js. Sanity content and metadata stay
+  // state (see lib/i18n/server.js). Sanity content and metadata stay
   // English regardless (see lib/i18n/translations.js's header comment).
   const locale = await getLocale();
 
@@ -110,7 +110,7 @@ export default async function RootLayout({ children }) {
       <body className="min-h-full w-full flex flex-col">
         <script
           type="application/ld+json"
-          // Static, hardcoded object above — no user input reaches this.
+          // Static, hardcoded object above (no user input reaches this).
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <LocaleProvider initialLocale={locale}>

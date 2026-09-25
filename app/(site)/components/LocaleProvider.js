@@ -8,7 +8,7 @@ import { createTranslator } from "@/lib/i18n/utils";
 
 const LocaleContext = createContext(null);
 
-// Client-side counterpart to lib/i18n/server.js's getLocale/getTranslator —
+// Client-side counterpart to lib/i18n/server.js's getLocale/getTranslator:
 // needed because Client Components (MascotFrame's scroll handling, the
 // toggle itself, the newsletter form...) can't call the server-only
 // cookies() API those use. Seeded from the cookie the root layout already

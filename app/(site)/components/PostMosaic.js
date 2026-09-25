@@ -6,7 +6,7 @@ import { isGifUrl } from "@/lib/isGifUrl";
 import Lightbox from "./Lightbox";
 import styles from "./PostMosaic.module.css";
 
-// A post body's inline "mosaic" block (sanity/schemaTypes/postType.js) —
+// A post body's inline "mosaic" block (sanity/schemaTypes/postType.js):
 // an adaptive 1-4 image grid (see page.module.css's .count1-4 for the
 // per-count layout), each cell clickable to open the same full-screen
 // Lightbox (app/(site)/components/Lightbox.js) ScreenshotGallery uses.
@@ -57,6 +57,7 @@ export default function PostMosaic({
 
       <Lightbox
         images={images.map((image) => image.src)}
+        alts={images.map((image) => image.alt)}
         openIndex={openIndex}
         onClose={close}
         onPrev={showPrev}

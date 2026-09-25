@@ -7,19 +7,21 @@ import { parseSteamAppId, fetchSteamLiveStats } from "@/lib/steam";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { translateGame, getGameTranslation } from "@/lib/i18n/content-utils";
 import SteamWidget from "../../components/SteamWidget";
 import Reveal from "../../components/Reveal";
 import ScreenshotGallery from "../../components/ScreenshotGallery";
 import ButtonDrift from "../../components/ButtonDrift";
+import TranslatedRichText from "../../components/TranslatedRichText";
 import styles from "./page.module.css";
 
 const SITE_URL = "https://www.mossgames.fr";
 
 // Sanity encodes an image asset's intrinsic size in its ref, e.g.
-// "image-abc123-1600x900-jpg" — pulled out here so next/image gets a real
-// width/height (and correct aspect ratio) without a network round-trip.
-// Same helper as app/(site)/news/[slug]/page.js's — kept local rather than
-// shared since the two pages' image styling differs.
+// "image-abc123-1600x900-jpg" (pulled out here so next/image gets a real
+// width/height, and correct aspect ratio, without a network round-trip).
+// Same helper as app/(site)/news/[slug]/page.js's (kept local rather than
+// shared since the two pages' image styling differs).
 function imageDimensions(source) {
   const ref = source?.asset?._ref || "";
   const match = ref.match(/-(\d+)x(\d+)-/);
@@ -28,7 +30,7 @@ function imageDimensions(source) {
 }
 
 // Renders `image` blocks dropped inline into a game's description Portable
-// Text (see the `description` field in sanity/schemaTypes/gameType.js) —
+// Text (see the `description` field in sanity/schemaTypes/gameType.js):
 // plain blocks render fine with PortableText's defaults, but non-text block
 // types need an explicit component or they're silently skipped. Also what
 // "Fetch from Steam" fills the description with, images included (see
@@ -77,8 +79,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// Tag clouds (platforms/languages/genres) get a slight alternating tilt —
-// a "scattered stickers" look, straightened out on hover — rather than a
+// Tag clouds (platforms/languages/genres) get a slight alternating tilt
+// (a "scattered stickers" look, straightened out on hover) rather than a
 // dry comma-joined list. See docs/DESIGN.md for the site's general "shake
 // +grow on hover" motif (GameCard.module.css's cardHoverIn is the original).
 function TagList({ label, items }) {
@@ -108,20 +110,26 @@ function TagList({ label, items }) {
 
 export default async function GamePage({ params }) {
   const { slug } = await params;
-  const t = getTranslator(await getLocale());
+  const locale = await getLocale();
+  const t = getTranslator(locale);
   const game = await getGame(slug);
   if (!game) notFound();
+  // Overlays title/tagline/badges/features/systemRequirements with
+  // lib/i18n/content.js's French copy when one exists (description, rich
+  // text, is handled separately below via TranslatedRichText).
+  const tg = translateGame(game, locale);
+  const gameTranslation = locale === "fr" ? getGameTranslation(slug) : null;
 
-  // Live price/reviews only apply to Steam listings — appId comes from the
+  // Live price/reviews only apply to Steam listings (appId comes from the
   // same storeUrl the page's store button already links to, no separate
-  // field (see sanity/schemaTypes/gameType.js for why that split was undone).
+  // field, see sanity/schemaTypes/gameType.js for why that split was undone).
   const steamAppId = game.storeUrl ? parseSteamAppId(game.storeUrl) : null;
   const steamStats = steamAppId ? await fetchSteamLiveStats(steamAppId) : null;
   const isItchUrl = Boolean(game.storeUrl && game.storeUrl.includes("itch.io"));
 
   // No aggregateRating/review data exists, so this won't trigger a Google
-  // rich card — price is free text (e.g. "Free to Play"), too unreliable to
-  // parse into a structured Offer, so left out rather than risk bad data.
+  // rich card (price is free text, e.g. "Free to Play", too unreliable to
+  // parse into a structured Offer), so left out rather than risk bad data.
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "VideoGame",
@@ -138,7 +146,7 @@ export default async function GamePage({ params }) {
       <script
         type="application/ld+json"
         // game is CMS content, but every field here is plain text/URLs
-        // serialized as JSON — no HTML is interpolated.
+        // serialized as JSON (no HTML is interpolated).
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {game.heroImage && (
@@ -147,7 +155,7 @@ export default async function GamePage({ params }) {
             className={styles.header}
             src={game.heroImage}
             unoptimized={isGifUrl(game.heroImage)}
-            alt={game.title}
+            alt={game.heroAlt || game.title}
             fill
             priority
             sizes="100vw"
@@ -160,13 +168,13 @@ export default async function GamePage({ params }) {
           {t("common.back")}
         </Link>
 
-        <h1 className={styles.title}>{game.title}</h1>
-        {game.tagline && <p className={styles.tagline}>{game.tagline}</p>}
+        <h1 className={styles.title}>{tg.title}</h1>
+        {tg.tagline && <p className={styles.tagline}>{tg.tagline}</p>}
 
         {/* Below ~60rem this just stacks in source order (sidebar bits
             first, so the CTA stays above the fold on mobile); past that,
             .layout switches to a row and .sidebar's `order` moves it to
-            the right — see page.module.css. */}
+            the right, see page.module.css. */}
         <div className={styles.layout}>
           <div className={styles.sidebar}>
             {game.storeUrl && (
@@ -218,16 +226,16 @@ export default async function GamePage({ params }) {
                 {game.price && !steamAppId && (
                   <div>
                     <dt>{t("projectPage.price")}</dt>
-                    <dd>{game.price}</dd>
+                    <dd>{game.price === "Free to Play" ? t("common.freeToPlay") : game.price}</dd>
                   </div>
                 )}
               </dl>
             )}
 
             <div className={styles.tagGroups}>
-              {/* Steam's own store page already shows platform support —
-                  redundant here, and this site can't keep it in sync with
-                  Steam anyway. */}
+              {/* Steam's own store page already shows platform support
+                  (redundant here, and this site can't keep it in sync with
+                  Steam anyway). */}
               {!steamAppId && <TagList label={t("projectPage.platforms")} items={game.platforms} />}
               <TagList label={t("projectPage.genres")} items={game.genres} />
               <TagList label={t("projectPage.languages")} items={game.languages} />
@@ -251,7 +259,7 @@ export default async function GamePage({ params }) {
                 <iframe
                   className={`${styles.trailer} ${styles.trailerYoutube}`}
                   src={game.trailerYoutubeUrl}
-                  title={`${game.title} trailer`}
+                  title={`${tg.title} trailer`}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
                 />
@@ -261,17 +269,25 @@ export default async function GamePage({ params }) {
             {game.description && (
               <Reveal>
                 <div className={styles.description}>
-                  <PortableText value={game.description} components={descriptionComponents} />
+                  {gameTranslation?.description ? (
+                    <TranslatedRichText
+                      entries={gameTranslation.description}
+                      mediaBlocks={game.description.filter((block) => block._type !== "block")}
+                      renderMedia={(block) => descriptionComponents.types[block._type]?.({ value: block })}
+                    />
+                  ) : (
+                    <PortableText value={game.description} components={descriptionComponents} />
+                  )}
                 </div>
               </Reveal>
             )}
 
-            {game.features.length > 0 && (
+            {tg.features.length > 0 && (
               <Reveal>
                 <section>
                   <h2 className={styles.sectionTitle}>{t("projectPage.features")}</h2>
                   <ul className={styles.featureList}>
-                    {game.features.map((feature) => (
+                    {tg.features.map((feature) => (
                       <li key={feature}>{feature}</li>
                     ))}
                   </ul>
@@ -285,7 +301,8 @@ export default async function GamePage({ params }) {
                   <h2 className={styles.sectionTitle}>{t("projectPage.screenshots")}</h2>
                   <ScreenshotGallery
                     screenshots={game.screenshots}
-                    title={game.title}
+                    alts={game.screenshotAlts}
+                    title={tg.title}
                     screenshotLabel={t("common.screenshot")}
                     closeLabel={t("common.close")}
                     prevLabel={t("common.previousImage")}
@@ -295,12 +312,12 @@ export default async function GamePage({ params }) {
               </Reveal>
             )}
 
-            {game.systemRequirements && (
+            {tg.systemRequirements && (
               <Reveal>
                 <section>
                   <h2 className={styles.sectionTitle}>{t("projectPage.systemRequirements")}</h2>
                   <pre className={styles.systemRequirements}>
-                    {game.systemRequirements}
+                    {tg.systemRequirements}
                   </pre>
                 </section>
               </Reveal>

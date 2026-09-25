@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { altField } from "./altField";
 
 // Replaces the old public/games/<Name>/*.txt file-per-field convention (see
 // docs/GAMES.md, docs/DECISIONS.md 2026-09-06). A single `storeUrl` field
@@ -31,12 +32,7 @@ export const gameType = defineType({
           type: "image",
           options: { hotspot: true },
           fields: [
-            defineField({
-              name: "alt",
-              type: "string",
-              title: "Alt text",
-              description: "Important for SEO and accessibility.",
-            }),
+            altField,
             defineField({ name: "caption", type: "string", title: "Caption (optional)" }),
           ],
         },
@@ -62,12 +58,14 @@ export const gameType = defineType({
       name: "headerImage",
       type: "image",
       options: { hotspot: true },
+      fields: [altField],
       description: "Also the homepage card's image (GameCard.js).",
     }),
     defineField({
       name: "libraryHeroImage",
       type: "image",
       options: { hotspot: true },
+      fields: [altField],
       title: "Library hero image",
       description: "Wide banner (Steam's own library_hero.jpg is 1920x620) — preferred for the game page's own hero over the header image.",
     }),
@@ -79,7 +77,11 @@ export const gameType = defineType({
       description: "Fallback when there's no trailer file above — a YouTube link (watch, youtu.be, or embed) is played in its place. Ignored when the trailer file is set.",
     }),
     defineField({ name: "trailerPoster", type: "image", options: { hotspot: true } }),
-    defineField({ name: "screenshots", type: "array", of: [{ type: "image", options: { hotspot: true } }] }),
+    defineField({
+      name: "screenshots",
+      type: "array",
+      of: [{ type: "image", options: { hotspot: true }, fields: [altField] }],
+    }),
     defineField({ name: "order", type: "number", description: "Homepage card position, ascending." }),
     defineField({
       name: "showOnHomepage",

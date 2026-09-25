@@ -1,6 +1,6 @@
 // Handles genuinely unmatched URLs (e.g. a typo'd path) across the whole
-// app. This site has two root layouts — app/(site)/layout.js and
-// app/studio/layout.js — so Next.js can't compose a single default 404 from
+// app. This site has two root layouts (app/(site)/layout.js and
+// app/studio/layout.js), so Next.js can't compose a single default 404 from
 // either one (see next.config.mjs's experimental.globalNotFound flag this
 // file requires, and docs/DESIGN.md). Unlike app/(site)/not-found.js (which
 // only catches thrown notFound() calls inside that route tree), this file

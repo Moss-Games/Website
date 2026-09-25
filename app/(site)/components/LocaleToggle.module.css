@@ -1,5 +1,5 @@
 /* Positioned relative to MascotFrame's .box (its nearest positioned
-   ancestor — see MascotFrame.js, where this renders as a sibling of
+   ancestor, see MascotFrame.js, where this renders as a sibling of
    .content, not a child of it), so it floats over the white content area's
    top-right corner and stays put while .content scrolls underneath it. */
 .toggle {

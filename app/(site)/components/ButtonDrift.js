@@ -7,11 +7,11 @@ import styles from "./ButtonDrift.module.css";
  * Wraps one of the site's black CTA buttons (see page.module.css's
  * .seeAllButton, NotFoundContent's .primary, Newsletter's .button,
  * projects/[slug]'s .storeButton) so page scrolling gives it a small
- * physical "yank" — the button lags/springs relative to its own resting
- * (floating) position instead of just riding along with the page, with a
+ * physical "yank" (the button lags/springs relative to its own resting
+ * (floating) position instead of just riding along with the page), with a
  * few motion-streak lines trailing behind it while it's actually moving.
  * Purely additive: doesn't touch the button's own markup, hover, or its
- * separate idle-float CSS animation — this only ever nudges the wrapper.
+ * separate idle-float CSS animation (this only ever nudges the wrapper).
  *
  * Physics constants were tuned in isolation (small node script) before
  * wiring in: ~9px peak displacement on a hard scroll fling, settling with a
@@ -21,9 +21,9 @@ import styles from "./ButtonDrift.module.css";
  * off the spring's own velocity: the spring legitimately overshoots/
  * oscillates as it settles (that's what makes the position feel physical),
  * but that means its velocity sign flips mid-settle even during sustained
- * one-direction scrolling — using it for the streak side made the wind
+ * one-direction scrolling (using it for the streak side made the wind
  * flicker between above/below instead of tracking which way the page was
- * actually moving. windDir/windSpeed track the real scroll input directly
+ * actually moving). windDir/windSpeed track the real scroll input directly
  * and just decay on their own once scrolling stops.
  */
 export default function ButtonDrift({ children, className = "" }) {
@@ -103,7 +103,7 @@ export default function ButtonDrift({ children, className = "" }) {
       const displayed = Math.sqrt(windSpeed);
       wrap.style.setProperty("--wind-opacity", displayed.toFixed(2));
       wrap.style.setProperty("--wind-scale", displayed.toFixed(2));
-      // data-wind-dir (not a CSS var) — the CSS needs to swap which edge
+      // data-wind-dir (not a CSS var): the CSS needs to swap which edge
       // (top vs bottom) the streaks anchor to, not just flip a signed
       // offset, so this drives an attribute selector instead of a calc().
       wrap.dataset.windDir = String(windDir);

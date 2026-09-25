@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getGames } from "@/lib/games";
 import { getDiscordInvite } from "@/lib/discord";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { translateGame } from "@/lib/i18n/content-utils";
 import GameCard from "./components/GameCard";
 import DiscordCard from "./components/DiscordCard";
 import InstagramCard from "./components/InstagramCard";
@@ -19,8 +20,9 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const t = getTranslator(await getLocale());
-  const games = (await getGames()).filter((game) => game.showOnHomepage);
+  const locale = await getLocale();
+  const t = getTranslator(locale);
+  const games = (await getGames()).filter((game) => game.showOnHomepage).map((game) => translateGame(game, locale));
   const discord = await getDiscordInvite();
 
   return (

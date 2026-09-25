@@ -55,7 +55,7 @@
   cursor: pointer;
   transition: transform 0.15s ease, background-color 0.15s ease;
   /* Idle drift, same "life" treatment as the other black CTA buttons across
-     the site (see page.module.css's .seeAllButton) — :hover below swaps
+     the site (see page.module.css's .seeAllButton); :hover below swaps
      this out for the shake-in keyframes. Own negative delay + duration so
      it's out of phase with the other floating black buttons (notably
      .seeAllButton, visible on the same homepage). */

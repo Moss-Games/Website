@@ -8,7 +8,7 @@ const OPTIONS = [
   { code: "fr", label: "FR" },
 ];
 
-// Lives inside MascotFrame's white `.content` area (top-right corner) —
+// Lives inside MascotFrame's white `.content` area (top-right corner),
 // deliberately not in the black margin band with the News/About Us nav
 // links, per the site's design brief.
 export default function LocaleToggle() {

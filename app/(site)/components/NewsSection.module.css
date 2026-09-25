@@ -1,7 +1,7 @@
-/* The homepage News box — sits below the Discord/Instagram section (same
+/* The homepage News box, sits below the Discord/Instagram section (same
    #fafafa/#e4e4e7 card language as Newsletter's .card), spanning the full
    page width rather than a capped max-width like Newsletter's narrow form.
-   The featured story itself lives separately, above the games grid — see
+   The featured story itself lives separately, above the games grid, see
    FeaturedNews.module.css. */
 .box {
   width: 100%;
@@ -29,7 +29,7 @@
   margin: 0;
 }
 
-/* Plain list of the 3 most recent posts (see NewsSection.js) — full-width
+/* Plain list of the 3 most recent posts (see NewsSection.js): full-width
    rows stacked vertically (same idea as news/page.module.css's .list, just
    more compact) rather than small fixed-width cards, so the list actually
    fills the box's full width instead of a few cards floating centered with
@@ -58,7 +58,7 @@
 .item:hover {
   /* See GameCard.module.css's cardHoverIn for why enter/leave are
      asymmetric: a keyframe shake+grow going in, a plain transition
-     shrink-back going out. Lighter amplitude — these sit in a tight row. */
+     shrink-back going out. Lighter amplitude (these sit in a tight row). */
   animation: itemHoverIn 0.2s ease forwards;
   box-shadow: 0 10px 18px -10px rgba(0, 0, 0, 0.3);
 }
@@ -122,7 +122,7 @@
   -webkit-box-orient: vertical;
 }
 
-/* Preview of the post body — same idea as news/page.module.css's .excerpt
+/* Preview of the post body, same idea as news/page.module.css's .excerpt
    (pt::text(body) truncated to its first sentence via lib/news.js's
    firstSentence), just a shorter clamp since this row is more compact. */
 .itemExcerpt {
@@ -153,7 +153,7 @@
   transform: translateX(0.25rem);
 }
 
-/* "See All News" CTA — same dark-button family and idle-float/hover
+/* "See All News" CTA: same dark-button family and idle-float/hover
    treatment as page.module.css's .seeAllButton (that one drives "See All
    Projects" above this box on the homepage); duplicated rather than shared
    because every button like this on the site keeps its own scoped

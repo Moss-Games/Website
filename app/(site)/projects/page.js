@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getGames } from "@/lib/games";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { translateGame } from "@/lib/i18n/content-utils";
 import GameCard from "../components/GameCard";
 import Reveal from "../components/Reveal";
 import styles from "./page.module.css";
@@ -12,11 +13,12 @@ export const metadata = {
 };
 
 export default async function GamesPage() {
-  const t = getTranslator(await getLocale());
+  const locale = await getLocale();
+  const t = getTranslator(locale);
   // Unlike the homepage carousel (gated by each game's "Show on homepage
-  // carousel" checkbox in Sanity), this page always lists every game —
-  // deliberately no filter here.
-  const games = await getGames();
+  // carousel" checkbox in Sanity), this page always lists every game
+  // (deliberately no filter here).
+  const games = (await getGames()).map((game) => translateGame(game, locale));
 
   return (
     <div className={styles.page}>

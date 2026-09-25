@@ -6,16 +6,18 @@ import { getNewsPost, firstSentence } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { translateGame, translatePostSummary, getPostTranslation } from "@/lib/i18n/content-utils";
 import GameCard from "../../components/GameCard";
 import PostCarousel from "../../components/PostCarousel";
 import PostMosaic from "../../components/PostMosaic";
+import TranslatedRichText from "../../components/TranslatedRichText";
 import styles from "./page.module.css";
 
 const SITE_URL = "https://www.mossgames.fr";
 
 // Sanity encodes an image asset's intrinsic size in its ref, e.g.
-// "image-abc123-1600x900-jpg" — pulled out here so next/image gets a real
-// width/height (and correct aspect ratio) without a network round-trip.
+// "image-abc123-1600x900-jpg" (pulled out here so next/image gets a real
+// width/height, and correct aspect ratio, without a network round-trip).
 function imageDimensions(source) {
   const ref = source?.asset?._ref || "";
   const match = ref.match(/-(\d+)x(\d+)-/);
@@ -23,7 +25,7 @@ function imageDimensions(source) {
   return { width: Number(match[1]), height: Number(match[2]) };
 }
 
-// Shared by the carousel/mosaic components below — resolves a raw array of
+// Shared by the carousel/mosaic components below: resolves a raw array of
 // Sanity images (each optionally carrying its own `alt`) to the plain
 // {src, width, height, alt} shape they render from.
 function resolveImages(images, width) {
@@ -37,8 +39,8 @@ function resolveImages(images, width) {
 }
 
 // Renders `image`/`carousel`/`mosaic` blocks dropped inline into a post's
-// Portable Text body (see the `body` field in sanity/schemaTypes/postType.js)
-// — plain text blocks render fine with PortableText's defaults, but these
+// Portable Text body (see the `body` field in sanity/schemaTypes/postType.js):
+// plain text blocks render fine with PortableText's defaults, but these
 // non-text block types need an explicit component or they're silently
 // skipped. Built per-request (inside NewsPostPage, not module scope) so the
 // carousel/mosaic's own aria-labels can be translated via `t`.
@@ -98,20 +100,24 @@ function createBodyComponents(t) {
 
 // Normalizes the resolved `relatedLink` (either a "post" or a "game"
 // document, see sanity/schemaTypes/postType.js) into the shape GameCard
-// expects, so the same card style used on home/all projects can render it —
-// GameCard only ever reads slug/header/badges/title/tagline off `game`.
-function relatedCardProps(related) {
+// expects, so the same card style used on home/all projects can render it
+// (GameCard only ever reads slug/header/badges/title/tagline off `game`).
+function relatedCardProps(related, locale) {
   if (!related) return null;
   const isGame = related._type === "game";
   const image = isGame ? related.headerImage : related.cover;
+  const translated = isGame ? translateGame(related, locale) : translatePostSummary(related, locale);
+  const title = translated.title;
+  const tagline = isGame ? translated.tagline || "" : translated.excerpt ? firstSentence(translated.excerpt) : "";
   return {
     isGame,
     href: isGame ? `/projects/${related.slug}` : `/news/${related.slug}`,
     game: {
       slug: related.slug,
-      title: related.title,
+      title,
       header: image ? imageUrl(image, { width: 800 }) : null,
-      tagline: isGame ? related.tagline || "" : related.excerpt ? firstSentence(related.excerpt) : "",
+      headerAlt: image?.alt || "",
+      tagline,
       badges: [],
     },
   };
@@ -139,12 +145,17 @@ export default async function NewsPostPage({ params }) {
   const post = await getNewsPost(slug);
   if (!post) notFound();
 
-  // No height param (unlike the old fixed-crop fetch) — the hero's own
+  // No height param (unlike the old fixed-crop fetch): the hero's own
   // aspect-ratio + object-fit:cover below does the cropping, same as the
   // game page's headerImage (app/(site)/projects/[slug]/page.js).
   const coverSrc = post.cover ? imageUrl(post.cover, { width: 1600 }) : null;
-  const related = relatedCardProps(post.relatedLink);
+  const related = relatedCardProps(post.relatedLink, locale);
   const bodyComponents = createBodyComponents(t);
+  // getNewsPost()'s query doesn't select `slug` (unlike the list query
+  // translatePostSummary expects), so translations are looked up by the
+  // route's own slug param directly rather than through that helper.
+  const postTranslation = locale === "fr" ? getPostTranslation(slug) : null;
+  const title = postTranslation?.title || post.title;
 
   // BlogPosting rather than NewsArticle: this is a devlog/announcement feed,
   // not journalistic reporting, and NewsArticle's rich-result eligibility
@@ -167,7 +178,7 @@ export default async function NewsPostPage({ params }) {
       <script
         type="application/ld+json"
         // post is CMS content, but every field here is plain text/URLs
-        // serialized as JSON — no HTML from the body is interpolated.
+        // serialized as JSON (no HTML from the body is interpolated).
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {coverSrc && (
@@ -176,7 +187,7 @@ export default async function NewsPostPage({ params }) {
             className={styles.cover}
             src={coverSrc}
             unoptimized={isGifUrl(coverSrc)}
-            alt=""
+            alt={post.cover.alt || ""}
             fill
             priority
             sizes="100vw"
@@ -190,7 +201,7 @@ export default async function NewsPostPage({ params }) {
         </Link>
 
         {/* Single column below 60rem; a row with the related card pinned
-            to the right (sticky) past that — same responsive pattern as
+            to the right (sticky) past that, same responsive pattern as
             the game page's .layout/.sidebar. */}
         <div className={styles.layout}>
           <div className={styles.main}>
@@ -203,10 +214,18 @@ export default async function NewsPostPage({ params }) {
                 })}
               </p>
             )}
-            <h1 className={styles.postTitle}>{post.title}</h1>
+            <h1 className={styles.postTitle}>{title}</h1>
             {post.body && (
               <div className={styles.postBody}>
-                <PortableText value={post.body} components={bodyComponents} />
+                {postTranslation?.body ? (
+                  <TranslatedRichText
+                    entries={postTranslation.body}
+                    mediaBlocks={post.body.filter((block) => block._type !== "block")}
+                    renderMedia={(block) => bodyComponents.types[block._type]?.({ value: block })}
+                  />
+                ) : (
+                  <PortableText value={post.body} components={bodyComponents} />
+                )}
               </div>
             )}
           </div>

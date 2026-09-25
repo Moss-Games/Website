@@ -4,20 +4,20 @@ import { isGifUrl } from "@/lib/isGifUrl";
 import styles from "./GameCard.module.css";
 
 // One listed game (see lib/games.js), rendered as a small self-contained
-// card — cover, title, tagline, and an explicit CTA line — rather than the
+// card (cover, title, tagline, and an explicit CTA line) rather than the
 // old full-bleed single-slide carousel (see docs/DECISIONS.md, 2026-09-06:
 // the old design read as an oversized image, not a clickable button). A
 // game with no headerImage yet (e.g. an unannounced project) skips the
-// image area entirely rather than showing an empty placeholder box — just
+// image area entirely rather than showing an empty placeholder box (just
 // title/tagline/badge/CTA, same idea as the old GameTeaserCard's text-only
-// layout (see docs/DECISIONS.md).
+// layout, see docs/DECISIONS.md).
 //
 // `large` is used on the /games page, where cards render bigger than the
-// homepage carousel's — same component/markup, just a size modifier class
-// (see GameCard.module.css) so both stay visually the same family of card.
+// homepage carousel's (same component/markup, just a size modifier class,
+// see GameCard.module.css) so both stay visually the same family of card.
 //
-// `href`/`ctaLabel` default to the game's own project page — overridable so
-// the same card style can point at something else (e.g. a news post's
+// `href`/`ctaLabel` default to the game's own project page (overridable so
+// the same card style can point at something else, e.g. a news post's
 // "related" card on app/(site)/news/[slug]/page.js linking to /news/<slug>).
 export default function GameCard({ game, large = false, href, ctaLabel = "Discover" }) {
   return (
@@ -31,7 +31,7 @@ export default function GameCard({ game, large = false, href, ctaLabel = "Discov
             className={styles.cover}
             src={game.header}
             unoptimized={isGifUrl(game.header)}
-            alt={game.title}
+            alt={game.headerAlt || game.title}
             fill
             sizes={large ? "(min-width: 768px) 28rem, 90vw" : "(min-width: 768px) 20rem, 90vw"}
           />

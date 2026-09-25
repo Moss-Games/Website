@@ -5,8 +5,8 @@ import ButtonDrift from "./ButtonDrift";
 import styles from "./NotFoundContent.module.css";
 
 // Shared by app/(site)/not-found.js (thrown notFound() calls, e.g. a broken
-// /projects/<slug> or /news/<slug> link — renders inside the site's own layout)
-// and app/global-not-found.js (genuinely unmatched URLs, e.g. a typo — that
+// /projects/<slug> or /news/<slug> link; renders inside the site's own layout)
+// and app/global-not-found.js (genuinely unmatched URLs, e.g. a typo: that
 // file bypasses the (site) layout entirely, see its own comment for why).
 // Reads the locale cookie directly (rather than via LocaleProvider) since
 // both callers are Server Components and this one doesn't need client state.

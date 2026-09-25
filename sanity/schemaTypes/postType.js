@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { altField } from "./altField";
 
 export const postType = defineType({
   name: "post",
@@ -18,7 +19,7 @@ export const postType = defineType({
       initialValue: () => new Date().toISOString(),
       validation: (rule) => rule.required(),
     }),
-    defineField({ name: "cover", type: "image", options: { hotspot: true } }),
+    defineField({ name: "cover", type: "image", options: { hotspot: true }, fields: [altField] }),
     defineField({
       name: "body",
       type: "array",
@@ -28,12 +29,7 @@ export const postType = defineType({
           type: "image",
           options: { hotspot: true },
           fields: [
-            defineField({
-              name: "alt",
-              type: "string",
-              title: "Alt text",
-              description: "Important for SEO and accessibility.",
-            }),
+            altField,
             defineField({ name: "caption", type: "string", title: "Caption (optional)" }),
           ],
         },
@@ -49,7 +45,7 @@ export const postType = defineType({
                 {
                   type: "image",
                   options: { hotspot: true },
-                  fields: [defineField({ name: "alt", type: "string", title: "Alt text" })],
+                  fields: [altField],
                 },
               ],
               validation: (rule) => rule.min(2).error("A carousel needs at least 2 images — use a standalone image block for just one."),
@@ -76,7 +72,7 @@ export const postType = defineType({
                 {
                   type: "image",
                   options: { hotspot: true },
-                  fields: [defineField({ name: "alt", type: "string", title: "Alt text" })],
+                  fields: [altField],
                 },
               ],
               validation: (rule) => rule.min(1).max(4).error("A mosaic takes 1 to 4 images — the grid adapts to however many you add."),

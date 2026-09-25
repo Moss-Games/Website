@@ -6,8 +6,10 @@ export const metadata = {
     "Meet Moss Games, a small team of game developers based in Toulouse, France.",
 };
 
+const CONTACT_EMAIL = "contact@mossgames.fr";
+
 // Names stay as-is in every locale (proper nouns); only bioKey is translated
-// — see lib/i18n/translations.js's aboutPage.bios.
+// (see lib/i18n/translations.js's aboutPage.bios).
 const team = [
   { name: "Camille Guerraz", bioKey: "aboutPage.bios.camille" },
   { name: "Geremy Cambus", bioKey: "aboutPage.bios.geremy" },
@@ -24,6 +26,15 @@ export default async function AboutPage() {
           {t("aboutPage.title")}
         </h1>
         <p className="max-w-md text-lg text-zinc-600">{t("aboutPage.intro")}</p>
+        <p className="text-base text-zinc-600">
+          {t("aboutPage.contact")}{" "}
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            className="font-medium text-zinc-900 underline underline-offset-4 hover:text-zinc-600"
+          >
+            {CONTACT_EMAIL}
+          </a>
+        </p>
       </div>
 
       <div className="grid w-full grid-cols-1 gap-10 text-left sm:grid-cols-3 sm:gap-8">

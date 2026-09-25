@@ -6,13 +6,15 @@ import Image from "next/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import styles from "./Lightbox.module.css";
 
-// Fullscreen image viewer — shared by ScreenshotGallery (game page) and
+// Fullscreen image viewer, shared by ScreenshotGallery (game page) and
 // PostMosaic (news post body's mosaic block), which each own their own grid
 // markup and open/index state, but want identical overlay/keyboard/swipe
 // behavior once an image is opened. `images` is a plain array of src
-// strings; `altPrefix` becomes "<altPrefix> N" for each slide's alt text.
+// strings; `alts` (same order) holds each one's CMS alt text, and
+// `altPrefix` becomes "<altPrefix> N" for any slide without one.
 export default function Lightbox({
   images,
+  alts = [],
   openIndex,
   onClose,
   onPrev,
@@ -53,7 +55,7 @@ export default function Lightbox({
     if (touchStartX.current === null) return;
     const delta = event.changedTouches[0].clientX - touchStartX.current;
     touchStartX.current = null;
-    // Ignore small drags/taps — only treat a real swipe as navigation.
+    // Ignore small drags/taps (only treat a real swipe as navigation).
     if (Math.abs(delta) < 40) return;
     if (delta > 0) onPrev();
     else onNext();
@@ -86,7 +88,7 @@ export default function Lightbox({
           key={src}
           src={src}
           unoptimized={isGifUrl(src)}
-          alt={`${altPrefix} ${openIndex + 1}`}
+          alt={alts[openIndex] || `${altPrefix} ${openIndex + 1}`}
           fill
           sizes="90vw"
           className={styles.fullImage}

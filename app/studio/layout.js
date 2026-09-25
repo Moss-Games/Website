@@ -1,5 +1,5 @@
 // Separate root layout (Next.js route groups let a subtree opt out of the
-// site's own <html>/<body> — see app/(site)/layout.js) so the embedded
+// site's own <html>/<body>, see app/(site)/layout.js) so the embedded
 // Sanity Studio gets the whole page, with none of the site's chrome or CSS.
 export { metadata, viewport } from "next-sanity/studio";
 

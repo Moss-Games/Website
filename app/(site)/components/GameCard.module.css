@@ -4,8 +4,8 @@
   width: 20rem;
   max-width: 100%;
   /* Without this, flex's automatic minimum size keeps the card from
-     shrinking below its `width` on narrow viewports — max-width:100% alone
-     doesn't override it — which pushed .grid's parent flex container wider
+     shrinking below its `width` on narrow viewports (max-width:100% alone
+     doesn't override it), which pushed .grid's parent flex container wider
      than the viewport and, since MascotFrame's scrolling .content wrapper
      uses overflow:auto rather than hidden, showed up as sideways-scrollable
      blank space instead of a clipped/wrapped layout. */
@@ -24,7 +24,7 @@
   /* Shake+grow on the way in, driven entirely by the keyframes below; on the
      way out :hover stops applying, `animation` reverts to none, and the plain
      `transition: transform` above takes over from wherever the animation left
-     off — a simple shrink-back, no wobble. */
+     off (a simple shrink-back, no wobble). */
   animation: cardHoverIn 0.2s ease forwards;
   box-shadow: 0 16px 28px -12px rgba(0, 0, 0, 0.3);
 }
@@ -62,8 +62,8 @@
   width: 28rem;
 }
 
-/* Wraps one or more .badge pills, overlaid on the cover image — stacked one
-   per line when there's more than one (see lib/games.js's comma-separated
+/* Wraps one or more .badge pills, overlaid on the cover image (stacked one
+   per line when there's more than one, see lib/games.js's comma-separated
    `badge` field). */
 .badgeGroup {
   position: absolute;
@@ -87,7 +87,7 @@
   opacity: 0.8;
 }
 
-/* Same pill, but in normal flow above the title — used instead of .badgeGroup
+/* Same pill, but in normal flow above the title: used instead of .badgeGroup
    (which overlays the cover image) when there's no image to overlay. */
 .badgeGroupInline {
   display: flex;

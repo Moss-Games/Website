@@ -11,7 +11,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // Game taglines can run to a full sentence or two (see GameCard.module.css's
-// line-clamp for the same issue elsewhere) — too long to fit this card's
+// line-clamp for the same issue elsewhere), too long to fit this card's
 // fixed 630px height once wrapped, so trim to a single short line here.
 function truncate(text, maxLen = 90) {
   if (!text || text.length <= maxLen) return text;

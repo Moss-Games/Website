@@ -4,6 +4,7 @@ import { getNewsPosts, firstSentence } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
 import { isGifUrl } from "@/lib/isGifUrl";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
+import { translatePostSummary } from "@/lib/i18n/content-utils";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -30,6 +31,7 @@ export default async function NewsPage() {
             const coverSrc = post.cover
               ? imageUrl(post.cover, { width: 800, height: 450 })
               : null;
+            const { title, excerpt } = translatePostSummary(post, locale);
             return (
               <Link key={post.slug} href={`/news/${post.slug}`} className={styles.post}>
                 <div className={styles.coverWrap}>
@@ -38,7 +40,7 @@ export default async function NewsPage() {
                       className={styles.cover}
                       src={coverSrc}
                       unoptimized={isGifUrl(coverSrc)}
-                      alt=""
+                      alt={post.cover.alt || ""}
                       fill
                       sizes="(min-width: 40rem) 26rem, 100vw"
                     />
@@ -54,8 +56,8 @@ export default async function NewsPage() {
                       })}
                     </p>
                   )}
-                  <h2 className={styles.postTitle}>{post.title}</h2>
-                  {post.excerpt && <p className={styles.excerpt}>{firstSentence(post.excerpt)}</p>}
+                  <h2 className={styles.postTitle}>{title}</h2>
+                  {excerpt && <p className={styles.excerpt}>{firstSentence(excerpt)}</p>}
                   <span className={styles.readMore}>
                     {t("common.readMore")} <span className={styles.arrow}>→</span>
                   </span>

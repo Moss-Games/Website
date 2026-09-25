@@ -1,4 +1,4 @@
-/* Thumbnail grid — same look the game page used for its inline (non-clickable)
+/* Thumbnail grid, same look the game page used for its inline (non-clickable)
    screenshot grid, now wrapped in <button>s that open the lightbox below. */
 .grid {
   display: grid;
@@ -52,4 +52,4 @@
 }
 
 /* Lightbox overlay styles now live in Lightbox.module.css (shared with
-   PostMosaic's mosaic block) — this file only styles the thumbnail grid. */
+   PostMosaic's mosaic block); this file only styles the thumbnail grid. */

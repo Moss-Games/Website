@@ -11,7 +11,7 @@
 }
 
 /* Slides sit side by side and the whole track is translated horizontally
-   on index change — a real slide, not a cut. */
+   on index change (a real slide, not a cut). */
 .track {
   display: flex;
   height: 100%;
