@@ -134,10 +134,12 @@ export default function MascotFrame({ children }) {
       <Link href="/" className={styles.logo} aria-label={t("nav.home")}>
         <Image src="/images/logo.png" alt="Moss Games" width={288} height={288} priority />
       </Link>
-      <Link href="/" className={styles.brandLeft}>
+      {/* The desktop wordmark halves double as shortcuts: MOSS (the team)
+          to About Us, GAMES to All Projects. */}
+      <Link href="/about" className={styles.brandLeft}>
         MOSS
       </Link>
-      <Link href="/" className={styles.brandRight}>
+      <Link href="/projects" className={styles.brandRight}>
         GAMES
       </Link>
       <Link href="/" className={styles.brandMobile} aria-label={t("nav.home")}>

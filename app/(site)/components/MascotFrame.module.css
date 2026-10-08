@@ -147,7 +147,8 @@
 
 /* "MOSS" / "GAMES" wordmark, flanking the head in the top margin (on the black
    site background, not inside the box). Vertically centered in the margin band.
-   Doubles as a home link, like the head (see .head below). */
+   Each half is a link: MOSS to About Us, GAMES to All Projects (the mobile
+   wordmark and the head stay home links, see .head below). */
 .brandLeft,
 .brandRight,
 .brandMobile {
