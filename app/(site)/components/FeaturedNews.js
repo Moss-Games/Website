@@ -1,74 +1,60 @@
-import Image from "next/image";
 import Link from "next/link";
 import { getNewsPosts, splitFeaturedNews } from "@/lib/news";
 import { imageUrl } from "@/sanity/lib/image";
-import { isGifUrl } from "@/lib/isGifUrl";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
 import { translatePostSummary } from "@/lib/i18n/content-utils";
 import ButtonDrift from "./ButtonDrift";
+import NewsCarousel from "./NewsCarousel";
 import styles from "./FeaturedNews.module.css";
 
-// The homepage's top-of-page highlight (the one editorially-picked story,
-// lib/news.js's splitFeaturedNews, set in Sanity via the post's "Featured
-// on homepage" checkbox), shown above the games grid as a single cropped
-// image with the title/date burned directly onto it (a black text outline,
-// see FeaturedNews.module.css's .date/.title, keeps them readable without
-// darkening the photo itself) rather than a separate text block, so there's
-// nothing to look at here but the picture itself. The rest of the recent posts still
-// show later on the page as NewsSection's plain list; this only ever
-// renders the single featured pick, or nothing at all when there's no news
-// yet (NewsSection's own box covers that empty state further down).
+// The homepage's lead element: a full-width news carousel at the very top,
+// above the games grid.
+// Up to CAROUSEL_SIZE stories: the editorially-picked one first (lib/news.js's
+// splitFeaturedNews, set in Sanity via the post's "Featured on homepage"
+// checkbox), then the most recent others. Each slide is a cropped cover with
+// the title/date burned directly onto it (a black text outline, see
+// FeaturedNews.module.css's .date/.title, keeps them readable without
+// darkening the photo itself). Renders nothing when there's no news yet
+// (NewsSection's own box covers that empty state further down).
+const CAROUSEL_SIZE = 4;
+
 export default async function FeaturedNews() {
   const locale = await getLocale();
   const t = getTranslator(locale);
   const posts = await getNewsPosts();
-  const { featured } = splitFeaturedNews(posts);
+  const { featured, recent } = splitFeaturedNews(posts, CAROUSEL_SIZE - 1);
   if (!featured) return null;
 
-  const { title } = translatePostSummary(featured, locale);
-  const coverSrc = featured.cover ? imageUrl(featured.cover, { width: 720, height: 320 }) : null;
-  const dateLabel = featured.publishedAt
-    ? new Date(featured.publishedAt).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    : null;
+  const slides = [featured, ...recent].map((post) => ({
+    slug: post.slug,
+    title: translatePostSummary(post, locale).title,
+    coverSrc: post.cover ? imageUrl(post.cover, { width: 2000, height: 800 }) : null,
+    coverAlt: post.cover?.alt || "",
+    dateLabel: post.publishedAt
+      ? new Date(post.publishedAt).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : null,
+  }));
 
   return (
-    <div className={styles.wrap}>
-      {/* Rendered twice, one hidden per breakpoint (see the max-width: 30rem
-          rule below) rather than repositioned with pure CSS: on mobile the
-          date moves out of the image overlay entirely to sit above the card
-          as its own left-aligned line, since overlaying it directly on a
-          cropped cover risks landing on top of whatever a cover's own
-          baked-in logo/title art happens to sit near the bottom (see the
-          .card comment above), same "duplicate + toggle visibility per
-          breakpoint" pattern as MascotFrame's .brandMobile. */}
-      {dateLabel && <p className={styles.dateMobile}>{dateLabel}</p>}
-      <Link href={`/news/${featured.slug}`} className={styles.card}>
-        {coverSrc ? (
-          <Image
-            className={styles.cover}
-            src={coverSrc}
-            unoptimized={isGifUrl(coverSrc)}
-            alt={featured.cover.alt || ""}
-            fill
-            sizes="(min-width: 40rem) 36rem, 100vw"
-            priority
-          />
-        ) : null}
-        <div className={styles.text}>
-          {dateLabel && <p className={styles.date}>{dateLabel}</p>}
-          <h2 className={styles.title}>{title}</h2>
-        </div>
-      </Link>
+    <div className={styles.frame}>
+      <div className={styles.wrap}>
+        <NewsCarousel
+          slides={slides}
+          prevLabel={t("common.previousNews")}
+          nextLabel={t("common.nextNews")}
+          goToLabel={t("common.goToNews")}
+        />
 
-      <ButtonDrift>
-        <Link href="/news" className={styles.seeAllButton}>
-          {t("common.seeAllNews")} <span className={styles.arrow} aria-hidden="true">→</span>
-        </Link>
-      </ButtonDrift>
+        <ButtonDrift>
+          <Link href="/news" className={styles.seeAllButton}>
+            {t("common.seeAllNews")} <span className={styles.arrow} aria-hidden="true">→</span>
+          </Link>
+        </ButtonDrift>
+      </div>
     </div>
   );
 }

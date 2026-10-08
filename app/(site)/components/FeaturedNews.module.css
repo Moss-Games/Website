@@ -1,37 +1,47 @@
+/* The homepage's lead element, spanning the page's full content width.
+   .frame is a size container so the one-column phone layout below keys off
+   the width actually available (MascotFrame's margins make it differ from
+   the viewport's). */
+.frame {
+  container-type: inline-size;
+  width: 100%;
+}
+
 .wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
   width: 100%;
-  max-width: 36rem;
 }
 
-/* The image itself is the whole card (title/date are burned onto it via
-   .text below rather than living in a separate text block). The wide
-   aspect-ratio keeps it short (a explicit crop, not a "whatever height the
-   image happens to be" box) so it reads as a banner rather than a big hero
-   image. Same ratio at every width, deliberately: a *taller* box (e.g. 16/9
-   on mobile) actually reveals MORE of the source image's own vertical
-   extent once it's wider than the box (cover crops the excess width
-   instead), which risks the overlaid text landing on top of whatever a
-   cover's own baked-in logo/title art happens to sit near the bottom;
-   keeping one ratio keeps that reveal consistent regardless of viewport. */
-.card {
-  position: relative;
-  display: block;
+.carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
   width: 100%;
-  aspect-ratio: 21 / 9;
+}
+
+/* The cropped frame every slide fills. One fixed ratio at every width,
+   deliberately: a *taller* box (e.g. 16/9 on mobile) reveals MORE of a
+   cover's own vertical extent, which risks the overlaid text landing on top
+   of whatever baked-in logo/title art the cover has near the bottom. 5/2
+   rather than 16/9 keeps it from taking the whole first screen at full
+   page width. The hover lift lives here (not on .card) since the slides
+   are clipped by this box's overflow. */
+.viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 2;
   border-radius: 0.85rem;
   overflow: hidden;
   border: 1px solid #e4e4e7;
   background: #18181b;
-  text-decoration: none;
-  color: inherit;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card:hover {
+.viewport:hover {
   /* See GameCard.module.css's cardHoverIn for why enter/leave are
      asymmetric: a keyframe shake+grow going in, a plain transition
      shrink-back going out. */
@@ -44,24 +54,111 @@
     transform: translateY(0) scale(1) rotate(0deg);
   }
   30% {
-    transform: translateY(-4px) scale(1.012) rotate(-0.4deg);
+    transform: translateY(-4px) scale(1.006) rotate(-0.2deg);
   }
   60% {
-    transform: translateY(-1px) scale(1.003) rotate(0.4deg);
+    transform: translateY(-1px) scale(1.002) rotate(0.2deg);
   }
   100% {
-    transform: translateY(-2px) scale(1.006) rotate(0deg);
+    transform: translateY(-2px) scale(1.003) rotate(0deg);
   }
+}
+
+/* Same translated-track slide as PostCarousel.module.css's .track. */
+.track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    transition: none;
+  }
+}
+
+.card {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
 }
 
 .cover {
   object-fit: cover;
 }
 
-/* Standalone date line, left-aligned above the card (see FeaturedNews.js's
-   comment for why this exists alongside .date instead of just repositioning
-   it). Hidden by default; the max-width: 30rem rule below swaps it in for
-   .date (the overlaid copy) on mobile. */
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 1.75rem;
+  line-height: 1;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  appearance: none;
+  transition: background-color 0.15s ease;
+}
+
+.nav:hover {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.prev {
+  left: 0.6rem;
+}
+
+.next {
+  right: 0.6rem;
+}
+
+.dots {
+  display: flex;
+}
+
+/* The button is a comfortable tap target; the visible dot is its ::before. */
+.dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  appearance: none;
+}
+
+.dot::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #d4d4d8;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.dotActive::before {
+  background: #18181b;
+  transform: scale(1.2);
+}
+
+/* Standalone date line, left-aligned above the carousel: on phones the
+   active slide's date moves out of the image overlay (so it
+   can't land on a cover's own baked-in art in the much smaller frame).
+   Hidden by default; the container query below swaps it in for .date. */
 .dateMobile {
   display: none;
   width: 100%;
@@ -73,12 +170,13 @@
   margin: 0;
 }
 
+/* Side padding keeps the text clear of the prev/next arrows. */
 .text {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 1rem 1.25rem 1.1rem;
+  padding: 1.5rem 4rem 1.6rem;
   text-align: left;
 }
 
@@ -86,7 +184,7 @@
    1px offsets in every direction, rather than a single soft drop-shadow)
    keeps the white text readable straight over any cover, light or dark. */
 .date {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #fff;
@@ -96,16 +194,27 @@
 
 .title {
   font-family: var(--font-super-corn), cursive;
-  font-size: 1.35rem;
+  font-size: 2rem;
   font-weight: 400;
   color: #fff;
   margin: 0;
   text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;
 }
 
-@media (max-width: 30rem) {
+/* Phones: a taller 16/9 frame so the cover isn't a thin strip, the date above the frame instead of on it, and no
+   arrows (swipe and the dots cover navigation there, and the arrows would
+   sit on top of the title). */
+@container (width < 40rem) {
+  .viewport {
+    aspect-ratio: 16 / 9;
+  }
+
+  .text {
+    padding: 0.85rem 1rem 0.9rem;
+  }
+
   .title {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
   }
 
   .dateMobile {
@@ -113,6 +222,10 @@
   }
 
   .date {
+    display: none;
+  }
+
+  .nav {
     display: none;
   }
 }

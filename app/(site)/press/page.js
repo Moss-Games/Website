@@ -214,7 +214,7 @@ export default async function PressPage() {
         <div className="flex flex-col gap-10">
           <section className="flex flex-col gap-3">
             <h2 className="font-display text-xl text-zinc-900">{t("pressPage.about")}</h2>
-            <p className="text-base leading-relaxed text-zinc-600">{t("home.intro")}</p>
+            <p className="text-base leading-relaxed text-zinc-600">{t("aboutPage.intro")}</p>
           </section>
 
           <section className="flex flex-col gap-3">

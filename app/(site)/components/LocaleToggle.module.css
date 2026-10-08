@@ -12,7 +12,10 @@
   gap: 0.15rem;
   padding: 0.2rem;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.06);
+  /* Opaque (the same grey a 6% black tint gives over white) so it stays
+     readable when a dark image, like the homepage news carousel, scrolls
+     underneath it. */
+  background: #f0f0f0;
   font-family: inherit;
 }
 

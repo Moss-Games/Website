@@ -26,7 +26,7 @@ export default async function AboutPage() {
         <h1 className="font-display text-4xl tracking-tight text-zinc-900">
           {t("aboutPage.title")}
         </h1>
-        <p className="max-w-md text-lg text-zinc-600">{t("aboutPage.intro")}</p>
+        <p className="max-w-xl text-lg leading-relaxed text-zinc-600">{t("aboutPage.intro")}</p>
         <p className="text-base text-zinc-600">
           {t("aboutPage.contact")}{" "}
           <a

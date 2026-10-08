@@ -1,3 +1,35 @@
+/* Homepage games row. Three equal columns spanning the full content width
+   (lined up with FeaturedNews's full-width carousel above) once they fit at
+   a decent size; below that, GameCard's own fixed 20rem cards wrap and
+   center as before (tablet: 2 + 1, phone: 1 per line). .gamesFrame is a size
+   container so the switch keys off the width actually available, not the
+   viewport's (MascotFrame's margins make them differ). */
+.gamesFrame {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.gamesRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+@container (min-width: 56rem) {
+  .gamesRow {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* The GameCards themselves: let the grid cell set the width instead of
+     their fixed 20rem. */
+  .gamesRow > * {
+    width: auto;
+  }
+}
+
 /* "See All Projects" CTA — same dark-button family as NotFoundContent's
    .primary and the project page's .storeButton (bg #18181b -> hover #3f3f46),
    but bumped up in size/shadow since this is the homepage's main CTA, and

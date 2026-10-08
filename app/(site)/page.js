@@ -29,17 +29,22 @@ export default async function Home() {
 
   return (
     <div className="flex flex-1 flex-col items-center gap-16 px-6 py-16 text-center font-sans sm:px-5 sm:py-12">
-      <p className="max-w-xl text-lg leading-relaxed text-zinc-600">{t("home.intro")}</p>
-
       <Reveal className="flex w-full justify-center">
         <FeaturedNews />
       </Reveal>
 
-      <Reveal className="flex flex-col items-center gap-8">
-        <div className="flex flex-wrap items-stretch justify-center gap-6">
-          {games.map((game) => (
-            <GameCard key={game.slug} game={game} ctaLabel={t("common.discover")} />
-          ))}
+      <Reveal className="flex w-full flex-col items-center gap-8">
+        <div className={styles.gamesFrame}>
+          <div className={styles.gamesRow}>
+            {games.map((game) => (
+              <GameCard
+                key={game.slug}
+                game={game}
+                ctaLabel={t("common.discover")}
+                imageSizes="(min-width: 1100px) 33vw, (min-width: 768px) 20rem, 90vw"
+              />
+            ))}
+          </div>
         </div>
         <ButtonDrift>
           <Link href="/projects" className={styles.seeAllButton}>

@@ -16,10 +16,13 @@ import styles from "./GameCard.module.css";
 // homepage carousel's (same component/markup, just a size modifier class,
 // see GameCard.module.css) so both stay visually the same family of card.
 //
+// `imageSizes` overrides the cover's `sizes` hint, for layouts where the card
+// isn't its usual fixed width (the homepage's full-width 3-column row).
+//
 // `href`/`ctaLabel` default to the game's own project page (overridable so
 // the same card style can point at something else, e.g. a news post's
 // "related" card on app/(site)/news/[slug]/page.js linking to /news/<slug>).
-export default function GameCard({ game, large = false, href, ctaLabel = "Discover" }) {
+export default function GameCard({ game, large = false, href, ctaLabel = "Discover", imageSizes }) {
   return (
     <Link
       href={href || `/projects/${game.slug}`}
@@ -33,7 +36,7 @@ export default function GameCard({ game, large = false, href, ctaLabel = "Discov
             unoptimized={isGifUrl(game.header)}
             alt={game.headerAlt || game.title}
             fill
-            sizes={large ? "(min-width: 768px) 28rem, 90vw" : "(min-width: 768px) 20rem, 90vw"}
+            sizes={imageSizes || (large ? "(min-width: 768px) 28rem, 90vw" : "(min-width: 768px) 20rem, 90vw")}
           />
           {game.badges.length > 0 && (
             <div className={styles.badgeGroup}>
