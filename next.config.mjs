@@ -11,6 +11,11 @@ const isDev = process.env.NODE_ENV === "development";
 // - www.youtube-nocookie.com: YouTube trailer embed (lib/games.js)
 // - vercel.live: the Vercel toolbar on preview deployments
 // - va.vercel-scripts.com: Vercel Analytics' script in development
+// upgrade-insecure-requests is production-only: in dev it would rewrite every
+// asset and navigation on the LAN address (http://192.168.x.x:3000, used to
+// test on a phone) to https, which the dev server doesn't serve (blank page,
+// "unable to connect" on clicking a link). localhost is exempt from it, so
+// the bug only shows up off-machine.
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' https://vercel.live${isDev ? " 'unsafe-eval' https://va.vercel-scripts.com" : ""};
@@ -24,7 +29,7 @@ const cspHeader = `
   base-uri 'self';
   form-action 'self';
   frame-ancestors 'none';
-  upgrade-insecure-requests;
+  ${isDev ? "" : "upgrade-insecure-requests;"}
 `;
 
 const securityHeaders = [
